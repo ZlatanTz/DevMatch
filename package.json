@@ -32,5 +32,8 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.13",
     "vite": "^7.1.2"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.9.5"
   }
 }
