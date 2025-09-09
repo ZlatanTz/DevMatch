@@ -7,7 +7,7 @@ export const Jobs = () => {
   return (
     <>
       <Toolbar />
-      <section className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+      <section className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 m-10 ">
         {jobs.map((job) => {
           const { title, company, location, employment_type, description, id } = job;
           return (
