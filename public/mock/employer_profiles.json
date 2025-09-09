@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "user_id": 2,
+    "company_name": "TechNova",
+    "website": "https://technova.dev",
+    "about": "Innovative SaaS company focused on cloud solutions.",
+    "location": "Remote",
+    "verified": true
+  }
+]

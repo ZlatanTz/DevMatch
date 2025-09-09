@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "name": "React"
+  },
+  {
+    "id": 2,
+    "name": "TypeScript"
+  },
+  {
+    "id": 3,
+    "name": "Node.js"
+  },
+  {
+    "id": 4,
+    "name": "FastAPI"
+  },
+  {
+    "id": 5,
+    "name": "MySQL"
+  },
+  {
+    "id": 6,
+    "name": "Docker"
+  },
+  {
+    "id": 7,
+    "name": "Python"
+  },
+  {
+    "id": 8,
+    "name": "Redux"
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "job_id": 103,
+    "job_title": "Full Stack Developer (React + Node)",
+    "company": "CloudShift",
+    "score": 90,
+    "reason": "3 skills match (React, Node.js, Docker), remote friendly"
+  },
+  {
+    "job_id": 104,
+    "job_title": "Python Developer",
+    "company": "AI Labs",
+    "score": 78,
+    "reason": "2 skills match (Python, MySQL), same location"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 201,
+    "job_id": 101,
+    "job_title": "Frontend Developer (React)",
+    "company": "TechNova",
+    "status": "in_review",
+    "score": 85,
+    "applied_at": "2025-09-05T09:15:00Z"
+  },
+  {
+    "id": 202,
+    "job_id": 102,
+    "job_title": "Backend Developer (FastAPI + MySQL)",
+    "company": "DataWorks",
+    "status": "applied",
+    "score": 72,
+    "applied_at": "2025-09-07T14:45:00Z"
+  }
+]
