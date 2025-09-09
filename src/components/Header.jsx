@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import logo from "../assets/logo.jpg";
 import profileImage from "../assets/profileIcon.jpg";
 import { useState, useRef, useEffect } from "react";
+import "./Header.css";
 
 const Header = () => {
   const [isLogged, setIsLogged] = useState(true);
@@ -24,16 +25,16 @@ const Header = () => {
         <NavLink to="/">
           <img src={logo} alt="Logo" className="h-12 w-12 rounded-full object-cover" />
         </NavLink>
-        <NavLink to="/" className="text-base">
+        <NavLink to="/" className="text-base linksInNav">
           Home
         </NavLink>
-        <NavLink to="/jobs" className="text-base">
+        <NavLink to="/jobs" className="text-base linksInNav">
           Jobs
         </NavLink>
-        <NavLink to="/about" className="text-base">
+        <NavLink to="/about" className="text-base linksInNav">
           About Us
         </NavLink>
-        <NavLink to="/contact" className="text-base">
+        <NavLink to="/contact" className="text-base linksInNav">
           Contact
         </NavLink>
       </div>
@@ -53,17 +54,27 @@ const Header = () => {
             <img
               src={profileImage}
               alt="Profile"
-              className="h-12 w-12 rounded-full object-cover cursor-pointer mr-19"
+              className="h-12 w-12 rounded-full object-cover cursor-pointer mr-19 profilaImage"
               onClick={() => setDropdownVisible((prev) => !prev)}
             />
             {dropdownVisible && (
-              <div className="absolute h-40 w-[200px] right-0 bg-federal-blue p-5 pt-10 flex flex-col items-center justify-center gap-6">
+              <div className="absolute h-40 w-[200px] right-0 bg-federal-blue p-5 pt-10 flex flex-col items-center justify-center gap-6 dropdownDiv">
+                <NavLink to="/jobs" className="text-base linkInDiv">
+                  Jobs
+                </NavLink>
+                <NavLink to="/about" className="text-base linkInDiv">
+                  About Us
+                </NavLink>
+                <NavLink to="/contact" className="text-base linkInDiv">
+                  Contact
+                </NavLink>
                 <NavLink className="text-base">My Applications</NavLink>
                 <NavLink className="text-base" to="/profile">
-                  Customize Profile
+                  Profile
                 </NavLink>
+
                 <button
-                  className="text-base"
+                  className="text-base cursor-pointer"
                   onClick={() => {
                     setDropdownVisible(false);
                   }}
