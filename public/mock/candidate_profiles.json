@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "full_name": "John Candidate",
+    "location": "Remote",
+    "years_exp": 2,
+    "bio": "Frontend developer passionate about React and UI/UX.",
+    "resume_url": "/resumes/john_candidate.pdf",
+    "skills": [1, 2, 8]
+  },
+  {
+    "id": 2,
+    "user_id": 3,
+    "full_name": "David Candidate",
+    "location": "Berlin",
+    "years_exp": 3,
+    "bio": "Backend developer with focus on Python and FastAPI.",
+    "resume_url": "/resumes/david_candidate.pdf",
+    "skills": [4, 5, 7]
+  }
+]
