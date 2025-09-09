@@ -4,5 +4,6 @@
   "eslint.validate": ["javascript", "javascriptreact"],
   "eslint.alwaysShowStatus": true,
   "files.associations": { "*.css": "postcss" },
-  "css.lint.unknownAtRules": "ignore"
+  "css.lint.unknownAtRules": "ignore",
+  "tailwindCSS.emmetCompletions": true
 }
