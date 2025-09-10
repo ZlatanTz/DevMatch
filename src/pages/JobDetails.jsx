@@ -56,7 +56,7 @@ const JobDetails = () => {
 
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
-          <div className="job-description md:w-7/10  p-6 rounded-lg shadow border border-gray-200">
+          <div className="job-description md:w-7/10 p-6 rounded-lg shadow border border-gray-200">
             <p className="mb-4 text-gray-700">Job description goes here. </p>
             <p className="font-semibold text-paynes-gray">The role entails:</p>
             <p className="mb-4 text-gray-700">{description}</p>
@@ -72,7 +72,7 @@ const JobDetails = () => {
               description goes here.
             </p>
           </div>
-          <div className="job-side-details flex-1  p-6 rounded-lg shadow border border-gray-200">
+          <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200">
             <div className="flex justify-start items-center mb-4">
               <p className="text-paynes-gray font-medium">Date posted:</p>
               <p className="text-gray-700 pl-1">{formattedDate}</p>
