@@ -1,6 +1,13 @@
 import AllSkillsList from "../components/AllSkillsList";
+import { useParams } from "react-router-dom";
+import jobs from "../../public/mock/jobs.json";
 
 const JobDetails = () => {
+  const { id } = useParams(); // ID iz URL-a
+  const job = jobs.find((job) => job.id === parseInt(id));
+
+  if (!job) return <div>Posao nije pronađen</div>;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Logika za slanje podataka
@@ -10,9 +17,9 @@ const JobDetails = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 bg-white min-h-screen">
       <img
-        src="firma1.jpg"
-        alt="Slika firme"
-        className="w-full h-64 object-cover rounded-lg mb-6 shadow-md"
+        src={job.company_img || job.comapny_img} // Rukuje greškom u spellingu
+        alt={`${job.company} logo`}
+        className="w-full h-64 sm:h-80 md:h-96 lg:h-[400px] object-contain object-center rounded-lg mb-6 shadow-md"
       />
 
       <div className="flex flex-wrap justify-around bg-federal-blue text-white p-4 rounded-lg mb-8">

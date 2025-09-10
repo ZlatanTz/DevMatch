@@ -1,8 +1,9 @@
 [
   {
-    "id": 101,
+    "id": 1,
     "title": "Frontend Developer (React)",
     "company": "TechNova",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "Remote",
     "employment_type": "Full-time",
     "seniority": "Junior",
@@ -15,9 +16,10 @@
     "description": "Work on building responsive and dynamic user interfaces using React. Collaborate with designers and backend developers to deliver high-quality web applications."
   },
   {
-    "id": 102,
+    "id": 2,
     "title": "Backend Developer (FastAPI + MySQL)",
     "company": "DataWorks",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Berlin",
     "employment_type": "Full-time",
     "seniority": "Mid",
@@ -30,9 +32,10 @@
     "description": "Develop scalable APIs using FastAPI and manage relational databases with MySQL. Focus on performance optimization and integration with front-end systems."
   },
   {
-    "id": 103,
+    "id": 3,
     "title": "DevOps Engineer",
     "company": "CloudForge",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "Amsterdam",
     "employment_type": "Full-time",
     "seniority": "Senior",
@@ -45,9 +48,10 @@
     "description": "Maintain and improve CI/CD pipelines, manage cloud infrastructure, and ensure system reliability. Strong knowledge of Docker, Kubernetes, and monitoring tools required."
   },
   {
-    "id": 104,
+    "id": 4,
     "title": "Mobile Developer (Flutter)",
     "company": "Appify",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Remote",
     "employment_type": "Contract",
     "seniority": "Mid",
@@ -60,9 +64,10 @@
     "description": "Design and develop cross-platform mobile applications using Flutter. Work closely with product teams to implement new features and maintain app stability."
   },
   {
-    "id": 105,
+    "id": 5,
     "title": "UI/UX Designer",
     "company": "DesignHub",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "London",
     "employment_type": "Full-time",
     "seniority": "Junior",
@@ -75,9 +80,10 @@
     "description": "Create user-centered designs, conduct usability testing, and deliver wireframes and prototypes. Collaborate with developers to ensure design accuracy."
   },
   {
-    "id": 106,
+    "id": 6,
     "title": "Full Stack Developer (MERN)",
     "company": "WebCraft",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Warsaw",
     "employment_type": "Full-time",
     "seniority": "Mid",
@@ -90,9 +96,10 @@
     "description": "Work on full stack applications using MongoDB, Express, React, and Node.js. Implement features across front and back end while ensuring scalability."
   },
   {
-    "id": 107,
+    "id": 7,
     "title": "AI Engineer (NLP)",
     "company": "LinguaTech",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "Paris",
     "employment_type": "Full-time",
     "seniority": "Senior",
@@ -105,9 +112,10 @@
     "description": "Build and optimize natural language processing models. Work with large datasets and collaborate with linguists to improve accuracy and usability."
   },
   {
-    "id": 108,
+    "id": 8,
     "title": "Data Analyst",
     "company": "Insightly",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Remote",
     "employment_type": "Part-time",
     "seniority": "Junior",
@@ -120,9 +128,10 @@
     "description": "Analyze datasets, prepare dashboards, and provide insights to support business decisions. Familiarity with SQL and BI tools preferred."
   },
   {
-    "id": 109,
+    "id": 9,
     "title": "Security Engineer",
     "company": "SafeNet",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "Zurich",
     "employment_type": "Full-time",
     "seniority": "Mid",
@@ -135,9 +144,10 @@
     "description": "Identify vulnerabilities, perform penetration testing, and implement security best practices across infrastructure and applications."
   },
   {
-    "id": 110,
+    "id": 10,
     "title": "Product Manager",
     "company": "Visionary",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Barcelona",
     "employment_type": "Full-time",
     "seniority": "Senior",
@@ -150,9 +160,10 @@
     "description": "Lead product lifecycle from discovery to delivery. Collaborate with engineering and design teams while managing stakeholder expectations."
   },
   {
-    "id": 111,
+    "id": 11,
     "title": "QA Engineer",
     "company": "TestLab",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "Remote",
     "employment_type": "Contract",
     "seniority": "Mid",
@@ -165,9 +176,10 @@
     "description": "Design and execute test cases, automate testing frameworks, and ensure product quality through continuous integration pipelines."
   },
   {
-    "id": 112,
+    "id": 12,
     "title": "Game Developer (Unity)",
     "company": "PlaySphere",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Stockholm",
     "employment_type": "Full-time",
     "seniority": "Junior",
@@ -180,9 +192,10 @@
     "description": "Develop and optimize gameplay mechanics in Unity. Collaborate with artists and designers to bring engaging experiences to life."
   },
   {
-    "id": 113,
+    "id": 13,
     "title": "Systems Administrator",
     "company": "InfraTech",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "Prague",
     "employment_type": "Full-time",
     "seniority": "Mid",
@@ -195,9 +208,10 @@
     "description": "Manage servers, ensure system uptime, and troubleshoot infrastructure issues. Knowledge of Linux and Windows environments required."
   },
   {
-    "id": 114,
+    "id": 14,
     "title": "Cloud Architect",
     "company": "NextGenCloud",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Copenhagen",
     "employment_type": "Full-time",
     "seniority": "Senior",
@@ -210,9 +224,10 @@
     "description": "Design cloud-native architectures, optimize deployments, and provide guidance on scaling and cost management for enterprise clients."
   },
   {
-    "id": 115,
+    "id": 15,
     "title": "Machine Learning Engineer",
     "company": "DeepVision",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "Remote",
     "employment_type": "Full-time",
     "seniority": "Mid",
@@ -225,9 +240,10 @@
     "description": "Develop and deploy ML models for image and data processing. Collaborate with data scientists and integrate solutions into production systems."
   },
   {
-    "id": 116,
+    "id": 16,
     "title": "IT Support Specialist",
     "company": "HelpDeskPro",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Vienna",
     "employment_type": "Full-time",
     "seniority": "Junior",
@@ -240,9 +256,10 @@
     "description": "Provide technical support, troubleshoot issues, and assist employees with hardware and software problems."
   },
   {
-    "id": 117,
+    "id": 17,
     "title": "Blockchain Developer",
     "company": "CryptoForge",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "Tallinn",
     "employment_type": "Full-time",
     "seniority": "Mid",
@@ -255,9 +272,10 @@
     "description": "Develop decentralized applications, smart contracts, and blockchain protocols. Experience with Ethereum and Solidity preferred."
   },
   {
-    "id": 118,
+    "id": 18,
     "title": "Marketing Specialist (Digital)",
     "company": "BrandBoost",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Remote",
     "employment_type": "Part-time",
     "seniority": "Junior",
@@ -270,9 +288,10 @@
     "description": "Plan and execute digital marketing campaigns, manage social media accounts, and analyze performance metrics."
   },
   {
-    "id": 119,
+    "id": 19,
     "title": "Business Analyst",
     "company": "StrategyWorks",
+    "company_img": "https://static.vecteezy.com/system/resources/previews/008/214/517/non_2x/abstract-geometric-logo-or-infinity-line-logo-for-your-company-free-vector.jpg",
     "location": "Dublin",
     "employment_type": "Full-time",
     "seniority": "Mid",
@@ -285,9 +304,10 @@
     "description": "Gather business requirements, document processes, and collaborate with technical teams to implement solutions."
   },
   {
-    "id": 120,
+    "id": 20,
     "title": "Technical Writer",
     "company": "DocuPro",
+    "company_img": "https://img.freepik.com/free-vector/abstract-company-logo_53876-120501.jpg?semt=ais_hybrid&w=740&q=80",
     "location": "Remote",
     "employment_type": "Contract",
     "seniority": "Mid",
