@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const Header = () => {
   const [isLogged, setIsLogged] = useState(true);
-
+  setIsLogged;
   return (
     <header className="flex items-center justify-between bg-federal-blue text-white px-4 py-3 h-30">
       <div className="flex items-center space-x-6">
@@ -44,11 +44,11 @@ const Header = () => {
               className="h-16 w-16 rounded-full object-cover 
             mr-25 cursor-pointer"
             />
-            <div class="absolute h-52 w-[294px] right-0 bg-federal-blue p-5 pt-10 flex flex-col items-center justift-center gap-5">
+            {/* <div class="absolute h-52 w-[294px] right-0 bg-federal-blue p-5 pt-10 flex flex-col items-center justift-center gap-5">
               <NavLink className="text-xl">My Applications</NavLink>
               <NavLink className="text-xl">Customize Profile</NavLink>
               <button className="text-xl">Logout</button>
-            </div>
+            </div> */}
           </div>
         )}
       </div>
