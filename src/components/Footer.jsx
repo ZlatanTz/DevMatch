@@ -1,7 +1,9 @@
 const Footer = () => {
   return (
-    <div>Footer</div>
-  )
-}
+    <footer className="bg-federal-blue text-white h-16 flex justify-center items-center font-roboto">
+      DevMatch © 2025
+    </footer>
+  );
+};
 
-export default Footer
+export default Footer;
