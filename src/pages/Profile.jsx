@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin, MoveRight, File, Link2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Profile = () => {
-  const [role, setRole] = useState("employer");
+  const [role, setRole] = useState("candidate");
   const [employer, setEmployer] = useState();
   const profile = useLoaderData();
 
