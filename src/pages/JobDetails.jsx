@@ -17,7 +17,7 @@ const JobDetails = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 bg-white min-h-screen">
       <img
-        src={job.company_img || job.comapny_img} // Rukuje greškom u spellingu
+        src={job.company_img}
         alt={`${job.company} logo`}
         className="w-full h-64 sm:h-80 md:h-96 lg:h-[400px] object-contain object-center rounded-lg mb-6 shadow-md"
       />
