@@ -3,7 +3,7 @@ import SkillList from "./SkillList";
 import { useSkills } from "../hooks/useSkills";
 
 export function JobCard({
-  id = 1,
+  id,
   title,
   company,
   location,
