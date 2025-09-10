@@ -1,7 +1,11 @@
-const EditProfile = () => {
-  return (
-    <div>EditProfile</div>
-  )
-}
+import { useParams } from "react-router-dom";
+import { useLoaderData, Link } from "react-router-dom";
 
-export default EditProfile
+const EditProfile = () => {
+  const profile = useLoaderData();
+  const { id } = useParams();
+
+  return <></>;
+};
+
+export default EditProfile;

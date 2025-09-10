@@ -42,7 +42,13 @@ const Header = () => {
       <div className="flex items-center space-x-4 basis-1/2 justify-end">
         {!isLogged ? (
           <>
-            <NavLink to="/login" className="text-base">
+            <NavLink
+              to="/login"
+              className="text-base"
+              onClick={() => {
+                setIsLogged(true);
+              }}
+            >
               Login
             </NavLink>
             <NavLink to="/register" className="text-base mr-5">
@@ -55,30 +61,60 @@ const Header = () => {
               src={profileImage}
               alt="Profile"
               className="h-12 w-12 rounded-full object-cover cursor-pointer mr-19 profilaImage"
-              onClick={() => setDropdownVisible(prev => !prev)}
+              onClick={() => setDropdownVisible((prev) => !prev)}
             />
             {dropdownVisible && (
               <div className="absolute h-40 w-[200px] right-0 bg-federal-blue p-5 pt-10 flex flex-col items-center justify-center gap-6 dropdownDiv">
-                <NavLink to="/jobs" className="text-base linkInDiv">
+                <NavLink
+                  to="/jobs"
+                  className="text-base linkInDiv"
+                  onClick={() => {
+                    setDropdownVisible(false);
+                  }}
+                >
                   Jobs
                 </NavLink>
-                <NavLink to="/about" className="text-base linkInDiv">
+                <NavLink
+                  to="/about"
+                  className="text-base linkInDiv"
+                  onClick={() => {
+                    setDropdownVisible(false);
+                  }}
+                >
                   About Us
                 </NavLink>
-                <NavLink to="/contact" className="text-base linkInDiv">
+                <NavLink
+                  to="/contact"
+                  className="text-base linkInDiv"
+                  onClick={() => {
+                    setDropdownVisible(false);
+                  }}
+                >
                   Contact
                 </NavLink>
-                <NavLink to="/applications" className="text-base">
+                <NavLink
+                  to="/my-submits"
+                  className="text-base"
+                  onClick={() => {
+                    setDropdownVisible(false);
+                  }}
+                >
                   My Applications
                 </NavLink>
-                <NavLink to="/profile" className="text-base">
+                <NavLink
+                  to="/profile"
+                  className="text-base"
+                  onClick={() => {
+                    setDropdownVisible(false);
+                  }}
+                >
                   Profile
                 </NavLink>
                 <button
                   className="text-base cursor-pointer"
                   onClick={() => {
                     setDropdownVisible(false);
-                    setIsLogged(false); // or call your real logout
+                    setIsLogged(false);
                   }}
                 >
                   Logout
