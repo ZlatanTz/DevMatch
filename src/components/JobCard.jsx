@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import SkillList from "./SkillList";
 import { useSkills } from "../hooks/useSkills";
+
 export function JobCard({
   id = 1,
   title,
