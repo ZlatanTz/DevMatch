@@ -1,10 +1,33 @@
 import AllSkillsList from "../components/AllSkillsList";
 import { useLoaderData, useParams } from "react-router-dom";
+import SkillList from "../components/SkillList";
+import { useSkills } from "../hooks/useSkills";
 
 const JobDetails = () => {
   const jobs = useLoaderData();
   const { id } = useParams(); // ID iz URL-a
   const job = jobs.find((job) => job.id === parseInt(id));
+  const {
+    title,
+    company,
+    company_img,
+    location,
+    employment_type,
+    seniority,
+    min_salary,
+    max_salary,
+    is_remote,
+    status,
+    skills,
+    created_at,
+    description,
+  } = job;
+
+  const date = new Date(created_at);
+  const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+
+  const { getNamesForIds } = useSkills();
+  const skillNames = getNamesForIds(skills);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,29 +38,33 @@ const JobDetails = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 bg-white min-h-screen">
       <img
-        src={job.company_img}
-        alt={`${job.company} logo`}
+        src={company_img}
+        alt={`${company} logo`}
         className="w-full h-64 sm:h-80 md:h-96 lg:h-[400px] object-contain object-center rounded-lg mb-6 shadow-md"
       />
 
       <div className="flex flex-wrap justify-around bg-federal-blue text-white p-4 rounded-lg mb-8">
-        <p className="mx-2 font-medium">Position</p>
-        <p className="mx-2 font-medium">Location</p>
-        <p className="mx-2 font-medium">Salary</p>
-        <p className="mx-2 font-medium">Info1</p>
-        <p className="mx-2 font-medium">Info2</p>
+        <p className="mx-2 font-medium">{company}</p>
+        <p className="mx-2 font-medium">{title}</p>
+        <p className="mx-2 font-medium">{location}</p>
+        <p className="mx-2 font-medium">
+          {min_salary}€-{max_salary}€
+        </p>
+        <p className="mx-2 font-medium">{employment_type}</p>
+        <p className="mx-2 font-medium">{is_remote ? "Remote" : "On-site"}</p>
       </div>
 
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
-          <div className="job-description md:w-7/10 bg-gray-50 p-6 rounded-lg shadow border border-gray-200">
+          <div className="job-description md:w-7/10  p-6 rounded-lg shadow border border-gray-200">
             <p className="mb-4 text-gray-700">Job description goes here. </p>
             <p className="font-semibold text-paynes-gray">The role entails:</p>
-            <p className="mb-4 text-gray-700">
-              Job description goes here.Job description goes here.Job description goes here.Job
-              description goes here.Job description goes here.Job description goes here.
-            </p>
-            <p className="font-semibold text-paynes-gray">What we offer:</p>
+            <p className="mb-4 text-gray-700">{description}</p>
+            <p className="font-semibold text-paynes-gray">Requiremnt:</p>
+            <div className="mt-auto pt-4 flex items-center justify-between text-sm">
+              <SkillList names={skillNames} max={3} />
+            </div>
+            .<p className="font-semibold text-paynes-gray">What we offer:</p>
             <p className="mb-4 text-gray-700">
               Job description goes here.Job description goes here.Job description goes here.Job
               description goes here.Job description goes here.Job description goes here.Job
@@ -45,10 +72,10 @@ const JobDetails = () => {
               description goes here.
             </p>
           </div>
-          <div className="job-side-details flex-1 bg-gray-100 p-6 rounded-lg shadow border border-gray-200">
+          <div className="job-side-details flex-1  p-6 rounded-lg shadow border border-gray-200">
             <div className="flex justify-start items-center mb-4">
-              <p className="text-paynes-gray font-medium">Application deadline:</p>
-              <p className="text-gray-700 pl-1">10/10/2025</p>
+              <p className="text-paynes-gray font-medium">Date posted:</p>
+              <p className="text-gray-700 pl-1">{formattedDate}</p>
             </div>
             <div className="flex justify-start items-center">
               <p className="text-paynes-gray font-medium">Location:</p>
