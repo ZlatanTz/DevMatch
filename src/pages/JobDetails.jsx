@@ -22,6 +22,8 @@ const JobDetails = () => {
     skills,
     created_at,
     description,
+    company_description,
+    benefits,
   } = job;
 
   const [loggedIn, setLoggedIn] = useState(false);
@@ -62,18 +64,21 @@ const JobDetails = () => {
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           <div className="job-description lg:w-7/10 md:w-6/10 p-6 rounded-lg shadow border border-gray-200">
+            <p className="font-semibold text-federal-blue text-2xl">About the job</p>
+            <p className="mb-4 text-gray-700">{company_description}</p>
             <p className="font-semibold text-paynes-gray">The role entails:</p>
             <p className="mb-4 text-gray-700">{description}</p>
-            <p className="font-semibold text-paynes-gray">Requiremnt:</p>
-            <div className="mt-auto pt-4  pb-4 flex items-center justify-between text-sm">
+            <p className="font-semibold text-paynes-gray">What we are looking for in you:</p>
+            <div className="mt-auto pt-3 pb-3 flex items-center justify-between text-sm">
               <SkillList names={skillNames} max={skillNames.length} />
             </div>
             <p className="font-semibold text-paynes-gray">What we offer:</p>
             <p className="mb-4 text-gray-700">
-              Job description goes here.Job description goes here.Job description goes here.Job
-              description goes here.Job description goes here.Job description goes here.Job
-              description goes here.Job description goes here.Job description goes here.Job
-              description goes here.
+              <ul className="mb-4 text-gray-700 list-disc list-inside">
+                {benefits.map((benefit, index) => (
+                  <li key={index}>{benefit}</li>
+                ))}
+              </ul>
             </p>
           </div>
           <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200 md:self-start">
