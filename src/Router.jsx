@@ -26,7 +26,12 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "jobs", element: <Jobs />, loader: jobsLoader },
-      { path: "jobs/:id", element: <JobDetails />, errorElement: <ErrorPage /> },
+      {
+        path: "jobs/:id",
+        element: <JobDetails />,
+        loader: jobsLoader,
+        errorElement: <ErrorPage />,
+      },
       { path: "my-submits", element: <MySubmits /> },
       { path: "profile", element: <Profile /> },
       { path: "profile/edit/:id", element: <EditProfile /> },

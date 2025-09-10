@@ -1,12 +1,10 @@
 import AllSkillsList from "../components/AllSkillsList";
-import { useParams } from "react-router-dom";
-import jobs from "../../public/mock/jobs.json";
+import { useLoaderData, useParams } from "react-router-dom";
 
 const JobDetails = () => {
+  const jobs = useLoaderData();
   const { id } = useParams(); // ID iz URL-a
   const job = jobs.find((job) => job.id === parseInt(id));
-
-  if (!job) return <div>Posao nije pronađen</div>;
 
   const handleSubmit = (e) => {
     e.preventDefault();
