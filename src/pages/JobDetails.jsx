@@ -14,45 +14,44 @@ const JobDetails = () => {
       />
 
       <div className="flex flex-wrap justify-around bg-federal-blue text-white p-4 rounded-lg mb-8">
-        <p className="mx-2 font-medium">Pozicija</p>
-        <p className="mx-2 font-medium">Lokacija</p>
-        <p className="mx-2 font-medium">Plata</p>
-        <p className="mx-2 font-medium">Podatak2</p>
-        <p className="mx-2 font-medium">Podatak3</p>
+        <p className="mx-2 font-medium">Position</p>
+        <p className="mx-2 font-medium">Location</p>
+        <p className="mx-2 font-medium">Salary</p>
+        <p className="mx-2 font-medium">Info1</p>
+        <p className="mx-2 font-medium">Info2</p>
       </div>
 
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           <div className="job-description md:w-7/10 bg-gray-50 p-6 rounded-lg shadow border border-gray-200">
-            <p className="mb-4 text-gray-700">Ovdje ide opis pozicije posla. </p>
-            <p className="font-semibold text-paynes-gray">Uslovi:</p>
+            <p className="mb-4 text-gray-700">Job description goes here. </p>
+            <p className="font-semibold text-paynes-gray">The role entails:</p>
             <p className="mb-4 text-gray-700">
-              Ovdje ide opis pozicije posla. Ovdje ide opis pozicije posla. Ovdje ide opis pozicije
-              posla. Ovdje ide opis pozicije posla.
+              Job description goes here.Job description goes here.Job description goes here.Job
+              description goes here.Job description goes here.Job description goes here.
             </p>
-            <p className="font-semibold text-paynes-gray">Opis poslova:</p>
+            <p className="font-semibold text-paynes-gray">What we offer:</p>
             <p className="mb-4 text-gray-700">
-              Ovdje ide opis pozicije posla. Ovdje ide opis pozicije posla. Ovdje ide opis pozicije
-              posla. Ovdje ide opis pozicije posla. Ovdje ide opis pozicije posla. Ovdje ide opis
-              pozicije posla.
+              Job description goes here.Job description goes here.Job description goes here.Job
+              description goes here.Job description goes here.Job description goes here.Job
+              description goes here.Job description goes here.Job description goes here.Job
+              description goes here.
             </p>
           </div>
           <div className="job-side-details flex-1 bg-gray-100 p-6 rounded-lg shadow border border-gray-200">
             <div className="flex justify-start items-center mb-4">
-              <p className="text-paynes-gray font-medium">Rok za prijavu:</p>
+              <p className="text-paynes-gray font-medium">Application deadline:</p>
               <p className="text-gray-700 pl-1">10/10/2025</p>
             </div>
             <div className="flex justify-start items-center">
-              <p className="text-paynes-gray font-medium">Mjesto rada:</p>
+              <p className="text-paynes-gray font-medium">Location:</p>
               <p className="text-gray-700 pl-1">Podgorica</p>
             </div>
           </div>
         </div>
 
         <div className="job-apply-form bg-white p-6 rounded-lg shadow-md border border-gray-200">
-          <h2 className="text-xl font-bold text-center mb-4 text-federal-blue">
-            Prijavi se na oglas
-          </h2>
+          <h2 className="text-xl font-bold text-center mb-4 text-federal-blue">Apply for a job </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -61,13 +60,13 @@ const JobDetails = () => {
                   htmlFor="firstName"
                   className="block text-sm font-medium text-federal-blue mb-1"
                 >
-                  Ime <span className="text-emerald">*</span>
+                  First Name <span className="text-emerald">*</span>
                 </label>
                 <input
                   type="text"
                   id="firstName"
                   required
-                  placeholder="Unesite vase ime"
+                  placeholder="First Name"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
               </div>
@@ -77,13 +76,13 @@ const JobDetails = () => {
                   htmlFor="lastName"
                   className="block text-sm font-medium text-federal-blue mb-1"
                 >
-                  Prezime <span className="text-emerald">*</span>
+                  Last Name <span className="text-emerald">*</span>
                 </label>
                 <input
                   type="text"
                   id="lastName"
                   required
-                  placeholder="Unesite vase prezime"
+                  placeholder="Last Name"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
               </div>
@@ -92,13 +91,13 @@ const JobDetails = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-federal-blue mb-1">
-                  Email adresa <span className="text-emerald">*</span>
+                  Email address <span className="text-emerald">*</span>
                 </label>
                 <input
                   type="email"
                   id="email"
                   required
-                  placeholder="primjer@email.com"
+                  placeholder="example@email.com"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
               </div>
@@ -108,7 +107,7 @@ const JobDetails = () => {
                   htmlFor="birthYear"
                   className="block text-sm font-medium text-federal-blue mb-1"
                 >
-                  Godina rodjenja <span className="text-emerald">*</span>
+                  Year of birth <span className="text-emerald">*</span>
                 </label>
                 <input
                   type="number"
@@ -116,7 +115,7 @@ const JobDetails = () => {
                   required
                   min="1950"
                   max="2005"
-                  placeholder="Godina rodjenja"
+                  placeholder="Year of birth"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
               </div>
@@ -125,7 +124,7 @@ const JobDetails = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-federal-blue mb-1">
-                  Broj telefona <span className="text-emerald">*</span>
+                  Phone number <span className="text-emerald">*</span>
                 </label>
                 <input
                   type="tel"
@@ -141,13 +140,13 @@ const JobDetails = () => {
                   htmlFor="location"
                   className="block text-sm font-medium text-federal-blue mb-1"
                 >
-                  Lokacija <span className="text-emerald">*</span>
+                  Location <span className="text-emerald">*</span>
                 </label>
                 <input
                   type="text"
                   id="location"
                   required
-                  placeholder="Gdje zivite?"
+                  placeholder="Where do you live?"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
               </div>
@@ -158,14 +157,14 @@ const JobDetails = () => {
                 htmlFor="experience"
                 className="block text-sm font-medium text-federal-blue mb-1"
               >
-                Radno iskustvo (godine) <span className="text-emerald">*</span>
+                Job experience (years) <span className="text-emerald">*</span>
               </label>
               <input
                 type="number"
                 id="experience"
                 required
                 min="0"
-                placeholder="Broj godina iskustva"
+                placeholder="Number of years of experience"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               />
             </div>
@@ -175,14 +174,14 @@ const JobDetails = () => {
                 htmlFor="education"
                 className="block text-sm font-medium text-federal-blue mb-1"
               >
-                Obrazovanje <span className="text-emerald">*</span>
+                Level<span className="text-emerald">*</span>
               </label>
               <select
                 id="education"
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               >
-                <option value="">Izaberite nivo</option>
+                <option value="">Choose a level</option>
                 <option value="intern">Intern</option>
                 <option value="junior">Junior</option>
                 <option value="medior">Medior</option>
@@ -192,20 +191,20 @@ const JobDetails = () => {
 
             <div>
               <label htmlFor="skills" className="block text-sm font-medium text-federal-blue mb-1">
-                Vjestine <span className="text-emerald">*</span>
+                Skill <span className="text-emerald">*</span>
               </label>
               <textarea
                 id="skills"
                 required
                 rows="3"
-                placeholder="Navedite vase vjestine (odvojite zarezom)"
+                placeholder="Skills"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               ></textarea>
             </div>
 
             <div>
               <label htmlFor="cv" className="block text-sm font-medium text-federal-blue mb-1">
-                Upload CV-a (PDF) <span className="text-emerald">*</span>
+                Upload CV (PDF) <span className="text-emerald">*</span>
               </label>
               <input
                 type="file"
@@ -221,12 +220,12 @@ const JobDetails = () => {
                 htmlFor="coverLetter"
                 className="block text-sm font-medium text-federal-blue mb-1"
               >
-                Propratno pismo
+                Cover letter{" "}
               </label>
               <textarea
                 id="coverLetter"
                 rows="4"
-                placeholder="Napisi kratko propratno pismo..."
+                placeholder="Write your cover letter here..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               ></textarea>
             </div>
@@ -235,7 +234,7 @@ const JobDetails = () => {
               type="submit"
               className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/90 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
             >
-              Posalji prijavu
+              Send application
             </button>
           </form>
         </div>
