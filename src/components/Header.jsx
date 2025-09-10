@@ -55,7 +55,7 @@ const Header = () => {
               src={profileImage}
               alt="Profile"
               className="h-12 w-12 rounded-full object-cover cursor-pointer mr-19 profilaImage"
-              onClick={() => setDropdownVisible((prev) => !prev)}
+              onClick={() => setDropdownVisible(prev => !prev)}
             />
             {dropdownVisible && (
               <div className="absolute h-40 w-[200px] right-0 bg-federal-blue p-5 pt-10 flex flex-col items-center justify-center gap-6 dropdownDiv">
@@ -68,15 +68,17 @@ const Header = () => {
                 <NavLink to="/contact" className="text-base linkInDiv">
                   Contact
                 </NavLink>
-                <NavLink className="text-base">My Applications</NavLink>
-                <NavLink className="text-base" to="/profile">
+                <NavLink to="/applications" className="text-base">
+                  My Applications
+                </NavLink>
+                <NavLink to="/profile" className="text-base">
                   Profile
                 </NavLink>
-
                 <button
                   className="text-base cursor-pointer"
                   onClick={() => {
                     setDropdownVisible(false);
+                    setIsLogged(false); // or call your real logout
                   }}
                 >
                   Logout
