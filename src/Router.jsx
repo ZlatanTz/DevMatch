@@ -10,6 +10,8 @@ import Profile from "./pages/Profile";
 import Register from "./pages/AuthLayout/Register";
 import Login from "./pages/AuthLayout/Login";
 import ErrorPage from "./pages/ErrorPages/ErrorPage";
+import { profileLoader } from "./routes/loaders/profileLoader";
+
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -28,8 +30,8 @@ export const router = createBrowserRouter([
       { path: "jobs", element: <Jobs />, loader: jobsLoader },
       { path: "jobs/:id", element: <JobDetails />, errorElement: <ErrorPage /> },
       { path: "my-submits", element: <MySubmits /> },
-      { path: "profile", element: <Profile /> },
-      { path: "profile/edit/:id", element: <EditProfile /> },
+      { path: "profile", element: <Profile />, loader: profileLoader },
+      { path: "profile/edit/:id", element: <EditProfile />, loader: profileLoader },
     ],
   },
   {
