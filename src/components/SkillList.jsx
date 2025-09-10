@@ -1,9 +1,19 @@
+import { useState, useEffect } from "react";
 import SkillTag from "./SkillTag";
-export default function SkillList({ names = [], max = 4, loadSkills = false }) {
-  const shown = names.slice(0, max);
-  const extra = names.length - shown.length;
 
-  const loadMoreSkills = () => {};
+export default function SkillList({ names = [], max = 4, loadSkills = false }) {
+  const [currentMax, setCurrentMax] = useState(max);
+
+  useEffect(() => {
+    setCurrentMax(max);
+  }, [max]);
+
+  const loadMoreSkills = () => {
+    setCurrentMax((prevMax) => prevMax + 3);
+  };
+
+  const shown = names.slice(0, currentMax);
+  const extra = names.length - shown.length;
 
   return (
     <div className="flex gap-2 flex-wrap">

@@ -1,7 +1,9 @@
+import AllSkillsList from "../components/AllSkillsList";
+
 const JobDetails = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Ovdje dodajte logiku za slanje podataka
+    // Logika za slanje podataka
     console.log("Forma poslata!");
   };
 
@@ -193,13 +195,7 @@ const JobDetails = () => {
               <label htmlFor="skills" className="block text-sm font-medium text-federal-blue mb-1">
                 Skill <span className="text-emerald">*</span>
               </label>
-              <textarea
-                id="skills"
-                required
-                rows="3"
-                placeholder="Skills"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
-              ></textarea>
+              <AllSkillsList max={3} />
             </div>
 
             <div>
