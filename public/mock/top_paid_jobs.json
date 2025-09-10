@@ -1,0 +1,47 @@
+[
+  {
+    "id": 99123,
+    "title": "Machine Learning Engineer",
+    "company": "DeepVision AI",
+    "location": "San Francisco, USA",
+    "employment_type": "Full-time",
+    "seniority": "Senior",
+    "min_salary": 9000,
+    "max_salary": 12000,
+    "is_remote": false,
+    "status": "open",
+    "skills": [3, 7, 12, 15],
+    "created_at": "2025-09-05T09:00:00Z",
+    "description": "Design and implement advanced machine learning models for large-scale data processing and predictive analytics. Collaborate with data scientists and engineers to deploy solutions into production."
+  },
+  {
+    "id": 99124,
+    "title": "Blockchain Solutions Architect",
+    "company": "CryptoWorks",
+    "location": "Berlin, Germany",
+    "employment_type": "Contract",
+    "seniority": "Lead",
+    "min_salary": 10000,
+    "max_salary": 14000,
+    "is_remote": true,
+    "status": "open",
+    "skills": [4, 9, 11, 18],
+    "created_at": "2025-09-06T11:30:00Z",
+    "description": "Lead the architecture and development of blockchain-based solutions. Define technical strategy, mentor engineers, and ensure scalability and security of distributed systems."
+  },
+  {
+    "id": 99125,
+    "title": "Principal Cloud Engineer",
+    "company": "SkyNet Systems",
+    "location": "London, UK",
+    "employment_type": "Full-time",
+    "seniority": "Principal",
+    "min_salary": 11000,
+    "max_salary": 15000,
+    "is_remote": true,
+    "status": "open",
+    "skills": [2, 6, 10, 20],
+    "created_at": "2025-09-07T14:15:00Z",
+    "description": "Own the design and implementation of cloud infrastructure for enterprise-scale systems. Drive innovation in DevOps, security, and cloud-native services."
+  }
+]
