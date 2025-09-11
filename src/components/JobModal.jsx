@@ -1,5 +1,4 @@
 import { useSkills } from "@/hooks/useSkills";
-import JobDetailsModal from "./JobDetailsModal";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import SkillList from "./SkillList";

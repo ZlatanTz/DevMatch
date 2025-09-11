@@ -14,7 +14,7 @@
     "skills": [1, 2, 8],
     "created_at": "2025-09-01T10:00:00Z",
     "description": "Work on building responsive and dynamic user interfaces using React. Collaborate with designers and backend developers to deliver high-quality web applications.",
-    "company_description": "TechNova je mlada softverska kompanija osnovana 2018. godine, fokusirana na izradu modernih web i mobilnih aplikacija za klijente širom svijeta. Poznati su po inovacijama u UI/UX dizajnu i agilnom pristupu razvoju.",
+    "company_description": "TechNova is a young software company founded in 2018, focused on creating modern web and mobile applications for clients worldwide. They are known for innovations in UI/UX design and an agile approach to development.",
     "benefits": [
       "Annual compensation review",
       "Flexible working hours",
@@ -38,7 +38,7 @@
     "skills": [4, 5, 6, 7],
     "created_at": "2025-09-03T15:30:00Z",
     "description": "Develop scalable APIs using FastAPI and manage relational databases with MySQL. Focus on performance optimization and integration with front-end systems.",
-    "company_description": "DataWorks je njemačka IT kompanija sa sjedištem u Berlinu, osnovana 2010. godine. Specijalizovana je za data engineering i analitiku, pružajući rješenja za velike evropske korporacije.",
+    "company_description": "DataWorks is a German IT company headquartered in Berlin, founded in 2010. It specializes in data engineering and analytics, providing solutions for large European corporations.",
     "benefits": [
       "Relocation assistance",
       "Gym membership",
@@ -62,7 +62,7 @@
     "skills": [1, 2, 3],
     "created_at": "2025-09-04T09:15:00Z",
     "description": "Maintain and improve CI/CD pipelines, manage cloud infrastructure, and ensure system reliability. Strong knowledge of Docker, Kubernetes, and monitoring tools required.",
-    "company_description": "CloudForge je holandska kompanija koja od 2015. nudi cloud rješenja za startupe i enterprise klijente. Njihove usluge uključuju DevOps outsourcing, automatizaciju i optimizaciju infrastrukture.",
+    "company_description": "CloudForge is a Dutch company that has been offering cloud solutions for startups and enterprise clients since 2015. Their services include DevOps outsourcing, automation, and infrastructure optimization.",
     "benefits": [
       "Stock options",
       "Fully remote work",
@@ -86,7 +86,7 @@
     "skills": [2, 3, 4],
     "created_at": "2025-09-05T12:45:00Z",
     "description": "Design and develop cross-platform mobile applications using Flutter. Work closely with product teams to implement new features and maintain app stability.",
-    "company_description": "Appify je globalni startup koji razvija mobilne aplikacije za e-commerce, fintech i health-tech industrije. Osnovan je 2020. i već ima preko 1 milion korisnika njihovih aplikacija.",
+    "company_description": "Appify is a global startup developing mobile apps for the e-commerce, fintech, and health-tech industries. Founded in 2020, it already has over 1 million users of its apps.",
     "benefits": [
       "Flexible contract terms",
       "Remote-first culture",
@@ -109,7 +109,7 @@
     "skills": [5, 6, 7],
     "created_at": "2025-09-06T14:20:00Z",
     "description": "Create user-centered designs, conduct usability testing, and deliver wireframes and prototypes. Collaborate with developers to ensure design accuracy.",
-    "company_description": "DesignHub je londonska dizajnerska agencija osnovana 2012. godine. Fokusirani su na digitalni dizajn, branding i UX istraživanja za poznate evropske i američke brendove.",
+    "company_description": "DesignHub is a London-based design agency founded in 2012. They focus on digital design, branding, and UX research for well-known European and American brands.",
     "benefits": [
       "Hybrid work model",
       "Pension contributions",
@@ -133,7 +133,7 @@
     "skills": [1, 4, 6],
     "created_at": "2025-09-07T08:50:00Z",
     "description": "Work on full stack applications using MongoDB, Express, React, and Node.js. Implement features across front and back end while ensuring scalability.",
-    "company_description": "WebCraft je poljska kompanija osnovana 2016. godine, fokusirana na razvoj web aplikacija i e-commerce rješenja koristeći moderne JavaScript tehnologije.",
+    "company_description": "WebCraft is a Polish company founded in 2016, focused on developing web applications and e-commerce solutions using modern JavaScript technologies.",
     "benefits": [
       "Flexible working hours",
       "Annual bonus program",
@@ -156,7 +156,7 @@
     "skills": [7, 8],
     "created_at": "2025-09-08T11:10:00Z",
     "description": "Build and optimize natural language processing models. Work with large datasets and collaborate with linguists to improve accuracy and usability.",
-    "company_description": "LinguaTech je francuski AI startup osnovan 2017. godine, specijalizovan za NLP rješenja, mašinsko prevođenje i semantičku analizu teksta.",
+    "company_description": "LinguaTech is a French AI startup founded in 2017, specializing in NLP solutions, machine translation, and semantic text analysis.",
     "benefits": [
       "Equity options",
       "Conference travel budget",
@@ -180,7 +180,7 @@
     "skills": [3, 4, 5],
     "created_at": "2025-09-09T13:30:00Z",
     "description": "Analyze datasets, prepare dashboards, and provide insights to support business decisions. Familiarity with SQL and BI tools preferred.",
-    "company_description": "Insightly je konsultantska firma osnovana u Londonu 2014. godine, fokusirana na business intelligence, analitiku podataka i BI rješenja za mala i srednja preduzeća.",
+    "company_description": "Insightly is a London-based consulting firm founded in 2014, focused on business intelligence, data analytics, and BI solutions for small and medium-sized enterprises.",
     "benefits": [
       "Part-time flexibility",
       "Remote-first setup",
@@ -203,7 +203,7 @@
     "skills": [6, 7, 8],
     "created_at": "2025-09-10T16:05:00Z",
     "description": "Identify vulnerabilities, perform penetration testing, and implement security best practices across infrastructure and applications.",
-    "company_description": "SafeNet je švajcarska firma osnovana 2008. godine koja se bavi sajber bezbjednošću i zaštitom podataka za bankarski i zdravstveni sektor.",
+    "company_description": "SafeNet is a Swiss company founded in 2008 that focuses on cybersecurity and data protection for the banking and healthcare sectors.",
     "benefits": [
       "Company pension plan",
       "Health and dental insurance",
@@ -226,7 +226,7 @@
     "skills": [1, 5, 7],
     "created_at": "2025-09-11T10:40:00Z",
     "description": "Lead product lifecycle from discovery to delivery. Collaborate with engineering and design teams while managing stakeholder expectations.",
-    "company_description": "Visionary je španska produkt menadžment i inovaciona konsultantska kuća, osnovana 2013. godine, koja pomaže startupima i korporacijama u razvoju digitalnih proizvoda.",
+    "company_description": "Visionary is a Spanish product management and innovation consulting firm, founded in 2013, helping startups and corporations develop digital products.",
     "benefits": [
       "Stock options",
       "Remote-friendly",
@@ -250,7 +250,7 @@
     "skills": [2, 6, 8],
     "created_at": "2025-09-12T12:25:00Z",
     "description": "Design and execute test cases, automate testing frameworks, and ensure product quality through continuous integration pipelines.",
-    "company_description": "TestLab je američka kompanija osnovana 2011. godine koja pruža QA outsourcing i automatizaciju testiranja za SaaS i gaming industriju.",
+    "company_description": "TestLab is a US-based company founded in 2011 that provides QA outsourcing and testing automation for SaaS and gaming industries.",
     "benefits": [
       "Flexible contract terms",
       "Remote-first culture",
@@ -273,7 +273,7 @@
     "skills": [1, 2, 3],
     "created_at": "2025-09-13T14:50:00Z",
     "description": "Develop and optimize gameplay mechanics in Unity. Collaborate with artists and designers to bring engaging experiences to life.",
-    "company_description": "PlaySphere je švedski game studio osnovan 2015. godine, poznat po razvoju mobilnih i PC igara sa više od 50 miliona preuzimanja globalno.",
+    "company_description": "PlaySphere is a Swedish game studio founded in 2015, known for developing mobile and PC games with over 50 million global downloads.",
     "benefits": [
       "On-site gaming zone",
       "Team-building trips",
@@ -296,7 +296,7 @@
     "skills": [4, 5, 6],
     "created_at": "2025-09-14T09:00:00Z",
     "description": "Manage servers, ensure system uptime, and troubleshoot infrastructure issues. Knowledge of Linux and Windows environments required.",
-    "company_description": "InfraTech je češka kompanija osnovana 2009. godine, specijalizovana za IT infrastrukturu i cloud hosting rješenja.",
+    "company_description": "InfraTech is a Czech company founded in 2009, specializing in IT infrastructure and cloud hosting solutions.",
     "benefits": [
       "Health insurance",
       "Annual training courses",
@@ -319,7 +319,7 @@
     "skills": [6, 7, 8],
     "created_at": "2025-09-15T17:15:00Z",
     "description": "Design cloud-native architectures, optimize deployments, and provide guidance on scaling and cost management for enterprise clients.",
-    "company_description": "NextGenCloud je danska kompanija osnovana 2018. godine koja pruža cloud arhitekturu i konsultantske usluge za enterprise klijente širom Evrope.",
+    "company_description": "NextGenCloud is a Danish company founded in 2018 that provides cloud architecture and consulting services for enterprise clients across Europe.",
     "benefits": [
       "Equity options",
       "Unlimited PTO",
@@ -343,7 +343,7 @@
     "skills": [2, 4, 6],
     "created_at": "2025-09-16T08:35:00Z",
     "description": "Develop and deploy ML models for image and data processing. Collaborate with data scientists and integrate solutions into production systems.",
-    "company_description": "DeepVision je američka AI kompanija osnovana 2016. godine, specijalizovana za computer vision i duboko učenje u medicini i transportu.",
+    "company_description": "DeepVision is a US-based AI company founded in 2016, specializing in computer vision and deep learning in healthcare and transportation.",
     "benefits": [
       "Stock options",
       "Remote-first policy",
@@ -366,7 +366,7 @@
     "skills": [1, 2, 3],
     "created_at": "2025-09-17T11:55:00Z",
     "description": "Provide technical support, troubleshoot issues, and assist employees with hardware and software problems.",
-    "company_description": "HelpDeskPro je austrijska kompanija osnovana 2012. godine, specijalizovana za IT podršku i outsourcing za mala i srednja preduzeća.",
+    "company_description": "HelpDeskPro is an Austrian company founded in 2012, specializing in IT support and outsourcing for small and medium-sized businesses.",
     "benefits": [
       "Meal vouchers",
       "Health insurance",
@@ -389,7 +389,7 @@
     "skills": [5, 6, 7],
     "created_at": "2025-09-18T15:00:00Z",
     "description": "Develop decentralized applications, smart contracts, and blockchain protocols. Experience with Ethereum and Solidity preferred.",
-    "company_description": "CryptoForge je estonska firma osnovana 2019. godine, fokusirana na blockchain rješenja, pametne ugovore i Web3 aplikacije.",
+    "company_description": "CryptoForge is an Estonian company founded in 2019, focused on blockchain solutions, smart contracts, and Web3 applications.",
     "benefits": [
       "Crypto salary option",
       "Remote-first work",
@@ -412,7 +412,7 @@
     "skills": [1, 2, 8],
     "created_at": "2025-09-19T13:10:00Z",
     "description": "Plan and execute digital marketing campaigns, manage social media accounts, and analyze performance metrics.",
-    "company_description": "BrandBoost je marketinška agencija osnovana 2015. godine, koja pruža digitalne marketinške usluge za e-commerce i lifestyle brendove.",
+    "company_description": "BrandBoost is a marketing agency founded in 2015, providing digital marketing services for e-commerce and lifestyle brands.",
     "benefits": [
       "Part-time flexibility",
       "Performance bonuses",
@@ -435,7 +435,7 @@
     "skills": [3, 5, 7],
     "created_at": "2025-09-20T10:20:00Z",
     "description": "Gather business requirements, document processes, and collaborate with technical teams to implement solutions.",
-    "company_description": "StrategyWorks je irska firma osnovana 2010. godine, specijalizovana za poslovnu analitiku, digitalnu transformaciju i strateško planiranje.",
+    "company_description": "StrategyWorks is an Irish company founded in 2010, specializing in business analytics, digital transformation, and strategic planning.",
     "benefits": [
       "Company pension plan",
       "Professional development budget",
@@ -458,7 +458,7 @@
     "skills": [4, 5, 6],
     "created_at": "2025-09-21T09:45:00Z",
     "description": "Write and maintain technical documentation, API references, and user manuals. Collaborate with engineers to ensure accuracy and clarity.",
-    "company_description": "DocuPro je međunarodna firma osnovana 2014. godine koja se bavi tehničkim pisanjem, dokumentacijom i lokalizacijom softverskih proizvoda.",
+    "company_description": "DocuPro is an international company founded in 2014 that specializes in technical writing, documentation, and software product localization.",
     "benefits": [
       "Remote-friendly",
       "Flexible contracts",
