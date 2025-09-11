@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import logo from "../assets/logo.jpg";
+import logo from "../assets/devmatch.svg";
 import profileImage from "../assets/profileIcon.jpg";
 
 const navItems = [
@@ -66,11 +66,7 @@ export default function Header() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 md:gap-6">
           <NavLink to="/" className="shrink-0">
-            <img
-              src={logo}
-              alt="Logo"
-              className="h-10 w-10 rounded-full object-cover ring-1 ring-white/20"
-            />
+            <img src={logo} alt="Logo" className="h-50 w-50" />
           </NavLink>
 
           <nav className="hidden items-center gap-1 md:flex">
@@ -87,7 +83,6 @@ export default function Header() {
                 </svg>
               </NavLink>
 
-              {/* Wrapper sits directly under the trigger, no external margin */}
               <div
                 className="absolute left-0 top-full pt-2 opacity-0 translate-y-1 transition
                   duration-150 ease-out group-hover:opacity-100 group-hover:translate-y-0"
