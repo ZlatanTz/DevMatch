@@ -73,13 +73,12 @@ const JobDetails = () => {
               <SkillList names={skillNames} max={skillNames.length} />
             </div>
             <p className="font-semibold text-paynes-gray">What we offer:</p>
-            <p className="mb-4 text-gray-700">
-              <ul className="mb-4 text-gray-700 list-disc list-inside">
-                {benefits.map((benefit, index) => (
-                  <li key={index}>{benefit}</li>
-                ))}
-              </ul>
-            </p>
+
+            <ul className="mb-4 text-gray-700 list-disc list-inside">
+              {benefits.map((benefit, index) => (
+                <li key={index}>{benefit}</li>
+              ))}
+            </ul>
           </div>
           <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200 md:self-start">
             <div className="flex justify-start items-center mb-4">
