@@ -10,8 +10,8 @@ import Profile from "./pages/Profile";
 import Register from "./pages/AuthLayout/Register";
 import Login from "./pages/AuthLayout/Login";
 import ErrorPage from "./pages/ErrorPages/ErrorPage";
-import { profileLoader } from "./routes/loaders/profileLoader";
-
+import { profileLoader, updateProfileLoader } from "./routes/loaders/profileLoader";
+import ForgotPassword from "./pages/AuthLayout/ForgotPassword";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -20,6 +20,10 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
   {
     path: "/",
@@ -36,7 +40,7 @@ export const router = createBrowserRouter([
       },
       { path: "my-submits", element: <MySubmits /> },
       { path: "profile", element: <Profile />, loader: profileLoader },
-      { path: "profile/edit/:id", element: <EditProfile />, loader: profileLoader },
+      { path: "profile/edit/:id", element: <EditProfile />, loader: updateProfileLoader },
     ],
   },
   {
