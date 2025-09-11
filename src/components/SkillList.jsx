@@ -1,4 +1,3 @@
-// SkillList.jsx
 import { useState, useEffect } from "react";
 import SkillTag from "./SkillTag";
 
