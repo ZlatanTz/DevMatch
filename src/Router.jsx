@@ -12,6 +12,7 @@ import Login from "./pages/AuthLayout/Login";
 import ErrorPage from "./pages/ErrorPages/ErrorPage";
 import { profileLoader, updateProfileLoader } from "./routes/loaders/profileLoader";
 import ForgotPassword from "./pages/AuthLayout/ForgotPassword";
+import Contact from "./pages/Contact";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       { path: "my-submits", element: <MySubmits /> },
+      { path: "contact", element: <Contact /> },
       { path: "profile", element: <Profile />, loader: profileLoader },
       { path: "profile/edit/:id", element: <EditProfile />, loader: updateProfileLoader },
     ],
