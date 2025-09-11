@@ -6,5 +6,5 @@ export const loginSchema = z.object({
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email("Unesite validan email"),
+  email: z.string().email("Enter valid email"),
 });
