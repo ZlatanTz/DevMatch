@@ -1,11 +1,12 @@
+// hooks/useJobsFilter.js
 import { useSearchParams } from "react-router-dom";
 
 export function useJobsFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const q = searchParams.get("q") || "";
-  const location = searchParams.get("loc") || "";
-  const seniority = searchParams.get("seniority") || "";
+  const location = searchParams.getAll("loc") || [];
+  const seniority = searchParams.getAll("seniority") || [];
   const skills = searchParams.getAll("skills") || [];
   const sort = searchParams.get("sort") || "date-desc";
 
@@ -18,8 +19,10 @@ export function updateParamBatch(searchParams, setSearchParams, patch) {
   Object.entries(patch).forEach(([key, value]) => {
     if (Array.isArray(value)) {
       next.delete(key);
-      value.forEach((v) => next.append(key, v));
-    } else if (!value) {
+      value.forEach((v) => {
+        if (v !== undefined && v !== null && `${v}`.length) next.append(key, v);
+      });
+    } else if (value === undefined || value === null || `${value}`.length === 0) {
       next.delete(key);
     } else {
       next.set(key, value);

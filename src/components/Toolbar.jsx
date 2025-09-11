@@ -1,125 +1,147 @@
+import { useMemo, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { updateParamBatch, useJobsFilter } from "../hooks/useJobsFilter";
 import { useSkills } from "../hooks/useSkills";
-import { useState, useEffect, useMemo } from "react";
+import MultiSelect from "@/pages/AuthLayout/MultiSelect";
 
 export default function Toolbar() {
-  const { loading, skills: allSkills = [] } = useSkills();
-  const { q, seniority, location, skills, sort, setSearchParams, searchParams } = useJobsFilter();
+  const { q, location, seniority, skills, sort, setSearchParams, searchParams } = useJobsFilter();
+  const { skills: allSkills = [], loading: skillsLoading } = useSkills();
+
+  const skillOptions = useMemo(
+    () => allSkills.map((s) => ({ value: String(s.id), label: s.name })),
+    [allSkills],
+  );
+
+  const locationOptions = useMemo(
+    () => [
+      { value: "loc-remote", label: "Remote" },
+      { value: "loc-onsite", label: "On-site" },
+    ],
+    [],
+  );
+
+  const seniorityOptions = useMemo(
+    () => [
+      { value: "junior", label: "Junior" },
+      { value: "mid", label: "Mid" },
+      { value: "senior", label: "Senior" },
+    ],
+    [],
+  );
+
+  const sortOptions = useMemo(
+    () => [
+      { value: "date-desc", label: "Newest" },
+      { value: "date-asc", label: "Oldest" },
+      { value: "salary-desc", label: "Salary High → Low" },
+      { value: "salary-asc", label: "Salary Low → High" },
+    ],
+    [],
+  );
+
+  const { register, control, handleSubmit, reset } = useForm({
+    defaultValues: {
+      q: q || "",
+      loc: Array.isArray(location) ? location : [],
+      seniority: Array.isArray(seniority) ? seniority : [],
+      skills: Array.isArray(skills) ? skills : [],
+      sort: Array.isArray(sort) ? sort : "date-desc",
+    },
+  });
 
   const urlKey = useMemo(() => {
-    return [q, location, seniority, sort, (skills || []).join(",")].join("|");
-  }, [q, location, seniority, sort, skills]);
+    const join = (arr) => (Array.isArray(arr) ? arr.join(",") : "");
+    return [q, join(location), join(seniority), join(skills), join(sort)].join("|");
+  }, [q, location, seniority, skills, sort]);
+
   useEffect(() => {
-    setDraftQ(q || "");
-    setDraftLocation(location || "");
-    setDraftSeniority(seniority || "");
-    setDraftSkill((Array.isArray(skills) && skills[0]) || "");
-    setDraftSort(sort || "date-desc");
+    console.log("Resetting form with skills:", skills);
+    reset({
+      q: q || "",
+      loc: location,
+      seniority: seniority,
+      skills: skills,
+      sort: sort,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlKey]);
+  }, [urlKey, reset]);
 
-  const [draftQ, setDraftQ] = useState(q || "");
-  const [draftLocation, setDraftLocation] = useState(location || "");
-  const [draftSeniority, setDraftSeniority] = useState(seniority || "");
-  const [draftSkill, setDraftSkill] = useState((Array.isArray(skills) && skills[0]) || "");
-  const [draftSort, setDraftSort] = useState(sort || "date-desc");
-
-  const applyFilters = () => {
+  const onApply = (values) => {
     updateParamBatch(searchParams, setSearchParams, {
-      q: draftQ,
-      loc: draftLocation,
-      seniority: draftSeniority,
-      skills: draftSkill,
-      sort: draftSort,
+      q: values.q,
+      loc: values.loc,
+      seniority: values.seniority,
+      skills: values.skills,
+      sort: values.sort,
     });
   };
 
-  const clearFilters = () => {
-    setDraftQ("");
-    setDraftLocation("");
-    setDraftSeniority("");
-    setDraftSkill("");
-    setDraftSort("date-desc");
-
+  const onClear = () => {
+    reset({ q: "", loc: [], seniority: [], skills: [], sort: [] });
     updateParamBatch(searchParams, setSearchParams, {
       q: "",
-      loc: "",
-      seniority: "",
-      skills: "",
-      sort: "date-desc",
+      loc: [],
+      seniority: [],
+      skills: [],
+      sort: [],
     });
   };
 
   return (
-    <div className="w-full bg-white shadow rounded-lg p-4 mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <form
+      onSubmit={handleSubmit(onApply)}
+      className="w-full bg-white shadow rounded-lg p-4 mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+    >
       <div className="flex-1">
         <input
-          value={draftQ ?? ""}
-          onChange={(e) => setDraftQ(e.target.value)}
+          {...register("q")}
           type="text"
           placeholder="Search jobs..."
-          className="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
+          className="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
       </div>
 
-      <div className="flex flex-wrap gap-3 items-center">
-        <select
-          value={draftLocation}
-          onChange={(e) => setDraftLocation(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
-        >
-          <option value="">All Locations</option>
-          <option value="loc-remote">Remote</option>
-          <option value="loc-onsite">On-site</option>
-        </select>
-
-        <select
-          value={draftSeniority}
-          onChange={(e) => setDraftSeniority(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
-        >
-          <option value="">All Levels</option>
-          <option value="junior">Junior</option>
-          <option value="mid">Mid</option>
-          <option value="senior">Senior</option>
-        </select>
-
-        <select
-          value={draftSkill}
-          onChange={(e) => setDraftSkill(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
-        >
-          <option value="">All Skills</option>
-          {!loading &&
-            allSkills.map((s) => (
-              <option key={s.id ?? s.name} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-        </select>
-      </div>
-
-      <div>
-        <select
-          value={draftSort}
-          onChange={(e) => setDraftSort(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald"
-        >
-          <option value="date-desc">Newest</option>
-          <option value="date-asc">Oldest</option>
-          <option value="salary-desc">Salary High → Low</option>
-          <option value="salary-asc">Salary Low → High</option>
-        </select>
+      <div className="flex flex-wrap items-start gap-4">
+        <MultiSelect
+          name="skills"
+          control={control}
+          label="Skills"
+          options={skillOptions}
+          isDisabled={skillsLoading}
+          isMulti
+        />
+        <MultiSelect
+          name="loc"
+          control={control}
+          label="Location"
+          options={locationOptions}
+          isMulti
+        />
+        <MultiSelect
+          name="seniority"
+          control={control}
+          label="Seniority"
+          options={seniorityOptions}
+          isMulti
+        />
+        <MultiSelect
+          name="sort"
+          control={control}
+          label="Sort"
+          options={sortOptions}
+          isMulti={false}
+        />
       </div>
 
       <div className="flex gap-2">
-        <button onClick={applyFilters} className="px-4 py-2 bg-emerald-600 text-white rounded-md">
+        <button type="submit" className="px-4 py-2 bg-emerald-600 text-white rounded-md">
           Apply
         </button>
-        <button onClick={clearFilters} className="px-4 py-2 border rounded-md">
+        <button type="button" onClick={onClear} className="px-4 py-2 border rounded-md">
           Clear
         </button>
       </div>
-    </div>
+    </form>
   );
 }
