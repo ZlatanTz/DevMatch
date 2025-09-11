@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-const Input = ({ label, error, register, name, type = "text", ...rest }) => {
+const Input = ({ label, error, register, name, type = "text", placeholder, ...rest }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const isPassword = type === "password";
@@ -13,6 +13,7 @@ const Input = ({ label, error, register, name, type = "text", ...rest }) => {
       <div className="relative">
         <input
           type={inputType}
+          placeholder={placeholder}
           {...register(name)}
           {...rest}
           className={`border p-2 w-full rounded pr-10 ${
