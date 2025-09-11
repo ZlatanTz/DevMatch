@@ -12,6 +12,11 @@ import Login from "./pages/AuthLayout/Login";
 import ErrorPage from "./pages/ErrorPages/ErrorPage";
 import { profileLoader, updateProfileLoader } from "./routes/loaders/profileLoader";
 import ForgotPassword from "./pages/AuthLayout/ForgotPassword";
+import Statistics from "./pages/Admin/Statistics";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import ManageJobs from "./pages/Admin/ManageJobs";
+import ManageUsers from "./pages/Admin/ManageUsers";
+import AdminLayout from "./pages/Admin/AdminLayout";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -41,6 +46,16 @@ export const router = createBrowserRouter([
       { path: "my-submits", element: <MySubmits /> },
       { path: "profile", element: <Profile />, loader: profileLoader },
       { path: "profile/edit/:id", element: <EditProfile />, loader: updateProfileLoader },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: "jobs", element: <ManageJobs /> },
+      { path: "users", element: <ManageUsers /> },
+      { path: "statistics", element: <Statistics /> },
     ],
   },
   {
