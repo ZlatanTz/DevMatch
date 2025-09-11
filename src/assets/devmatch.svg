@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="240" viewBox="0 0 800 240" role="img" aria-labelledby="title desc">
+  <title id="title">DevMatch logo</title>
+  <desc id="desc">An emerald octagon with a white checkmark, followed by the DevMatch wordmark in emerald on a white background.</desc>
+  <!-- Emblem -->
+  <polygon points="150.00,120.00 138.57,158.42 100.00,170.00 61.43,158.42 50.00,120.00 61.43,81.58 100.00,70.00 138.57,81.58" fill="#2dd881ff"/>
+  <path d="M 82 122 L 94 134 L 120 108" fill="none" stroke="#ffffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Wordmark -->
+  <text x="180" y="138" font-family="Roboto, system-ui, sans-serif" font-weight="700" font-size="72" fill="#2dd881ff">DevMatch</text>
+</svg>

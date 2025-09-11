@@ -50,17 +50,23 @@ const HomePage = () => {
 
   return loading ? (
     <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-yellow-500 border-solid"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-emerald/90 border-solid"></div>
     </div>
   ) : error ? (
-    <div>erorr</div>
+    <div className="mx-auto max-w-lg mt-8 rounded-xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 text-center shadow-sm">
+      <p className="text-sm text-red-600">{String(error || "erorr")}</p>
+    </div>
   ) : (
     <div className="container mx-auto p-4 sm:p-6 grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-4">
       {/* Carousel */}
       <div className="col-span-1 lg:col-span-3">
-        <div className="bg-white p-4 sm:p-6 h-full">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Newest Jobs</h2>
-          <div className="relative px-8 sm:px-12">
+        <div className="relative h-full rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
+          <div className="absolute inset-0 rounded-2xl pointer-events-none bg-gradient-to-tr from-federal-blue/5 via-paynes-gray/5 to-emerald/5" />
+          <h2 className="relative text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
+            Newest Jobs
+          </h2>
+
+          <div className="relative px-2 sm:px-4">
             <Carousel
               className="w-full"
               opts={{
@@ -69,7 +75,7 @@ const HomePage = () => {
                 initial: 0,
               }}
             >
-              <CarouselContent className="flex gap-2 sm:gap-4">
+              <CarouselContent className="flex gap-3 sm:gap-4">
                 {sortByNewest(jobs)
                   .slice(0, 10)
                   .reverse()
@@ -77,44 +83,52 @@ const HomePage = () => {
                     <CarouselItem key={job.id} className="basis-full sm:basis-1/2 lg:basis-1/3">
                       <Link
                         to={`/jobs/${job.id}`}
-                        className="flex flex-col justify-between p-3 sm:p-4 bg-gray-300 rounded-lg shadow h-72 sm:h-80 w-full hover:bg-gray-400 hover:shadow-lg transition-all"
+                        className="group relative flex h-72 sm:h-80 w-full flex-col justify-between rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
                       >
-                        <h3 className="text-base sm:text-lg font-semibold mb-2 text-center line-clamp-2">
+                        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity motion-safe:duration-300 bg-gradient-to-br from-paynes-gray/5 to-federal-blue/5" />
+
+                        <h3 className="relative text-base sm:text-lg font-semibold text-center leading-snug line-clamp-2">
                           {job.title}
                         </h3>
-                        <p className="text-xs sm:text-sm text-gray-700 text-center mb-1 truncate">
+
+                        <p className="relative text-xs sm:text-sm text-muted-foreground text-center mb-1 truncate">
                           {job.company}
                         </p>
-                        <p className="text-xs sm:text-sm text-gray-600 text-center italic mb-2">
+
+                        <p className="relative text-xs sm:text-sm text-foreground/80 text-center italic mb-2">
                           {job.employment_type}
                         </p>
-                        <p className="text-xs sm:text-sm text-center font-medium text-emerald-700 mb-2">
+
+                        <p className="relative text-xs sm:text-sm text-center font-bold text-emerald">
                           {job.min_salary}€ – {job.max_salary}€
                         </p>
-                        <div className="flex flex-wrap justify-center gap-1 mb-2">
+
+                        <div className="relative flex flex-wrap justify-center gap-1.5 mb-2">
                           {job.skills.slice(0, 3).map((skill) => (
                             <span
                               key={skill}
-                              className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs bg-gray-200 rounded-full"
+                              className="px-2 py-1 text-[11px] sm:text-xs rounded-full bg-muted text-foreground/80 border border-border"
                             >
                               {skill.length > 8 ? skill.substring(0, 8) + "..." : `Skill ${skill}`}
                             </span>
                           ))}
                           {job.skills.length > 3 && (
-                            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs bg-gray-200 rounded-full">
+                            <span className="px-2 py-1 text-[11px] sm:text-xs rounded-full bg-muted text-foreground/80 border border-border">
                               +{job.skills.length - 3}
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 text-center">
+
+                        <p className="relative text-[11px] sm:text-xs text-muted-foreground text-center">
                           {daysAgo(job.created_at)}
                         </p>
                       </Link>
                     </CarouselItem>
                   ))}
               </CarouselContent>
-              <CarouselPrevious className="left-2 sm:left-4 -translate-y-1/2 bg-paynes-gray text-white hover:text-white hover:bg-federal-blue shadow-md rounded-full p-2 sm:p-3" />
-              <CarouselNext className="right-2 sm:right-4 -translate-y-1/2 bg-paynes-gray text-white hover:bg-federal-blue hover:text-white shadow-md rounded-full p-2 sm:p-3" />
+
+              <CarouselPrevious className="left-2 sm:left-4 -translate-y-1/2 rounded-full border border-border bg-paynes-gray text-white hover:text-white hover:bg-federal-blue shadow-md p-2 sm:p-3 focus-visible:ring-2 focus-visible:ring-emerald focus-visible:outline-none motion-safe:transition" />
+              <CarouselNext className="right-2 sm:right-4 -translate-y-1/2 rounded-full border border-border bg-paynes-gray text-white hover:text-white hover:bg-federal-blue shadow-md p-2 sm:p-3 focus-visible:ring-2 focus-visible:ring-emerald focus-visible:outline-none motion-safe:transition" />
             </Carousel>
           </div>
         </div>
@@ -122,20 +136,28 @@ const HomePage = () => {
 
       {/* Highest paid */}
       <div className="col-span-1 order-last lg:order-none">
-        <div className="bg-white p-4 sm:p-6 h-full">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Top 3 highest-paid</h2>
+        <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 h-full shadow-sm">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
+            Top 3 highest-paid
+          </h2>
+
           <div className="flex flex-col gap-3">
             {highestPaidJobs.map((job, index) => (
               <Link key={job.id} to={`/jobs/${job.id}`}>
-                <div className="bg-gray-50 rounded-lg shadow-xl p-3 sm:p-4 hover:bg-gray-200 transition relative">
-                  <div className="absolute top-2 right-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded-full">
-                    #{index + 1}
+                <div className="relative rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all motion-safe:duration-300">
+                  <div className="absolute top-2 right-2">
+                    <span className="inline-flex items-center justify-center rounded-full bg-emerald text-white text-[11px] px-2 py-1 shadow-sm">
+                      #{index + 1}
+                    </span>
                   </div>
-                  <p className="text-xs sm:text-sm font-semibold mb-1 pr-8 line-clamp-2">
+
+                  <p className="text-xs sm:text-sm font-semibold mb-1 pr-10 line-clamp-2">
                     {job.title}
                   </p>
-                  <p className="text-xs text-gray-500 mb-2 truncate">{job.company}</p>
-                  <p className="text-sm sm:text-base font-bold text-emerald-700">
+                  <p className="text-[11px] sm:text-xs text-muted-foreground mb-2 truncate">
+                    {job.company}
+                  </p>
+                  <p className="text-sm sm:text-base font-extrabold text-emerald">
                     {job.min_salary}€ – {job.max_salary}€
                   </p>
                 </div>
@@ -147,23 +169,27 @@ const HomePage = () => {
 
       {/* Top Rated */}
       <div className="col-span-1 lg:col-span-4">
-        <div className="bg-white p-4 sm:p-6">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Top rated</h2>
+        <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">Top rated</h2>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {jobs.slice(0, visibleCount).map((job) => (
               <Link
                 key={job.id}
                 to={`/jobs/${job.id}`}
-                className="block bg-gray-50 rounded-lg border-2 shadow-xl p-3 sm:p-4 hover:bg-gray-200 transition"
+                className="block rounded-2xl border-2 border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
               >
                 <h3 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">
                   {job.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-500 mb-1 truncate">{job.company}</p>
-                <p className="text-xs italic text-gray-600 mb-2">{job.employment_type}</p>
-                <div className="flex justify-between items-center">
-                  <p className="text-xs text-gray-800">Rating: 4.5</p>
-                  <div className="flex text-yellow-400">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">
+                  {job.company}
+                </p>
+                <p className="text-xs italic text-foreground/80 mb-3">{job.employment_type}</p>
+
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-foreground/80">Rating: 4.5</p>
+                  <div className="flex text-yellow-400" aria-hidden="true">
                     {"★".repeat(4)}
                     {"☆".repeat(1)}
                   </div>
@@ -171,6 +197,7 @@ const HomePage = () => {
               </Link>
             ))}
           </div>
+
           {jobs.length > 6 && (
             <div className="flex justify-center mt-4 sm:mt-6">
               <Button
@@ -179,7 +206,7 @@ const HomePage = () => {
                     ? () => setVisibleCount(6)
                     : () => setVisibleCount((prev) => prev + 6)
                 }
-                className="px-4 py-2 sm:py-4 w-28 sm:w-32 text-sm sm:text-base rounded shadow bg-paynes-gray hover:bg-federal-blue transition-colors"
+                className="px-4 py-2 sm:py-4 w-28 sm:w-32 text-sm sm:text-base rounded-full shadow-md bg-paynes-gray hover:bg-federal-blue text-white focus-visible:ring-2 focus-visible:ring-emerald focus-visible:outline-none motion-safe:transition"
               >
                 {visibleCount >= jobs.length ? "Show Less" : "Load More"}
               </Button>
