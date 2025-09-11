@@ -58,7 +58,6 @@ export default function Toolbar() {
 
   useEffect(() => {
     reset({ q: q || "", loc: location, seniority, skills, sort });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlKey, reset]);
 
   const onApply = (values) => {
@@ -312,11 +311,9 @@ export default function Toolbar() {
                     value={watchJob("seniority")}
                     onChange={(e) => setValueJob("seniority", e.target.value)}
                   >
-                    <option>Intern</option>
                     <option>Junior</option>
                     <option>Mid</option>
                     <option>Senior</option>
-                    <option>Lead</option>
                   </select>
                 </div>
 
@@ -377,21 +374,13 @@ export default function Toolbar() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium">Skills</label>
-                <Controller
+                <MultiSelect
                   name="skills"
                   control={controlJob}
-                  render={({ field }) => (
-                    <MultiSelect
-                      name={field.name}
-                      control={{
-                        register: () => {},
-                      }}
-                      options={skillOptions}
-                      isDisabled={skillsLoading}
-                      isMulti
-                    />
-                  )}
+                  label="Skills"
+                  options={skillOptions}
+                  isDisabled={skillsLoading}
+                  isMulti
                 />
               </div>
 
