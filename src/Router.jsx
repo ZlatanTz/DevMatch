@@ -11,6 +11,7 @@ import Register from "./pages/AuthLayout/Register";
 import Login from "./pages/AuthLayout/Login";
 import ErrorPage from "./pages/ErrorPages/ErrorPage";
 import { profileLoader } from "./routes/loaders/profileLoader";
+import ForgotPassword from "./pages/AuthLayout/ForgotPassword";
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
   {
     path: "/",
