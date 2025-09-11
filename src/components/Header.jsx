@@ -5,9 +5,15 @@ import profileImage from "../assets/profileIcon.jpg";
 
 const navItems = [
   { to: "/", label: "Home" },
-  { to: "/jobs", label: "Jobs" },
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
+];
+
+const sortLinks = [
+  { label: "Newest", to: { pathname: "/jobs", search: "?sort=date-desc" } },
+  { label: "Oldest", to: { pathname: "/jobs", search: "?sort=date-asc" } },
+  { label: "Salary High → Low", to: { pathname: "/jobs", search: "?sort=salary-desc" } },
+  { label: "Salary Low → High", to: { pathname: "/jobs", search: "?sort=salary-asc" } },
 ];
 
 export default function Header() {
@@ -17,21 +23,19 @@ export default function Header() {
 
   const location = useLocation();
   const avatarBtnRef = useRef(null);
-  const dropdownRef = useRef(null);
+  const userDropdownRef = useRef(null);
 
-  // close menus on route change
   useEffect(() => {
     setDropdownOpen(false);
     setMobileOpen(false);
   }, [location.pathname]);
 
-  // click outside and Esc to close
   useEffect(() => {
     function handleDocClick(e) {
       if (
         dropdownOpen &&
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target) &&
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(e.target) &&
         avatarBtnRef.current &&
         !avatarBtnRef.current.contains(e.target)
       ) {
@@ -60,7 +64,6 @@ export default function Header() {
   return (
     <header className="bg-federal-blue text-white sticky top-0 z-50 border-b border-white/10 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Left: logo + desktop nav */}
         <div className="flex items-center gap-4 md:gap-6">
           <NavLink to="/" className="shrink-0">
             <img
@@ -71,6 +74,77 @@ export default function Header() {
           </NavLink>
 
           <nav className="hidden items-center gap-1 md:flex">
+            <div className="relative group">
+              <NavLink
+                to="/jobs"
+                className={({ isActive }) =>
+                  `${linkBase} ${isActive ? linkActive : linkInactive} inline-flex items-center`
+                }
+              >
+                Jobs
+                <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </NavLink>
+
+              {/* Wrapper sits directly under the trigger, no external margin */}
+              <div
+                className="absolute left-0 top-full pt-2 opacity-0 translate-y-1 transition
+                  duration-150 ease-out group-hover:opacity-100 group-hover:translate-y-0"
+              >
+                <div className="w-64 rounded-xl bg-federal-blue/95 p-2 shadow-lg ring-1 ring-white/10 backdrop-blur">
+                  <NavLink
+                    to={{ pathname: "/jobs", search: "?sort=date-desc" }}
+                    className={({ isActive }) =>
+                      `block rounded-lg px-3 py-2 text-sm ${
+                        isActive
+                          ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                          : "text-white/85 hover:text-emerald hover:bg-white/5"
+                      }`
+                    }
+                  >
+                    Newest
+                  </NavLink>
+                  <NavLink
+                    to={{ pathname: "/jobs", search: "?sort=date-asc" }}
+                    className={({ isActive }) =>
+                      `block rounded-lg px-3 py-2 text-sm ${
+                        isActive
+                          ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                          : "text-white/85 hover:text-emerald hover:bg-white/5"
+                      }`
+                    }
+                  >
+                    Oldest
+                  </NavLink>
+                  <NavLink
+                    to={{ pathname: "/jobs", search: "?sort=salary-desc" }}
+                    className={({ isActive }) =>
+                      `block rounded-lg px-3 py-2 text-sm ${
+                        isActive
+                          ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                          : "text-white/85 hover:text-emerald hover:bg-white/5"
+                      }`
+                    }
+                  >
+                    Salary High → Low
+                  </NavLink>
+                  <NavLink
+                    to={{ pathname: "/jobs", search: "?sort=salary-asc" }}
+                    className={({ isActive }) =>
+                      `block rounded-lg px-3 py-2 text-sm ${
+                        isActive
+                          ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                          : "text-white/85 hover:text-emerald hover:bg-white/5"
+                      }`
+                    }
+                  >
+                    Salary Low → High
+                  </NavLink>
+                </div>
+              </div>
+            </div>
+
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -83,9 +157,7 @@ export default function Header() {
           </nav>
         </div>
 
-        {/* Right: mobile toggle + desktop auth/avatar */}
         <div className="flex items-center gap-2">
-          {/* Mobile toggle */}
           <button
             className="inline-flex items-center justify-center rounded-xl p-2 text-white/90 hover:text-emerald focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald md:hidden"
             aria-label="Toggle menu"
@@ -93,7 +165,6 @@ export default function Header() {
             onClick={() => setMobileOpen((v) => !v)}
           >
             {mobileOpen ? (
-              // X icon
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -108,7 +179,6 @@ export default function Header() {
                 />
               </svg>
             ) : (
-              // Hamburger icon
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -125,7 +195,6 @@ export default function Header() {
             )}
           </button>
 
-          {/* Desktop only: auth or avatar */}
           <div className="hidden md:flex items-center gap-3">
             {!isLogged ? (
               <>
@@ -156,7 +225,7 @@ export default function Header() {
 
                 {dropdownOpen && (
                   <div
-                    ref={dropdownRef}
+                    ref={userDropdownRef}
                     role="menu"
                     className="absolute right-0 mt-3 w-56 rounded-2xl bg-federal-blue/95 p-2 shadow-xl ring-1 ring-white/10 backdrop-blur"
                   >
@@ -190,7 +259,7 @@ export default function Header() {
                         className="w-full rounded-xl px-3 py-2 text-left text-sm text-white/90 transition-colors hover:text-emerald hover:bg-white/5"
                         onClick={() => {
                           setDropdownOpen(false);
-                          setIsLogged(false); // replace with real logout
+                          setIsLogged(false);
                         }}
                       >
                         Logout
@@ -204,21 +273,22 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile panel */}
+      {/* Mobile menu */}
       <div className={`md:hidden ${mobileOpen ? "block" : "hidden"}`}>
         <div className="mx-4 mb-4 overflow-hidden rounded-2xl bg-federal-blue/95 shadow-lg ring-1 ring-white/10">
           <nav className="flex flex-col p-2">
-            {/* Main nav */}
+            {/* Jobs with sort links */}
             <div className="flex flex-col">
-              {navItems.map((item) => (
+              <span className="px-3 py-3 text-base font-semibold text-white/90">Jobs</span>
+              {sortLinks.map((item) => (
                 <NavLink
-                  key={item.to}
+                  key={item.label}
                   to={item.to}
                   className={({ isActive }) =>
-                    `rounded-xl px-3 py-3 text-base transition-colors ${
+                    `ml-4 rounded-xl px-3 py-2 text-sm transition-colors ${
                       isActive
-                        ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
-                        : "text-white/90 hover:text-emerald hover:bg-white/5"
+                        ? "text-emerald bg-white/5"
+                        : "text-white/85 hover:text-emerald hover:bg-white/5"
                     }`
                   }
                 >
@@ -229,7 +299,24 @@ export default function Header() {
 
             <div className="my-3 h-px bg-white/10" />
 
-            {/* Account section */}
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `rounded-xl px-3 py-3 text-base transition-colors ${
+                    isActive
+                      ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                      : "text-white/90 hover:text-emerald hover:bg-white/5"
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+
+            <div className="my-3 h-px bg-white/10" />
+
             {!isLogged ? (
               <div className="grid grid-cols-2 gap-2">
                 <NavLink
@@ -274,7 +361,7 @@ export default function Header() {
                 <button
                   onClick={() => {
                     setMobileOpen(false);
-                    setIsLogged(false); // replace with real logout
+                    setIsLogged(false);
                   }}
                   className="rounded-xl px-3 py-3 text-left text-base text-white/90 transition-colors hover:text-emerald hover:bg-white/5"
                 >

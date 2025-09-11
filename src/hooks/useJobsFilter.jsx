@@ -1,4 +1,3 @@
-// hooks/useJobsFilter.js
 import { useSearchParams } from "react-router-dom";
 
 export function useJobsFilter() {

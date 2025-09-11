@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import SkillList from "./SkillList";
 import { useSkills } from "../hooks/useSkills";
-import BasicModal from "./Modal";
+import BasicModal from "./JobModal";
 
 export function JobCard({
   id,
@@ -37,8 +37,6 @@ export function JobCard({
         <SkillList names={skillNames} max={3} />
 
         <div className="flex items-center gap-3">
-          {/* <a className="text-emerald hover:underline font-medium cursor-pointer">View details</a> */}
-
           <BasicModal id={id}></BasicModal>
           <Link to={`/jobs/${id}`}>
             <button className="bg-emerald hover:opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium shadow cursor-pointer">
