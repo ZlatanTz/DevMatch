@@ -112,6 +112,18 @@ const JobDetails = () => {
     console.log("Form submission data:", Object.fromEntries(submitFormData));
   };
 
+  if (!job) {
+    return (
+      <section className="p-10 text-center">
+        <h1 className="text-2xl font-bold">Job not found</h1>
+        <p className="mt-4">The job you're looking for doesn't exist or was removed.</p>
+        <Link to="/jobs" className="inline-block mt-6 px-4 py-2 rounded-xl bg-emerald text-white">
+          Back to Jobs
+        </Link>
+      </section>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 bg-white min-h-screen min-w-[320px]">
       <img
