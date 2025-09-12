@@ -151,7 +151,7 @@ export default function Toolbar() {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="inline-flex items-center gap-2 px-3 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
+            className="inline-flex items-center gap-2 px-3 py-2 bg-emerald text-white rounded-md "
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -198,8 +198,8 @@ export default function Toolbar() {
         </div>
 
         <div className="flex gap-2">
-          <button type="submit" className="px-4 py-2 bg-emerald-600 text-white rounded-md">
-            Apply
+          <button type="submit" className="px-4 py-2 bg-emerald text-white rounded-md">
+            Apply Filters
           </button>
           <button type="button" onClick={onClear} className="px-4 py-2 border rounded-md">
             Clear
