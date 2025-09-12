@@ -138,7 +138,9 @@ const JobDetails = () => {
                     type="text"
                     id="firstName"
                     required
-                    placeholder={candidateLoggedIn ? user.firstName : "First Name"}
+                    placeholder={
+                      candidateLoggedIn ? (user?.firstName ?? "First Name") : "First Name"
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -154,7 +156,7 @@ const JobDetails = () => {
                     type="text"
                     id="lastName"
                     required
-                    placeholder={candidateLoggedIn ? user.lastName : "Last Name"}
+                    placeholder={candidateLoggedIn ? (user?.lastName ?? "Last Name") : "Last Name"}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -172,7 +174,9 @@ const JobDetails = () => {
                     type="email"
                     id="email"
                     required
-                    placeholder={candidateLoggedIn ? user.email : "example@email.com"}
+                    placeholder={
+                      candidateLoggedIn ? (user?.email ?? "example@email.com") : "example@email.com"
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -208,7 +212,9 @@ const JobDetails = () => {
                     type="tel"
                     id="phone"
                     required
-                    placeholder={candidateLoggedIn ? user.phone : "+381 63 123456"}
+                    placeholder={
+                      candidateLoggedIn ? (user?.phone ?? "+381 63 123456") : "+381 63 123456"
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -224,7 +230,11 @@ const JobDetails = () => {
                     type="text"
                     id="location"
                     required
-                    placeholder={candidateLoggedIn ? user.location : "Where do you live?"}
+                    placeholder={
+                      candidateLoggedIn
+                        ? (user?.location ?? "Where do you live?")
+                        : "Where do you live?"
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -243,7 +253,9 @@ const JobDetails = () => {
                   required
                   min="0"
                   placeholder={
-                    candidateLoggedIn ? user.years_experiance : "Number of years of experience"
+                    candidateLoggedIn
+                      ? (user?.years_experiance ?? "Number of years of experience")
+                      : "Number of years of experience"
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
