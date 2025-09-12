@@ -28,6 +28,9 @@ body {
   margin: 0;
   height: 100%;
 }
+button {
+  cursor: pointer;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

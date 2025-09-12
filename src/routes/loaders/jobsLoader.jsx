@@ -7,5 +7,7 @@ export async function jobsLoader({ request }) {
   }
 
   const data = await res.json();
+  await new Promise((resolve) => setTimeout(resolve, 700));
+
   return data;
 }
