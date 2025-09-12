@@ -1,7 +1,7 @@
 import { useSkills } from "../hooks/useSkills";
 import SkillList from "./SkillList";
 
-export default function AllSkillsList({ max = 4 }) {
+export default function AllSkillsList({ max = 4, value = [], onChange }) {
   const { skills, loading, getNamesForIds } = useSkills();
   if (loading) return <p>Loading...</p>;
 
@@ -10,7 +10,7 @@ export default function AllSkillsList({ max = 4 }) {
 
   return (
     <div className="flex gap-2 flex-wrap">
-      <SkillList names={skillNames} max={max} />
+      <SkillList names={skillNames} max={max} value={value} onChange={onChange} />
     </div>
   );
 }
