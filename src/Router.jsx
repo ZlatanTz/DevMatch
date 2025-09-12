@@ -48,7 +48,6 @@ export const router = createBrowserRouter([
       { path: "my-submits", element: <MySubmits /> },
       { path: "contact", element: <Contact /> },
       { path: "profile", element: <Profile />, loader: profileLoader },
-
       { path: "profile/edit/:id", element: <EditProfile />, loader: updateProfileLoader },
       { path: "about", element: <About /> },
     ],

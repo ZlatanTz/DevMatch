@@ -18,7 +18,7 @@ const sortLinks = [
 ];
 
 export default function Header() {
-  const { user, login, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [isLogged, setIsLogged] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -89,7 +89,7 @@ export default function Header() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4 md:gap-6">
             <NavLink to="/" className="shrink-0">
-              <img src={logo} alt="Logo" className="h-15 w-60" />
+              <img src={logo} alt="Logo" className="h-15 w-60 p-2" />
             </NavLink>
 
             <nav className="hidden items-center gap-1 md:flex">
