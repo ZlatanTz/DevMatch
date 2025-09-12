@@ -419,7 +419,7 @@ const JobDetails = () => {
         )}
 
         <div className="col-span-1 lg:col-span-4">
-          <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card/70 mt-8 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">Top rated</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
