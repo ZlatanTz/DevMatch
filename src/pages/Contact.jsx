@@ -1,5 +1,5 @@
 import { Form } from "react-router-dom";
-import Logo from "../assets/logo.jpg";
+import Logo from "../assets/devmatch.svg";
 import emailjs from "@emailjs/browser";
 import { useState } from "react";
 

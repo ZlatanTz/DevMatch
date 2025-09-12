@@ -18,6 +18,7 @@ import ManageJobs from "./pages/Admin/ManageJobs";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import Contact from "./pages/Contact";
+import About from "./pages/About";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -47,7 +48,9 @@ export const router = createBrowserRouter([
       { path: "my-submits", element: <MySubmits /> },
       { path: "contact", element: <Contact /> },
       { path: "profile", element: <Profile />, loader: profileLoader },
+
       { path: "profile/edit/:id", element: <EditProfile />, loader: updateProfileLoader },
+      { path: "about", element: <About /> },
     ],
   },
   {

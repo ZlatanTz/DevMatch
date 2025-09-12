@@ -1,34 +1,76 @@
-import { useLoaderData, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import profileImg from "../assets/profileImage.jpeg";
 import { Phone, Mail, MapPin, MoveRight, File, Link2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useSkills } from "../hooks/useSkills";
+import SkillList from "@/components/SkillList";
 
 const Profile = () => {
-  const [role, setRole] = useState("candidate");
-  const [employer, setEmployer] = useState();
-  const profile = useLoaderData();
+  const { user, login, logout } = useAuth();
+  const { getNamesForIds } = useSkills();
+  const [finalUser, setFinalUser] = useState(null);
 
-  const Fetchemployer = async () => {
-    const res = await fetch("../public/mock/employer_profiles.json");
-    if (!res.ok) {
-      throw new Response("Failed to load employer data", { status: res.status });
-    }
-    const data = await res.json();
-    return data;
+  const fetchEmployer = async () => {
+    const res = await fetch("/mock/employer_profiles.json");
+    if (!res.ok) throw new Error("Failed to load employer data");
+    return res.json();
+  };
+
+  const fetchCandidate = async () => {
+    const res = await fetch("/mock/candidate_profiles.json");
+    if (!res.ok) throw new Error("Failed to load candidate data");
+    return res.json();
   };
 
   useEffect(() => {
-    const fetchEmployeer = async () => {
-      const data = await Fetchemployer();
-      setEmployer(data[0]);
+    const getUser = async () => {
+      try {
+        const [employers, candidates] = await Promise.all([fetchEmployer(), fetchCandidate()]);
+
+        const foundEmployer = employers.find((el) => el.email === user?.email);
+        if (foundEmployer) {
+          setFinalUser({ ...foundEmployer, role: "employer" });
+          return;
+        }
+
+        const foundCandidate = candidates.find((el) => el.email === user?.email);
+        if (foundCandidate) {
+          setFinalUser({ ...foundCandidate, role: "candidate" });
+          return;
+        }
+
+        if (user.role === "candidate") {
+          setFinalUser({
+            ...user,
+            resume_url: user.resume.name,
+            full_name: user.firstName + " " + user.lastName,
+            tel: user.phone,
+            id: 123,
+          });
+        } else {
+          setFinalUser({ ...user, company_name: user.companyName, tel: user.phone, id: 123 });
+        }
+        console.log(user);
+
+        return;
+      } catch (err) {
+        console.error("Error fetching user profile:", err);
+      }
     };
 
-    fetchEmployeer();
-  }, []);
+    if (user?.email) {
+      getUser();
+    }
+  }, [user]);
+
+  if (!finalUser) {
+    return <p className="text-center mt-10">Loading profile...</p>;
+  }
 
   return (
-    <div className="w-[90%] md:w-[80%] min-h-[700px] bg-white rounded-lg shadow-md hover:shadow-lg transition mx-auto my-[50px] p-5 md:p-10 md:px-[70px]">
-      {role === "candidate" ? (
+    <div className="w-[90%] md:w-[80%] min-h-[700px] bg-white rounded-lg shadow-md hover:shadow-lg transition mx-auto my-[80px] p-5 md:p-10 md:px-[70px]">
+      {finalUser.role === "candidate" ? (
         <>
           <div className="flex flex-col md:flex-row justify-center items-center md:items-start w-full gap-6">
             <div className="flex justify-center md:justify-start md:flex-[30%]">
@@ -40,51 +82,43 @@ const Profile = () => {
             </div>
 
             <div className="md:flex-[70%] text-center md:text-left">
-              <h1 className="text-2xl md:text-3xl font-roboto">{profile[1].full_name}</h1>
+              <h1 className="text-2xl md:text-3xl font-roboto">{finalUser.full_name}</h1>
 
               <div className="flex flex-col md:flex-row gap-2 mt-3">
-                <div className="flex items-center justify-center md:justify-start gap-2">
+                <div className="flex items-center gap-2">
                   <MapPin />
                   <h2>
-                    {profile[1].location}, {profile[1].country}
+                    {finalUser.location}, {finalUser.country}
                   </h2>
                 </div>
-                <div className="flex items-center justify-center md:justify-start gap-2">
+                <div className="flex items-center gap-2">
                   <Mail />
-                  <h2>{profile[1].email}</h2>
+                  <h2>{finalUser.email}</h2>
                 </div>
-                <div className="flex items-center justify-center md:justify-start gap-2">
+                <div className="flex items-center gap-2">
                   <Phone />
-                  <h2>{profile[1].tel}</h2>
+                  <h2>{finalUser.tel}</h2>
                 </div>
               </div>
 
-              <div className="flex items-center justify-center md:justify-start gap-2 mt-2">
-                <File /> {profile[1].resume_url}
+              <div className="flex items-center gap-2 mt-2">
+                <File /> {finalUser.resume_url}
               </div>
             </div>
           </div>
 
           <div className="w-full px-3 md:px-5 py-10 md:py-20">
             <h1 className="text-2xl md:text-3xl">About</h1>
-            <p className="mt-2 text-sm md:text-base">{profile[1].bio}</p>
+            <p className="mt-2 text-sm md:text-base">{finalUser.bio}</p>
           </div>
 
           <div className="w-full px-3 md:px-5">
-            <h1 className="text-2xl md:text-3xl">Skills</h1>
-            <ul className="mt-3 space-y-2">
-              {profile[1].skills.map((el, idx) => (
-                <li key={idx}>
-                  <div className="flex items-center gap-2 md:justify-start">
-                    <MoveRight size={16} />
-                    {el}
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <h1 className="text-2xl md:text-3xl mb-1">Skills</h1>
+            <SkillList names={getNamesForIds(finalUser.skills)} />
           </div>
+
           <div className="w-full h-50px mt-8 flex justify-center">
-            <Link to={`edit/${profile[1].id}`}>
+            <Link to={`edit/${finalUser.id}`}>
               <button className="bg-emerald hover:opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium shadow cursor-pointer">
                 Edit Profile
               </button>
@@ -103,36 +137,38 @@ const Profile = () => {
             </div>
 
             <div className="md:flex-[70%] text-center md:text-left">
-              <h1 className="text-2xl md:text-3xl font-roboto">{employer?.company_name}</h1>
+              <h1 className="text-2xl md:text-3xl font-roboto">{finalUser.company_name}</h1>
 
               <div className="flex flex-col md:flex-row gap-2 mt-3">
-                <div className="flex items-center justify-center md:justify-start gap-2">
+                <div className="flex items-center gap-2">
                   <MapPin />
                   <h2>
-                    {employer?.location}, {employer?.country}
+                    {finalUser.location}, {finalUser.country}
                   </h2>
                 </div>
-                <div className="flex items-center justify-center md:justify-start gap-2">
+                <div className="flex items-center gap-2">
                   <Mail />
-                  <h2>{employer?.email}</h2>
+                  <h2>{finalUser.email}</h2>
                 </div>
-                <div className="flex items-center justify-center md:justify-start gap-2">
+                <div className="flex items-center gap-2">
                   <Phone />
-                  <h2>{employer?.tel}</h2>
+                  <h2>{finalUser.tel}</h2>
                 </div>
               </div>
 
-              <div className="flex items-center justify-center md:justify-start gap-2 mt-2">
-                <Link2 /> {employer?.website}
+              <div className="flex items-center gap-2 mt-2">
+                <Link2 /> {finalUser.website}
               </div>
             </div>
           </div>
+
           <div className="w-full px-3 md:px-5 py-10 md:py-20">
             <h1 className="text-2xl md:text-3xl">About</h1>
-            <p className="mt-2 text-sm md:text-base">{employer?.about}</p>
+            <p className="mt-2 text-sm md:text-base">{finalUser.about}</p>
           </div>
+
           <div className="w-full h-50px mt-8 flex justify-center">
-            <Link to={`edit/${employer?.id}`}>
+            <Link to={`edit/${finalUser.id}`}>
               <button className="bg-emerald hover:opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium shadow cursor-pointer">
                 Edit Profile
               </button>
