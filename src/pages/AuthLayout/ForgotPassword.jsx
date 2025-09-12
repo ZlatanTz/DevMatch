@@ -22,10 +22,8 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row w-full min-h-[100vh]">
-      <AuthSidebar pageName="Forgot password" />
-
-      <div className="flex flex-1 items-center justify-center p-8">
+    <div className="flex flex-col lg:flex-row w-full min-h-[100vh]">
+      <div className="flex flex-1 items-center justify-center p-8 order-2 lg:order-2">
         <div className="w-full max-w-md">
           <h1 className="text-2xl font-bold mb-6">Reset your password</h1>
           <p className="text-gray-600 mb-6 text-sm">
@@ -58,6 +56,7 @@ const ForgotPassword = () => {
           </div>
         </div>
       </div>
+      <AuthSidebar pageName="Forgot password" />
     </div>
   );
 };
