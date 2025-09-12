@@ -6,9 +6,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginSchema } from "@/schemas/loginSchemas";
 import Input from "./Input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
@@ -19,8 +21,8 @@ const Login = () => {
   });
 
   const onSubmit = (data) => {
-    console.log("Login datas:", data);
     // TODO: Call API service
+    login(data);
     navigate("/");
   };
   return (

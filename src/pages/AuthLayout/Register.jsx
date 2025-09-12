@@ -11,11 +11,13 @@ import {
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import AuthSidebar from "./AuthSidebar";
+import { useAuth } from "@/context/AuthContext";
 
 const Register = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [role, setRole] = useState("candidate");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const STEPS = ["candidate", "employer"];
   const isLastStep = currentStep === STEPS.length;
@@ -41,7 +43,7 @@ const Register = () => {
       role: role,
     };
     // TODO: Call register service
-    console.log(registerData);
+    login(registerData);
     navigate("/");
   };
 
