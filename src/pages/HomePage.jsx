@@ -63,7 +63,7 @@ const HomePage = () => {
         <div className="relative h-full rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
           <div className="absolute inset-0 rounded-2xl pointer-events-none bg-gradient-to-tr from-federal-blue/5 via-paynes-gray/5 to-emerald/5" />
           <h2 className="relative text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
-            Newest Jobs
+            Latest Jobs
           </h2>
 
           <div className="relative px-2 sm:px-4">
