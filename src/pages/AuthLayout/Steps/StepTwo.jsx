@@ -1,10 +1,18 @@
+import { useSkills } from "@/hooks/useSkills";
 import Input from "../Input";
 import MultiSelect from "../MultiSelect";
 import FileInput from "./FileInput";
 
 const StepTwo = ({ role, register, errors, control }) => {
+  const { skills } = useSkills();
+
+  const selectOptions = skills.map((skill) => ({
+    value: skill.id,
+    label: skill.name,
+  }));
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-4/5 xl:w-full">
       {/* Shared fields */}
       <Input
         label="* Email"
@@ -77,7 +85,14 @@ const StepTwo = ({ role, register, errors, control }) => {
             error={errors.years_experiance}
             {...register("years_experiance", { valueAsNumber: true })}
           />
-          <MultiSelect label="* Skills" name="skills" control={control} error={errors.skills} />
+          <MultiSelect
+            label="* Skills"
+            options={selectOptions}
+            isMulti={true}
+            name="skills"
+            control={control}
+            error={errors.skills}
+          />
           <Input
             label="* Bio"
             name="bio"

@@ -46,9 +46,9 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row w-full min-h-[100vh]">
+    <div className="flex flex-col lg:flex-row w-full min-h-[100vh] items-center lg:items-stretch">
       <AuthSidebar pageName={"Signup"} currentStep={currentStep} />
-      <div className="w-4/5 flex flex-col items-center mt-8">
+      <div className="w-full md:w-4/5 flex flex-col items-center mt-8 order-1 lg:order-2">
         <div className="flex flex-col w-full h-full max-w-4xl">
           {/* HEADER */}
           <div className="text-center mb-8">
@@ -57,7 +57,6 @@ const Register = () => {
             </h3>
             <span className="text-xl">Step {currentStep}/3</span>
           </div>
-
           {/* MAIN */}
           <div className="flex-1 flex justify-center items-start">
             {currentStep === 1 && <StepOne role={role} setRole={setRole} />}
@@ -65,24 +64,23 @@ const Register = () => {
               <StepTwo role={role} register={register} errors={errors} control={control} />
             )}
           </div>
-
           {/* FOOTER */}
-          <div className="flex justify-between my-12">
+          <div className="flex flex-col gap-4 sm:flex-row sm:gap-6 sm:justify-between my-12 px-4">
             {currentStep === 1 ? (
-              <div></div>
+              <div className="hidden sm:block" />
             ) : (
               <Button
-                className="text-md px-16 py-6"
+                className="w-full sm:w-auto text-md px-8 py-4 sm:px-12 md:px-18 lg:px-16"
                 onClick={handlePrev}
                 disabled={currentStep < 2}
                 variant="ghost"
               >
-                <MoveLeft />
+                <MoveLeft className="mr-2" />
                 Previous step
               </Button>
             )}
             <Button
-              className="bg-federal-blue hover:bg-paynes-gray px-16 py-6 text-md"
+              className="w-full sm:w-auto bg-federal-blue hover:bg-paynes-gray text-md px-8 py-4 sm:px-12 md:px-18 lg:px-16"
               onClick={isLastStep ? handleSubmit(onSubmit) : handleNext}
               disabled={!role}
             >
