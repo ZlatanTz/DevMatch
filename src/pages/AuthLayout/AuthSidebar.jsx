@@ -1,4 +1,5 @@
 import React from "react";
+import logo from "../../assets/devmatch.svg";
 
 const AuthSidebar = ({ pageName, currentStep }) => {
   return (
@@ -6,7 +7,8 @@ const AuthSidebar = ({ pageName, currentStep }) => {
       <div className="w-full flex flex-col gap-22 md:gap-12">
         <div className="w-full flex justify-center">
           <div className="flex flex-col gap-2 w-35 xl:w-55 items-center mt-12">
-            <h1 className=" text-3xl xl:text-5xl font-bold">DevMatch</h1>
+            {/* <h1 className=" text-3xl xl:text-5xl font-bold">DevMatch</h1> */}
+            <img src={logo} alt="" />
             <span className="text-sm xl:text-xl font-bold self-start">{pageName}</span>
           </div>
         </div>
