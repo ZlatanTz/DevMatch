@@ -1,17 +1,9 @@
-import { useSkills } from "@/hooks/useSkills";
 import { Controller } from "react-hook-form";
 import Select from "react-select";
 
-const MultiSelect = ({ name, control, label, error }) => {
-  const { skills } = useSkills();
-  const options = skills.map((skill) => ({
-    value: skill.id,
-    label: skill.name,
-  }));
-
-  console.log(options);
+const MultiSelect = ({ options, name, control, label, error, isDisabled, isMulti = false }) => {
   return (
-    <div className="mb-4">
+    <div className="mb-4 min-w-[220px]">
       {label && <label className="block mb-1 font-semibold">{label}</label>}
       <Controller
         name={name}
@@ -20,12 +12,24 @@ const MultiSelect = ({ name, control, label, error }) => {
           <Select
             {...field}
             options={options}
-            isMulti
+            isMulti={isMulti}
+            isDisabled={isDisabled}
             classNamePrefix="react-select"
+            value={
+              isMulti
+                ? options.filter(
+                    (opt) => Array.isArray(field.value) && field.value.includes(opt.value),
+                  )
+                : options.find((opt) => opt.value === field.value) || null
+            }
             onChange={(selected) => {
-              field.onChange(selected ? selected.map((opt) => opt.value) : []);
+              if (isMulti) {
+                field.onChange(selected ? selected.map((opt) => opt.value) : []);
+              } else {
+                field.onChange(selected ? selected.value : "");
+              }
             }}
-            value={options.filter((opt) => field.value?.includes(opt.value))}
+            onBlur={field.onBlur}
           />
         )}
       />

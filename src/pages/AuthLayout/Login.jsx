@@ -6,9 +6,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginSchema } from "@/schemas/loginSchemas";
 import Input from "./Input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
@@ -19,14 +21,13 @@ const Login = () => {
   });
 
   const onSubmit = (data) => {
-    console.log("Login datas:", data);
     // TODO: Call API service
+    login(data);
     navigate("/");
   };
   return (
-    <div className="flex flex-col md:flex-row w-full min-h-[100vh]">
-      <AuthSidebar pageName={"Log in"} />
-      <div className="flex flex-1 items-center justify-center p-8">
+    <div className="flex flex-col lg:flex-row w-full min-h-[100vh]">
+      <div className="flex flex-1 items-center justify-center p-8 order-2 lg:order-2">
         <div className="w-full max-w-md">
           <h1 className="text-2xl font-bold mb-6">Log in to your account</h1>
 
@@ -68,6 +69,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <AuthSidebar pageName={"Log in"} />
     </div>
   );
 };

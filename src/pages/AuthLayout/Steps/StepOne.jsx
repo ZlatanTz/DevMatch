@@ -17,7 +17,7 @@ const StepOne = ({ role, setRole }) => {
   ];
 
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-6 w-4/5 xl:w-full">
       {ROLES.map((r) => {
         const isActive = role === r.key;
 

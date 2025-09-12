@@ -53,6 +53,8 @@ const ManageJobs = () => {
     return () => (mounted = false);
   }, []);
 
+  console.log(jobs);
+
   const handleAskDelete = (id) => {
     setPendingDeleteId(id);
     setConfirmOpen(true);
@@ -62,11 +64,9 @@ const ManageJobs = () => {
     if (!pendingDeleteId) return;
     try {
       setDeleting(true);
-      // await deleteJob(pendingDeleteId);
       setJobs((prev) => prev.filter((j) => j.id !== pendingDeleteId));
     } catch (e) {
       console.error("Delete failed:", e);
-      // po želji: toast.error("Failed to delete job");
     } finally {
       setDeleting(false);
       setConfirmOpen(false);
@@ -90,16 +90,15 @@ const ManageJobs = () => {
   const hasData = useMemo(() => jobs && jobs.length > 0, [jobs]);
 
   return (
-    <div className="w-full space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="w-full space-y-6 flex flex-col items-center">
+      <div className="flex items-center justify-between w-9/10 h-16">
         <h1 className="text-2xl md:text-3xl font-bold">Manage Jobs</h1>
         <span className="text-sm text-muted-foreground">
           {hasData ? `${jobs.length} total` : ""}
         </span>
       </div>
 
-      {/* Container s horizontalnim scrollom SAMO za tabelu */}
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border w-9/10">
         <div className="w-full overflow-x-auto">
           <Table className="min-w-[900px]">
             <TableHeader>
@@ -115,7 +114,6 @@ const ManageJobs = () => {
 
             <TableBody>
               {loading ? (
-                // jednostavan loading state
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-10">
                     Loading jobs…
@@ -149,7 +147,6 @@ const ManageJobs = () => {
         </div>
       </div>
 
-      {/* AlertDialog za potvrdu brisanja */}
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

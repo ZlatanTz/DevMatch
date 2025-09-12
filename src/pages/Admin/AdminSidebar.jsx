@@ -9,8 +9,8 @@ const AdminSidebar = ({ pageName }) => {
   return (
     <div className="w-full lg:w-1/5 flex flex-col justify-between items-center bg-gradient-to-br from-paynes-gray to-federal-blue text-white">
       <div className="mt-12 px-8 w-full flex flex-col gap-12">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-5xl font-bold">{pageName}</h1>
+        <div className="flex flex-col items-center gap-2">
+          <h1 className="text-3xl font-bold">{pageName}</h1>
         </div>
         <div>
           {/* Navigation */}
