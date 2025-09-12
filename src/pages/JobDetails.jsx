@@ -2,7 +2,7 @@ import AllSkillsList from "../components/AllSkillsList";
 import { Link, useLoaderData, useParams } from "react-router-dom";
 import SkillList from "../components/SkillList";
 import { useSkills } from "../hooks/useSkills";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const JobDetails = () => {
@@ -30,7 +30,7 @@ const JobDetails = () => {
   const [candidateLoggedIn, setCandidateLoggedIn] = useState(true); //da li je ulogovan candidate
 
   const { user } = useAuth();
-  console.log(user);
+  // console.log(user);
 
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
@@ -38,14 +38,78 @@ const JobDetails = () => {
   const { getNamesForIds } = useSkills();
   const skillNames = getNamesForIds(skills);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Logika za slanje podataka
-    console.log("Forma poslata!");
-  };
-
   const handleLogIn = () => {
     setCandidateLoggedIn(!candidateLoggedIn);
+  };
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    birthYear: "",
+    phone: "",
+    location: "",
+    experience: "",
+    education: "",
+    skills: [],
+    cv: null,
+    coverLetter: "",
+  });
+
+  //const [selectedSkills, setSelectedSkills] = useState([]);
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        location: user.location || "",
+        experience: user.years_experiance || "",
+      }));
+    }
+  }, [user]);
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
+  const handleSkillsChange = (skills) => {
+    setFormData((prev) => ({ ...prev, skills }));
+  };
+
+  const handleFileChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      cv: e.target.files[0],
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const submissionData = {
+      ...formData,
+      //skills: selectedSkills,
+      jobId: id,
+    };
+
+    const submitFormData = new FormData();
+    Object.keys(submissionData).forEach((key) => {
+      if (key === "cv") {
+        submitFormData.append(key, submissionData[key]);
+      } else {
+        submitFormData.append(key, submissionData[key]);
+      }
+    });
+
+    console.log("Form submission data:", Object.fromEntries(submitFormData));
   };
 
   return (
@@ -126,7 +190,9 @@ const JobDetails = () => {
                     type="text"
                     id="firstName"
                     required
-                    placeholder={candidateLoggedIn ? user.firstName : "First Name"}
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    placeholder="First Name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -142,7 +208,9 @@ const JobDetails = () => {
                     type="text"
                     id="lastName"
                     required
-                    placeholder={candidateLoggedIn ? user.lastName : "Last Name"}
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    placeholder="Last Name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -160,7 +228,9 @@ const JobDetails = () => {
                     type="email"
                     id="email"
                     required
-                    placeholder={candidateLoggedIn ? user.email : "example@email.com"}
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="example@gmail.com"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -179,6 +249,8 @@ const JobDetails = () => {
                     min="1950"
                     max="2005"
                     placeholder="Year of birth"
+                    value={formData.birthYear}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -196,7 +268,9 @@ const JobDetails = () => {
                     type="tel"
                     id="phone"
                     required
-                    placeholder={candidateLoggedIn ? user.phone : "+381 63 123456"}
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="+382 69 123456"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -212,7 +286,9 @@ const JobDetails = () => {
                     type="text"
                     id="location"
                     required
-                    placeholder={candidateLoggedIn ? user.location : "Where do you live?"}
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="Where do you live?"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -230,9 +306,9 @@ const JobDetails = () => {
                   id="experience"
                   required
                   min="0"
-                  placeholder={
-                    candidateLoggedIn ? user.years_experiance : "Number of years of experience"
-                  }
+                  value={formData.years_experiance}
+                  onChange={handleInputChange}
+                  placeholder="0"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
               </div>
@@ -248,6 +324,7 @@ const JobDetails = () => {
                   id="education"
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                  onChange={handleInputChange}
                 >
                   <option value="">Seniority</option>
                   <option value="intern">Intern</option>
@@ -264,7 +341,7 @@ const JobDetails = () => {
                 >
                   Skill <span className="text-emerald">*</span>
                 </label>
-                <AllSkillsList max={3} />
+                <AllSkillsList max={3} value={formData.skills} onChange={handleSkillsChange} />
               </div>
 
               <div>
@@ -276,6 +353,7 @@ const JobDetails = () => {
                   id="cv"
                   accept=".pdf"
                   required
+                  onChange={handleFileChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
                 />
               </div>
@@ -291,6 +369,8 @@ const JobDetails = () => {
                   id="coverLetter"
                   rows="4"
                   placeholder="Write your cover letter here..."
+                  value={formData.coverLetter}
+                  onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 ></textarea>
               </div>
