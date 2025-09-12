@@ -1,9 +1,10 @@
-import { useLoaderData, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import profileImg from "../assets/profileImage.jpeg";
 import { Phone, Mail, MapPin, MoveRight, File, Link2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useSkills } from "../hooks/useSkills";
+import SkillList from "@/components/SkillList";
 
 const Profile = () => {
   const { user, login, logout } = useAuth();
@@ -11,7 +12,7 @@ const Profile = () => {
   const [finalUser, setFinalUser] = useState(null);
 
   const fetchEmployer = async () => {
-    const res = await fetch("/mock/employer_profiles.json"); // ✅ public folder paths don’t need ../public
+    const res = await fetch("/mock/employer_profiles.json");
     if (!res.ok) throw new Error("Failed to load employer data");
     return res.json();
   };
@@ -38,17 +39,19 @@ const Profile = () => {
           setFinalUser({ ...foundCandidate, role: "candidate" });
           return;
         }
-        console.log(user);
+
         if (user.role === "candidate") {
           setFinalUser({
             ...user,
             resume_url: user.resume.name,
-            full_name: user.firstName + user.lastName,
+            full_name: user.firstName + " " + user.lastName,
             tel: user.phone,
+            id: 123,
           });
         } else {
-          setFinalUser({ ...user, company_name: user.companyName, tel: user.phone });
+          setFinalUser({ ...user, company_name: user.companyName, tel: user.phone, id: 123 });
         }
+        console.log(user);
 
         return;
       } catch (err) {
@@ -110,17 +113,8 @@ const Profile = () => {
           </div>
 
           <div className="w-full px-3 md:px-5">
-            <h1 className="text-2xl md:text-3xl">Skills</h1>
-            <ul className="mt-3 space-y-2">
-              {getNamesForIds(finalUser.skills).map((el, idx) => (
-                <li key={idx}>
-                  <div className="flex items-center gap-2 md:justify-start">
-                    <MoveRight size={16} />
-                    {el}
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <h1 className="text-2xl md:text-3xl mb-1">Skills</h1>
+            <SkillList names={getNamesForIds(finalUser.skills)} />
           </div>
 
           <div className="w-full h-50px mt-8 flex justify-center">

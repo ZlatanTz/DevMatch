@@ -2,6 +2,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import logo from "../assets/devmatch.svg";
 import profileImage from "../assets/profileIcon.jpg";
+import { useAuth } from "../context/AuthContext";
 
 const navItems = [
   { to: "/", label: "Home" },
@@ -17,7 +18,8 @@ const sortLinks = [
 ];
 
 export default function Header() {
-  const [isLogged, setIsLogged] = useState(true);
+  const { user, login, logout } = useAuth();
+  const [isLogged, setIsLogged] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -28,6 +30,9 @@ export default function Header() {
   useEffect(() => {
     setDropdownOpen(false);
     setMobileOpen(false);
+    if (user != null) {
+      setIsLogged(true);
+    }
   }, [location.pathname]);
 
   useEffect(() => {
@@ -255,6 +260,7 @@ export default function Header() {
                         onClick={() => {
                           setDropdownOpen(false);
                           setIsLogged(false);
+                          logout();
                         }}
                       >
                         Logout
