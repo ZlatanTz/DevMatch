@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useSkills } from "../hooks/useSkills";
 
 function EditProfile() {
-  const { user, login, logout } = useAuth();
+  const { user } = useAuth();
   const { getNamesForIds } = useSkills();
   const [finalUser, setFinalUser] = useState(null);
 
