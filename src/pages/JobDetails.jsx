@@ -27,10 +27,12 @@ const JobDetails = () => {
     benefits,
   } = job;
 
-  const [candidateLoggedIn, setCandidateLoggedIn] = useState(true); //da li je ulogovan candidate
-
   const { user } = useAuth();
   // console.log(user);
+  const loggedIn = user ? true : false;
+  // console.log(loggedIn);
+
+  const [candidateLoggedIn, setCandidateLoggedIn] = useState(loggedIn); //da li je ulogovan candidate
 
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
@@ -38,6 +40,7 @@ const JobDetails = () => {
   const { getNamesForIds } = useSkills();
   const skillNames = getNamesForIds(skills);
 
+  //sad je visak
   const handleLogIn = () => {
     setCandidateLoggedIn(!candidateLoggedIn);
   };
@@ -50,7 +53,7 @@ const JobDetails = () => {
     phone: "",
     location: "",
     experience: "",
-    education: "",
+    seniority: "",
     skills: [],
     cv: null,
     coverLetter: "",
@@ -96,7 +99,6 @@ const JobDetails = () => {
 
     const submissionData = {
       ...formData,
-      //skills: selectedSkills,
       jobId: id,
     };
 
@@ -202,9 +204,9 @@ const JobDetails = () => {
                     type="text"
                     id="firstName"
                     required
+                    placeholder="First Name"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    placeholder="First Name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -220,9 +222,9 @@ const JobDetails = () => {
                     type="text"
                     id="lastName"
                     required
+                    placeholder="Last Name"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    placeholder="Last Name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -240,9 +242,9 @@ const JobDetails = () => {
                     type="email"
                     id="email"
                     required
+                    placeholder="example@email.com"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="example@gmail.com"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -280,9 +282,9 @@ const JobDetails = () => {
                     type="tel"
                     id="phone"
                     required
+                    placeholder="+381 63 123456"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="+382 69 123456"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -298,9 +300,9 @@ const JobDetails = () => {
                     type="text"
                     id="location"
                     required
+                    placeholder="Where do you live?"
                     value={formData.location}
                     onChange={handleInputChange}
-                    placeholder="Where do you live?"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -318,9 +320,9 @@ const JobDetails = () => {
                   id="experience"
                   required
                   min="0"
+                  placeholder="Number of years of experience"
                   value={formData.years_experiance}
                   onChange={handleInputChange}
-                  placeholder="0"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
               </div>
@@ -333,9 +335,10 @@ const JobDetails = () => {
                   Level<span className="text-emerald">*</span>
                 </label>
                 <select
-                  id="education"
+                  id="seniority"
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                  value={formData.seniority}
                   onChange={handleInputChange}
                 >
                   <option value="">Seniority</option>
