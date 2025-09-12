@@ -28,7 +28,7 @@ const JobDetails = () => {
   } = job;
 
   const { user } = useAuth();
-  // console.log(user);
+  console.log(user);
   const loggedIn = user ? true : false;
   // console.log(loggedIn);
 
@@ -321,7 +321,7 @@ const JobDetails = () => {
                   required
                   min="0"
                   placeholder="Number of years of experience"
-                  value={formData.years_experiance}
+                  value={formData.experience}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
