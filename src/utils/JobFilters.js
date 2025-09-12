@@ -10,7 +10,7 @@ export function readParams(sp) {
 
 export function filterAndSort(jobs, p) {
   const filtered = jobs.filter((j) => {
-    const text = `${j.title} ${j.company}  || ""}`.toLowerCase();
+    const text = `${j.title ?? ""} ${j.company ?? ""} ${j.description ?? ""}`.toLowerCase();
     if (p.q && !text.includes(p.q)) return false;
 
     const locStr = String(j.location || "");

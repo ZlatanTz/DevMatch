@@ -206,7 +206,7 @@ const HomePage = () => {
                     ? () => setVisibleCount(6)
                     : () => setVisibleCount((prev) => prev + 6)
                 }
-                className="px-4 py-2 sm:py-4 w-28 sm:w-32 text-sm sm:text-base rounded-full shadow-md bg-paynes-gray hover:bg-federal-blue text-white focus-visible:ring-2 focus-visible:ring-emerald focus-visible:outline-none motion-safe:transition"
+                className="bg-emerald text-white hover:bg-emerald/80 px-4 py-2 sm:py-4 w-28 sm:w-32 text-sm sm:text-base rounded-full shadow-md"
               >
                 {visibleCount >= jobs.length ? "Show Less" : "Load More"}
               </Button>

@@ -1,8 +1,10 @@
 import AllSkillsList from "../components/AllSkillsList";
-import { useLoaderData, useParams } from "react-router-dom";
+import { Link, useLoaderData, useParams } from "react-router-dom";
 import SkillList from "../components/SkillList";
 import { useSkills } from "../hooks/useSkills";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const JobDetails = () => {
   const jobs = useLoaderData();
@@ -26,7 +28,14 @@ const JobDetails = () => {
     benefits,
   } = job;
 
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(3);
+
+  const { user } = useAuth();
+  console.log(user);
+  const loggedIn = user ? true : false;
+  // console.log(loggedIn);
+
+  const [candidateLoggedIn, setCandidateLoggedIn] = useState(loggedIn); //da li je ulogovan candidate
 
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
@@ -34,15 +43,96 @@ const JobDetails = () => {
   const { getNamesForIds } = useSkills();
   const skillNames = getNamesForIds(skills);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Logika za slanje podataka
-    console.log("Forma poslata!");
+  //sad je visak
+  const handleLogIn = () => {
+    setCandidateLoggedIn(!candidateLoggedIn);
   };
 
-  const handleLogIn = () => {
-    setLoggedIn(!loggedIn);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    birthYear: "",
+    phone: "",
+    location: "",
+    experience: "",
+    seniority: "",
+    skills: [],
+    cv: null,
+    coverLetter: "",
+  });
+
+  //const [selectedSkills, setSelectedSkills] = useState([]);
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        location: user.location || "",
+        experience: user.years_experiance || "",
+      }));
+    }
+  }, [user]);
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
   };
+
+  const handleSkillsChange = (skills) => {
+    setFormData((prev) => ({ ...prev, skills }));
+  };
+
+  const handleFileChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      cv: e.target.files[0],
+    }));
+  };
+
+  const handleClickLink = () => {
+    window.scrollTo(0, 0);
+    setVisibleCount(3);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const submissionData = {
+      ...formData,
+      jobId: id,
+    };
+
+    const submitFormData = new FormData();
+    Object.keys(submissionData).forEach((key) => {
+      if (key === "cv") {
+        submitFormData.append(key, submissionData[key]);
+      } else {
+        submitFormData.append(key, submissionData[key]);
+      }
+    });
+
+    console.log("Form submission data:", Object.fromEntries(submitFormData));
+  };
+
+  if (!job) {
+    return (
+      <section className="p-10 text-center">
+        <h1 className="text-2xl font-bold">Job not found</h1>
+        <p className="mt-4">The job you're looking for doesn't exist or was removed.</p>
+        <Link to="/jobs" className="inline-block mt-6 px-4 py-2 rounded-xl bg-emerald text-white">
+          Back to Jobs
+        </Link>
+      </section>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 bg-white min-h-screen min-w-[320px]">
@@ -103,7 +193,7 @@ const JobDetails = () => {
           </div>
         </div>
 
-        {loggedIn && (
+        {candidateLoggedIn && (
           <div className="job-apply-form bg-white p-6 rounded-lg shadow-md border border-gray-200">
             <h2 className="text-xl font-bold text-center mb-4 text-federal-blue">
               Apply for a job{" "}
@@ -123,6 +213,8 @@ const JobDetails = () => {
                     id="firstName"
                     required
                     placeholder="First Name"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -139,6 +231,8 @@ const JobDetails = () => {
                     id="lastName"
                     required
                     placeholder="Last Name"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -157,6 +251,8 @@ const JobDetails = () => {
                     id="email"
                     required
                     placeholder="example@email.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -175,6 +271,8 @@ const JobDetails = () => {
                     min="1950"
                     max="2005"
                     placeholder="Year of birth"
+                    value={formData.birthYear}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -193,6 +291,8 @@ const JobDetails = () => {
                     id="phone"
                     required
                     placeholder="+381 63 123456"
+                    value={formData.phone}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -209,6 +309,8 @@ const JobDetails = () => {
                     id="location"
                     required
                     placeholder="Where do you live?"
+                    value={formData.location}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -227,6 +329,8 @@ const JobDetails = () => {
                   required
                   min="0"
                   placeholder="Number of years of experience"
+                  value={formData.experience}
+                  onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
               </div>
@@ -239,9 +343,11 @@ const JobDetails = () => {
                   Level<span className="text-emerald">*</span>
                 </label>
                 <select
-                  id="education"
+                  id="seniority"
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                  value={formData.seniority}
+                  onChange={handleInputChange}
                 >
                   <option value="">Seniority</option>
                   <option value="intern">Intern</option>
@@ -258,7 +364,7 @@ const JobDetails = () => {
                 >
                   Skill <span className="text-emerald">*</span>
                 </label>
-                <AllSkillsList max={3} />
+                <AllSkillsList max={3} value={formData.skills} onChange={handleSkillsChange} />
               </div>
 
               <div>
@@ -270,7 +376,8 @@ const JobDetails = () => {
                   id="cv"
                   accept=".pdf"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/90"
+                  onChange={handleFileChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
                 />
               </div>
 
@@ -285,27 +392,79 @@ const JobDetails = () => {
                   id="coverLetter"
                   rows="4"
                   placeholder="Write your cover letter here..."
+                  value={formData.coverLetter}
+                  onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 ></textarea>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/90 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
+                className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
               >
                 Send application
               </button>
             </form>
           </div>
         )}
-        {!loggedIn && (
-          <button
-            onClick={handleLogIn}
-            className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/90 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
-          >
-            Log In to Apply
-          </button>
+        {!candidateLoggedIn && (
+          <Link to="/login">
+            <button
+              onClick={handleLogIn}
+              className="w-full bg-emerald text-white mb-8 py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
+            >
+              Log In to Apply
+            </button>
+          </Link>
         )}
+
+        <div className="col-span-1 lg:col-span-4">
+          <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">Top rated</h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {jobs.slice(0, visibleCount).map((job) => (
+                <Link
+                  key={job.id}
+                  to={`/jobs/${job.id}`}
+                  onClick={handleClickLink}
+                  className="block rounded-2xl border-2 border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                >
+                  <h3 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">
+                    {job.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">
+                    {job.company}
+                  </p>
+                  <p className="text-xs italic text-foreground/80 mb-3">{job.employment_type}</p>
+
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-foreground/80">Rating: 4.5</p>
+                    <div className="flex text-yellow-400" aria-hidden="true">
+                      {"★".repeat(4)}
+                      {"☆".repeat(1)}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {jobs.length > 3 && (
+              <div className="flex justify-center mt-4 sm:mt-6">
+                <Button
+                  onClick={
+                    visibleCount >= jobs.length
+                      ? () => setVisibleCount(3)
+                      : () => setVisibleCount((prev) => prev + 3)
+                  }
+                  className="bg-emerald text-white hover:bg-emerald/80 px-4 py-2 sm:py-4 w-28 sm:w-32 text-sm sm:text-base rounded-full shadow-md"
+                >
+                  {visibleCount >= jobs.length ? "Show Less" : "Load More"}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

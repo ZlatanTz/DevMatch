@@ -13,7 +13,7 @@ const Footer = () => {
   const linkInactive =
     "text-white/85 hover:text-emerald focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald";
   return (
-    <footer className="bg-federal-blue text-white">
+    <footer className="bg-federal-blue text-white pt-2 pb-2">
       <div className="flex flex-col md:flex-row md:gap-10 justify-center items-center">
         {navItems.map((item) => (
           <NavLink
