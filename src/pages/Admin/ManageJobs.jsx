@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MoreHorizontal } from "lucide-react";
 import { getAllJobs } from "@/api/services/jobs";
+import { formatDate } from "../../utils/helpers";
 
 import {
   Table,
@@ -53,8 +54,6 @@ const ManageJobs = () => {
     return () => (mounted = false);
   }, []);
 
-  console.log(jobs);
-
   const handleAskDelete = (id) => {
     setPendingDeleteId(id);
     setConfirmOpen(true);
@@ -71,19 +70,6 @@ const ManageJobs = () => {
       setDeleting(false);
       setConfirmOpen(false);
       setPendingDeleteId(null);
-    }
-  };
-
-  const formatDate = (dt) => {
-    if (!dt) return "—";
-    try {
-      return new Intl.DateTimeFormat(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-      }).format(new Date(dt));
-    } catch {
-      return String(dt);
     }
   };
 
@@ -135,7 +121,7 @@ const ManageJobs = () => {
                     <TableCell>{formatDate(job.createdAt)}</TableCell>
                     <TableCell className="text-right">
                       <RowActions
-                        onView={() => navigate(`/jobs/${job.id}`)}
+                        onView={() => navigate(`jobs/${job.id}`)}
                         onDelete={() => handleAskDelete(job.id)}
                       />
                     </TableCell>
