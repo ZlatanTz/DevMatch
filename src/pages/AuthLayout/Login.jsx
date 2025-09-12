@@ -24,9 +24,8 @@ const Login = () => {
     navigate("/");
   };
   return (
-    <div className="flex flex-col md:flex-row w-full min-h-[100vh]">
-      <AuthSidebar pageName={"Log in"} />
-      <div className="flex flex-1 items-center justify-center p-8">
+    <div className="flex flex-col lg:flex-row w-full min-h-[100vh]">
+      <div className="flex flex-1 items-center justify-center p-8 order-2 lg:order-2">
         <div className="w-full max-w-md">
           <h1 className="text-2xl font-bold mb-6">Log in to your account</h1>
 
@@ -68,6 +67,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <AuthSidebar pageName={"Log in"} />
     </div>
   );
 };
