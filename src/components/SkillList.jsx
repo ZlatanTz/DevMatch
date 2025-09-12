@@ -1,4 +1,3 @@
-// SkillList.jsx
 import { useState, useEffect, useMemo } from "react";
 import SkillTag from "./SkillTag";
 
@@ -56,6 +55,7 @@ export default function SkillList({
 
   const toggle = (name) => {
     const next = new Set(selectedSet);
+
     next.has(name) ? next.delete(name) : next.add(name);
     updateSelection(next);
   };
@@ -75,7 +75,7 @@ export default function SkillList({
         <button
           type="button"
           onClick={() => setCurrentMax((n) => n + pageSize)}
-          className="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+          className="px-2 py-1 rounded bg-emerald hover:bg-emerald/80 text-white text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
         >
           Load more
         </button>

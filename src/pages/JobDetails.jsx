@@ -1,8 +1,9 @@
 import AllSkillsList from "../components/AllSkillsList";
-import { useLoaderData, useParams } from "react-router-dom";
+import { Link, useLoaderData, useParams } from "react-router-dom";
 import SkillList from "../components/SkillList";
 import { useSkills } from "../hooks/useSkills";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const JobDetails = () => {
   const jobs = useLoaderData();
@@ -26,7 +27,10 @@ const JobDetails = () => {
     benefits,
   } = job;
 
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [candidateLoggedIn, setCandidateLoggedIn] = useState(true); //da li je ulogovan candidate
+
+  const { user } = useAuth();
+  console.log(user);
 
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
@@ -41,7 +45,7 @@ const JobDetails = () => {
   };
 
   const handleLogIn = () => {
-    setLoggedIn(!loggedIn);
+    setCandidateLoggedIn(!candidateLoggedIn);
   };
 
   return (
@@ -103,7 +107,7 @@ const JobDetails = () => {
           </div>
         </div>
 
-        {loggedIn && (
+        {candidateLoggedIn && (
           <div className="job-apply-form bg-white p-6 rounded-lg shadow-md border border-gray-200">
             <h2 className="text-xl font-bold text-center mb-4 text-federal-blue">
               Apply for a job{" "}
@@ -122,7 +126,7 @@ const JobDetails = () => {
                     type="text"
                     id="firstName"
                     required
-                    placeholder="First Name"
+                    placeholder={candidateLoggedIn ? user.firstName : "First Name"}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -138,7 +142,7 @@ const JobDetails = () => {
                     type="text"
                     id="lastName"
                     required
-                    placeholder="Last Name"
+                    placeholder={candidateLoggedIn ? user.lastName : "Last Name"}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -156,7 +160,7 @@ const JobDetails = () => {
                     type="email"
                     id="email"
                     required
-                    placeholder="example@email.com"
+                    placeholder={candidateLoggedIn ? user.email : "example@email.com"}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -192,7 +196,7 @@ const JobDetails = () => {
                     type="tel"
                     id="phone"
                     required
-                    placeholder="+381 63 123456"
+                    placeholder={candidateLoggedIn ? user.phone : "+381 63 123456"}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -208,7 +212,7 @@ const JobDetails = () => {
                     type="text"
                     id="location"
                     required
-                    placeholder="Where do you live?"
+                    placeholder={candidateLoggedIn ? user.location : "Where do you live?"}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
                 </div>
@@ -226,7 +230,9 @@ const JobDetails = () => {
                   id="experience"
                   required
                   min="0"
-                  placeholder="Number of years of experience"
+                  placeholder={
+                    candidateLoggedIn ? user.years_experiance : "Number of years of experience"
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                 />
               </div>
@@ -270,7 +276,7 @@ const JobDetails = () => {
                   id="cv"
                   accept=".pdf"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/90"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
                 />
               </div>
 
@@ -291,20 +297,22 @@ const JobDetails = () => {
 
               <button
                 type="submit"
-                className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/90 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
+                className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
               >
                 Send application
               </button>
             </form>
           </div>
         )}
-        {!loggedIn && (
-          <button
-            onClick={handleLogIn}
-            className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/90 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
-          >
-            Log In to Apply
-          </button>
+        {!candidateLoggedIn && (
+          <Link to="/login">
+            <button
+              onClick={handleLogIn}
+              className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
+            >
+              Log In to Apply
+            </button>
+          </Link>
         )}
       </div>
     </div>
