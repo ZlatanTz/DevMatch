@@ -58,6 +58,7 @@ export default function Toolbar() {
 
   useEffect(() => {
     reset({ q: q || "", loc: location, seniority, skills, sort });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlKey, reset]);
 
   const onApply = (values) => {
@@ -135,7 +136,7 @@ export default function Toolbar() {
   };
 
   return (
-    <>
+    <div>
       <form
         onSubmit={handleSubmit(onApply)}
         className="w-full bg-white shadow rounded-lg p-4 mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
@@ -426,6 +427,6 @@ export default function Toolbar() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

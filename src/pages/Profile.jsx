@@ -4,6 +4,7 @@ import { Phone, Mail, MapPin, MoveRight, File, Link2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Profile = () => {
+  // eslint-disable-next-line no-unused-vars
   const [role, setRole] = useState("candidate");
   const [employer, setEmployer] = useState();
   const profile = useLoaderData();

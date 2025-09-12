@@ -6,18 +6,17 @@ import { useMemo } from "react";
 import { JobCardSkeletonGrid } from "../components/Skeleton";
 
 export const Jobs = () => {
-  const allJobs = useLoaderData(); // blocking loader data, as before
+  const allJobs = useLoaderData();
   const [sp] = useSearchParams();
   const navigation = useNavigation(); // NEW
   const isLoading = navigation.state === "loading"; // NEW
 
-  // your original memoization
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const params = useMemo(() => readParams(sp), [sp.toString()]);
   const jobs = useMemo(() => filterAndSort(allJobs || [], params), [allJobs, params]);
 
   return (
-    <>
+    <section>
       <Toolbar />
 
       {isLoading ? (
@@ -29,6 +28,6 @@ export const Jobs = () => {
           ))}
         </section>
       )}
-    </>
+    </section>
   );
 };

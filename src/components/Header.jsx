@@ -21,6 +21,18 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // const [dark, setDark] = useState(() => localStorage.getItem("theme") === "dark");
+
+  // useEffect(() => {
+  //   if (dark) {
+  //     document.documentElement.classList.add("dark");
+  //     localStorage.setItem("theme", "dark");
+  //   } else {
+  //     document.documentElement.classList.remove("dark");
+  //     localStorage.setItem("theme", "light");
+  //   }
+  // }, [dark]);
+
   const location = useLocation();
   const avatarBtnRef = useRef(null);
   const userDropdownRef = useRef(null);
@@ -76,6 +88,17 @@ export default function Header() {
             </NavLink>
 
             <nav className="hidden items-center gap-1 md:flex">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `${linkBase} ${isActive ? linkActive : linkInactive}`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
               <div className="relative group">
                 <NavLink
                   to="/jobs"
@@ -150,18 +173,6 @@ export default function Header() {
                   </div>
                 </div>
               </div>
-
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `${linkBase} ${isActive ? linkActive : linkInactive}`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
             </nav>
           </div>
 
@@ -277,6 +288,12 @@ export default function Header() {
                   )}
                 </div>
               )}
+              {/* <button
+                onClick={() => setDark(!dark)}
+                className="mt-6 px-4 py-2 rounded bg-gray-200 dark:bg-gray-700"
+              >
+                Toggle Dark Mode
+              </button> */}
             </div>
           </div>
         </div>
