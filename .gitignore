@@ -7,15 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependencies and build output
+node_modules/
+dist/
+dist-ssr/
+.vite/
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
@@ -23,5 +24,7 @@ dist-ssr
 *.sln
 *.sw?
 
+# Explicit ignores for client/server (redundant but safe)
 client/node_modules/
 client/dist/
+server/node_modules/
