@@ -7,7 +7,7 @@ import { useSkills } from "../hooks/useSkills";
 import SkillList from "@/components/SkillList";
 
 const Profile = () => {
-  const { user, login, logout } = useAuth();
+  const { user } = useAuth();
   const { getNamesForIds } = useSkills();
   const [finalUser, setFinalUser] = useState(null);
 

@@ -17,9 +17,7 @@ const MultiSelect = ({ options, name, control, label, error, isDisabled, isMulti
             classNamePrefix="react-select"
             value={
               isMulti
-                ? options.filter(
-                    (opt) => Array.isArray(field.value) && field.value.includes(opt.value),
-                  )
+                ? options.filter((opt) => Array.isArray(field.value) && field.value.includes(opt.value))
                 : options.find((opt) => opt.value === field.value) || null
             }
             onChange={(selected) => {
