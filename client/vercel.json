@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "client": {
+      "root": "client",
+      "buildCommand": "npm run build",
+      "outputDirectory": "dist"
+    },
+    "server": {
+      "root": "server",
+      "buildCommand": "npm install",
+      "outputDirectory": ".vercel/output"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/server/api/$1" },
+    { "source": "/(.*)", "destination": "/client/$1" }
+  ]
+}
