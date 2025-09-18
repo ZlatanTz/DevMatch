@@ -8,8 +8,8 @@ import { JobCardSkeletonGrid } from "../components/Skeleton";
 export const Jobs = () => {
   const allJobs = useLoaderData();
   const [sp] = useSearchParams();
-  const navigation = useNavigation(); 
-  const isLoading = navigation.state === "loading"; 
+  const navigation = useNavigation();
+  const isLoading = navigation.state === "loading";
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const params = useMemo(() => readParams(sp), [sp.toString()]);

@@ -5,6 +5,7 @@ import { useSkills } from "../hooks/useSkills";
 import MultiSelect from "@/pages/AuthLayout/MultiSelect";
 import NewJobModal from "@/components/NewJobModal";
 import axios from "axios";
+import { useRevalidator } from "react-router-dom";
 export default function Toolbar() {
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -86,12 +87,14 @@ export default function Toolbar() {
   };
 
   const [open, setOpen] = useState(false);
-
+  const { revalidate } = useRevalidator();
   const handlePostJob = async (job) => {
     try {
       const res = await axios.post(`${apiUrl}jobs`, job);
+
       setOpen(false);
       console.log(res);
+      revalidate();
       return res.data;
     } catch (err) {
       console.error("Failed to post job", err);

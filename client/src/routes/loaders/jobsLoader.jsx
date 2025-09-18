@@ -1,13 +1,11 @@
-export async function jobsLoader({ request }) {
-  const url = `${import.meta.env.BASE_URL}mock/jobs.json`;
-  const res = await fetch(url, { signal: request.signal });
+import axios from "axios";
 
-  if (!res.ok) {
-    throw new Response("Failed to load jobs", { status: res.status });
+export async function jobsLoader() {
+  try {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const res = await axios.get(`${apiUrl}jobs`);
+    return res.data;
+  } catch (err) {
+    throw new Response(err.message, { status: err.response?.status || 500 });
   }
-
-  const data = await res.json();
-  await new Promise((resolve) => setTimeout(resolve, 700));
-
-  return data;
 }

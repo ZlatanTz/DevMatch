@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import MultiSelect from "@/pages/AuthLayout/MultiSelect";
-
 export default function NewJobModal({
   open,
   onClose,
