@@ -1,0 +1,30 @@
+from typing import  Optional, List
+from pydantic import BaseModel, Field
+from app.schemas.skill import SkillRead
+
+class CandidateBase(BaseModel):
+    full_name: str = Field(..., max_length=255)
+    location: Optional[str] = None
+    years_exp: Optional[int] = None
+    bio: Optional[str] = None
+    resume_url: Optional[str] = None
+    desired_salary: Optional[int] = None
+
+class CandidateCreate(CandidateBase):
+    user_id: int
+    skills: Optional[List[int]] = []  # list of skill IDs
+
+class CandidateUpdate(BaseModel):
+    full_name: Optional[str] = Field(None, max_length=255)
+    location: Optional[str] = None
+    years_exp: Optional[int] = None
+    bio: Optional[str] = None
+    resume_url: Optional[str] = None
+    desired_salary: Optional[int] = None
+    skills: Optional[List[int]] = None  # replace skills
+
+class CandidateRead(CandidateBase):
+    model_config = {"from_attributes": True}
+    id: int
+    user_id: int
+    skills: List[SkillRead] = []
