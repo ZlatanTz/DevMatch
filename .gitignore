@@ -27,3 +27,4 @@ env
 *.sln
 *.sw?
 server/__pycache__
+server/app/__pycache__
