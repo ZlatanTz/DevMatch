@@ -15,3 +15,8 @@
 #     "job_skills",
 #     "candidate_skills",
 # ]
+
+
+# app/schemas/__init__.py
+from app.schemas.candidate import CandidateBase, CandidateCreate, CandidateUpdate, CandidateRead
+from app.schemas.user import UserRead
