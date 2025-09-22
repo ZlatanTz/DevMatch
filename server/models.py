@@ -10,14 +10,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 from database import Base
 
-# --- Association tables ------------------------------------------------------
-
 job_skills = Table(
     "job_skills",
     Base.metadata,
-    # composite PK prevents duplicates
     Index("ix_job_skill", "job_id", "skill_id", unique=True),
-    # FKs with cascade delete
     mapped_column("job_id", Integer, ForeignKey(
         "jobs.id", ondelete="CASCADE"), primary_key=True),
     mapped_column("skill_id", Integer, ForeignKey(
@@ -33,8 +29,6 @@ candidate_skills = Table(
     mapped_column("skill_id", Integer, ForeignKey(
         "skills.id", ondelete="CASCADE"), primary_key=True),
 )
-
-# --- Core entities -----------------------------------------------------------
 
 
 class Skill(Base):
