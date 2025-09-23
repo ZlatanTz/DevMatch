@@ -17,7 +17,7 @@ app.add_middleware(
 async def root():
     return {"message": "OK"}
 
-# Routers
+
 app.include_router(roles_router, prefix="/roles", tags=["roles"])
 app.include_router(users_router, prefix="/users", tags=["users"])
 app.include_router(jobs_router, prefix="/jobs", tags=["jobs"])
