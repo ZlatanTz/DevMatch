@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, Text, Boolean, ForeignKey, Index, text
-from app.database import Base
+from app.core import Base
 
 if TYPE_CHECKING:
     from .user import User
@@ -19,7 +19,6 @@ class Employer(Base):
     website: Mapped[Optional[str]] = mapped_column(String(255))
     about: Mapped[Optional[str]] = mapped_column(Text)
     location: Mapped[Optional[str]] = mapped_column(String(255))
-    verified: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
     country: Mapped[Optional[str]] = mapped_column(String(100))
     tel: Mapped[Optional[str]] = mapped_column(String(50))
 

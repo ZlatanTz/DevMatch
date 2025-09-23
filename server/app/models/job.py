@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, Text, Boolean, DateTime, ForeignKey, Index, CheckConstraint, func, text
 from sqlalchemy.dialects.postgresql import ARRAY
-from app.database import Base
+from app.core import Base
 from .associations import job_skills
 
 if TYPE_CHECKING:
@@ -14,12 +14,9 @@ if TYPE_CHECKING:
 
 class Job(Base):
     __tablename__ = "jobs"
-  
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
-    company: Mapped[Optional[str]] = mapped_column(String(255))
-    company_img: Mapped[Optional[str]] = mapped_column(String(255))
     location: Mapped[Optional[str]] = mapped_column(String(255))
     employment_type: Mapped[Optional[str]] = mapped_column(String(100))
     seniority: Mapped[Optional[str]] = mapped_column(String(50))
@@ -48,5 +45,7 @@ class Job(Base):
     CheckConstraint(
         "(min_salary IS NULL) OR (max_salary IS NULL) OR (min_salary <= max_salary)",
         name="ck_salary_range",
-    ),
-)
+        )
+    )
+    def __repr__(self) -> str:
+        return f"<Job id={self.id} title={self.title!r} status={self.status}>"

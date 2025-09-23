@@ -1,11 +1,9 @@
-from fastapi import FastAPI #, Depends
+from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-# from sqlalchemy import select
+from sqlalchemy import select
 
-"""
-from app.database import get_db
-from app.schemas.user import UserRead
-"""
+from app.core import get_db
+from app.models import User, Role
 
 app = FastAPI()
 
@@ -13,16 +11,17 @@ app = FastAPI()
 async def root():
     return {"message": "Hello World"}
 
-"""
-# @app.get("/users/{user_id}", response_model=UserRead)
-# async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
-#     result = await db.execute(select(User).where(User.id == user_id))
-#     user = result.scalar_one_or_none()
-#     if not user:
-#         return {"id": 0, "role": "N/A", "email": "notfound@example.com"} 
-#     return user
+@app.get("/roles")
+async def get_roles(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Role))
+    roles = result.scalars().all()
+    return roles
 
-# @app.get("/ping")
-# def ping():
-#     return {"ok": True}
-"""
+@app.get("/users")
+async def get_users(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User))
+    users = result.scalars().all()
+    return users
+
+
+
