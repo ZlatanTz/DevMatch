@@ -54,7 +54,6 @@ async def delete_user(id: int, db: AsyncSession):
 
     return {"detail": f"User {id} deleted successfully"}
 
-# GET user by email
 async def get_user_by_email(email: str, db: AsyncSession):
     result = await db.execute(
         select(User).options(selectinload(User.role)).where(User.email == email)
@@ -64,8 +63,6 @@ async def get_user_by_email(email: str, db: AsyncSession):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-
-# UPDATE user by email
 async def user_update_by_email(email: str, user_update: UserUpdate, db: AsyncSession):
     user = await get_user_by_email(email, db)
     for key, value in user_update.model_dump(exclude_unset=True).items():
@@ -74,8 +71,6 @@ async def user_update_by_email(email: str, user_update: UserUpdate, db: AsyncSes
     await db.refresh(user)
     return user
 
-
-# DELETE user by email
 async def delete_user_by_email(email: str, db: AsyncSession):
     user = await get_user_by_email(email, db)
     await db.delete(user)
