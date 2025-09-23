@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -51,22 +50,4 @@ async def update_job(
         raise HTTPException(status_code=404, detail="Job not found")
     return job
 
-=======
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.core import get_db
-from app.schemas import JobRead
-from app.services.jobs import list_jobs
-
-router = APIRouter()
-
-@router.get("/", response_model=list[JobRead])
-async def get_roles(db: AsyncSession = Depends(get_db)):
-    return await list_jobs(db)
-
-@router.get("/{id}", response_model=list[JobRead])
-async def get_roles(id:int, db: AsyncSession = Depends(get_db)):
-    return await list_jobs(db)
->>>>>>> ed3566c7234b1950c020b7133f96291b21147170
 
