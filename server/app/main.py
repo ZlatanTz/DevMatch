@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import roles_router, users_router
-from app.routers.jobs import router as jobs_router
+from app.routers import roles_router, users_router, jobs_router
 
 app = FastAPI(title="DevMatch API", version="0.1.0")
 

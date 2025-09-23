@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from sqlalchemy import select, func, exists
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -78,3 +79,18 @@ async def list_jobs(q: JobListQuery, db: AsyncSession) -> Tuple[Sequence[Job], i
 
     rows = (await db.execute(stmt)).scalars().all()
     return rows, total
+=======
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models import Job
+
+async def list_jobs(db: AsyncSession):
+    result = await db.execute(select(Job))
+    return result.scalars().all()
+
+async def get_job_by_id(id: int, db: AsyncSession):
+    result = await db.execute(select(Job))
+    return result.scalars().all()
+
+>>>>>>> ed3566c7234b1950c020b7133f96291b21147170
