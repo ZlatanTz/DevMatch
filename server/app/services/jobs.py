@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, selectinload
 from typing import Tuple, List, Sequence
 
 from app.models import Job, job_skills
-from app.schemas.job import JobUpdate, JobListQuery
+from app.schemas.job import JobUpdate, JobListQuery, JobCreate
 
 
 async def get_job_by_id(db: AsyncSession, id_ : int):
@@ -34,7 +34,15 @@ async def update_job_by_id(db: AsyncSession, id: int, job_update: JobUpdate):
     await db.refresh(job)
     return job
 
+async def create_job(db: AsyncSession, job_create: JobCreate):
+    job = Job(**job_create.model_dump())
+    db.add(job)
+    await db.commit()
+    await db.refresh(job)
+    return job
+    
 
+    
 
 async def list_jobs(q: JobListQuery, db: AsyncSession) -> Tuple[Sequence[Job], int]:
     stmt = select(Job)
