@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, Text, ForeignKey, Index
-from app.database import Base
+from app.core import Base
 from .associations import candidate_skills
 
 if TYPE_CHECKING:
