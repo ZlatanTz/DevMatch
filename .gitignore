@@ -53,3 +53,8 @@ Desktop.ini
 *.njsproj
 *.sln
 *.sw?
+
+server/__pycache__
+server/app/__pycache__
+**/__pycache__/
+
