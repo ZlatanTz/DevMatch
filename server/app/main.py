@@ -1,30 +1,24 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.core import get_db
-from app.models import User, Role
+from app.routers import roles_router, users_router
 
-from app.models import Role
-from app.schemas import RoleRead
+app = FastAPI(title="DevMatch API", version="0.1.0")
 
-app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "OK"}
 
-@app.get("/roles", response_model=list[RoleRead])
-async def get_roles(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Role))
-    roles = result.scalars().all()
-    return roles
-
-@app.get("/users")
-async def get_users(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(User))
-    users = result.scalars().all()
-    return users
-
+# Routers
+app.include_router(roles_router, prefix="/roles", tags=["roles"])
+app.include_router(users_router, prefix="/users", tags=["users"])
 
 
