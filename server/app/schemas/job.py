@@ -5,8 +5,6 @@ from app.schemas.skill import SkillRead
 
 class JobBase(BaseModel):
     title: str = Field(..., max_length=255)
-    company: Optional[str] = None
-    company_img: Optional[str] = None
     location: Optional[str] = None
     employment_type: Optional[str] = None
     seniority: Optional[str] = None
@@ -24,8 +22,6 @@ class JobCreate(JobBase):
 
 class JobUpdate(BaseModel):
     title: Optional[str] = None
-    company: Optional[str] = None
-    company_img: Optional[str] = None
     location: Optional[str] = None
     employment_type: Optional[str] = None
     seniority: Optional[str] = None

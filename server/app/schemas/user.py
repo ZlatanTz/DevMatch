@@ -1,23 +1,25 @@
+from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
+from app.schemas.role import RoleRead
 
 class UserBase(BaseModel):
-    role: str = Field(..., max_length=50)
     email: EmailStr
 
 class UserCreate(UserBase):
-    pass
+    hashed_password: str
+    role_id: int
 
 class UserUpdate(BaseModel):
-    role: Optional[str] = Field(None, max_length=50)
     email: Optional[EmailStr] = None
+    is_active: Optional[bool] = None
+    is_suspended: Optional[bool] = None
 
 class UserRead(UserBase):
     model_config = {"from_attributes": True}
     id: int
-
-
-class AdminRead(BaseModel):
-    model_config = {"from_attributes": True}
-    id: int
-    name: str
+    is_active: bool
+    is_suspended: bool
+    created_at: datetime
+    updated_at: datetime
+    role: RoleRead

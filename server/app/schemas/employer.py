@@ -7,7 +7,6 @@ class EmployerBase(BaseModel):
     website: Optional[str] = None
     about: Optional[str] = None
     location: Optional[str] = None
-    verified: bool = False
     country: Optional[str] = None
     tel: Optional[str] = None
 
@@ -19,7 +18,6 @@ class EmployerUpdate(BaseModel):
     website: Optional[str] = None
     about: Optional[str] = None
     location: Optional[str] = None
-    verified: Optional[bool] = None
     country: Optional[str] = None
     tel: Optional[str] = None
 
