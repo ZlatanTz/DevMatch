@@ -1,18 +1,18 @@
+from typing import Tuple, List, Sequence, Iterable
+from fastapi import HTTPException
 from sqlalchemy import select, func, exists
-from sqlalchemy.sql import expression
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session, selectinload
-from typing import Tuple, List, Sequence
+from sqlalchemy.orm import selectinload
 
-from app.models import Job, job_skills
+from app.models import Job, job_skills, Skill, Employer
 from app.schemas.job import JobUpdate, JobListQuery, JobCreate
 
 
-async def get_job_by_id(db: AsyncSession, id_ : int):
+async def get_job_by_id(db: AsyncSession, id_: int):
     return await db.get(Job, id_)
 
 
-async def delete_job_by_id(db: AsyncSession, id_ : int):
+async def delete_job_by_id(db: AsyncSession, id_: int):
     job = await db.get(Job, id_)
     if not job:
         return None
@@ -21,28 +21,56 @@ async def delete_job_by_id(db: AsyncSession, id_ : int):
     return job
 
 
+async def create_job(db: AsyncSession, job_create: JobCreate):
+    # require a real employer_id
+    row = await db.execute(select(Employer.id).where(Employer.id == job_create.employer_id))
+    if row.scalar_one_or_none() is None:
+        raise HTTPException(status_code=400, detail="Invalid employer_id: not found")
+
+    # build Job without relationship IDs
+    data = job_create.model_dump(exclude_unset=True, exclude={"skills"})
+    job = Job(**data)
+
+
+    if job_create.skills:
+        job.skills = await _fetch_skills_or_400(db, job_create.skills)
+
+    db.add(job)
+    await db.commit()
+    await db.refresh(job)
+    return job
+
 
 async def update_job_by_id(db: AsyncSession, id: int, job_update: JobUpdate):
     job = await db.get(Job, id)
     if not job:
         return None
 
-    for field, value in job_update.model_dump(exclude_unset=True).items():
+    payload = job_update.model_dump(exclude_unset=True)
+    skills_ids = payload.pop("skills", None)  # None = no change, [] = clear
+
+    for field, value in payload.items():
         setattr(job, field, value)
 
+    if skills_ids is not None:
+        job.skills = await _fetch_skills_or_400(db, skills_ids)
+
     await db.commit()
     await db.refresh(job)
     return job
 
-async def create_job(db: AsyncSession, job_create: JobCreate):
-    job = Job(**job_create.model_dump())
-    db.add(job)
-    await db.commit()
-    await db.refresh(job)
-    return job
-    
 
-    
+async def _fetch_skills_or_400(db: AsyncSession, ids: Iterable[int]) -> List[Skill]:
+    ids = [int(x) for x in set(ids)]
+    if not ids:
+        return []
+    res = await db.execute(select(Skill).where(Skill.id.in_(ids)))
+    skills = list(res.scalars().all())
+    missing = sorted(set(ids) - {s.id for s in skills})
+    if missing:
+        raise HTTPException(status_code=400, detail=f"Unknown skill ids: {missing}")
+    return skills
+
 
 async def list_jobs(q: JobListQuery, db: AsyncSession) -> Tuple[Sequence[Job], int]:
     stmt = select(Job)
@@ -69,11 +97,11 @@ async def list_jobs(q: JobListQuery, db: AsyncSession) -> Tuple[Sequence[Job], i
 
     sort_map = {"created_at": Job.created_at, "max_salary": Job.max_salary}
     col = sort_map[q.sort_by]
-    
-    if q.sort_dir == "desc":
-        stmt = stmt.order_by(col.desc().nullslast(), Job.id.desc())
-    else:
-        stmt = stmt.order_by(col.asc().nullsfirst(), Job.id.asc())
+    stmt = (
+        stmt.order_by(col.desc().nullslast(), Job.id.desc())
+        if q.sort_dir == "desc"
+        else stmt.order_by(col.asc().nullsfirst(), Job.id.asc())
+    )
 
     total_stmt = select(func.count()).select_from(stmt.subquery())
     total = (await db.execute(total_stmt)).scalar_one()

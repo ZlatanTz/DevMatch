@@ -4,7 +4,7 @@ from .jobs import router as jobs_router
 from .skills import router as skills_router
 from .employers import router as employers_router
 from .candidates import router as candidates_router
+from .applications import router as applications_router
 
-
-__all__ = ["roles_router", "users_router", "jobs_router", "skills_router","employers_router", "candidates_router"]
+__all__ = ["roles_router", "users_router", "jobs_router", "skills_router","employers_router", "candidates_router", "applications_router"]
 

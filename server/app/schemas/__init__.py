@@ -4,12 +4,15 @@ from .candidate import CandidateBase, CandidateCreate, CandidateUpdate, Candidat
 from .employer import EmployerBase, EmployerCreate, EmployerUpdate, EmployerRead
 from .job import JobBase, JobCreate, JobUpdate, JobRead
 from .role import RoleBase, RoleCreate, RoleRead
+from .application import ApplicationBase, ApplicationCreate, ApplicationOut, ApplicationUpdate, ApplicationStatus
 
 __all__ = [
     # Skill
     "SkillBase", "SkillCreate", "SkillRead",
+
     # Role
     "RoleBase", "RoleCreate", "RoleRead",
+
     # User
     "UserBase", "UserCreate", "UserUpdate", "UserRead",
 
@@ -21,4 +24,7 @@ __all__ = [
 
     # Job
     "JobBase", "JobCreate", "JobUpdate", "JobRead",
+
+    # Application
+    "ApplicationBase", "ApplicationCreate", "ApplicationOut", "ApplicationUpdate", "ApplicationStatus"
 ]

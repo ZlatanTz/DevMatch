@@ -11,7 +11,7 @@ from .associations import job_skills
 if TYPE_CHECKING:
     from .employer import Employer
     from .skill import Skill
-
+    from .application import Application
 class Job(Base):
     __tablename__ = "jobs"
 
@@ -31,6 +31,7 @@ class Job(Base):
 
     employer_id: Mapped[int] = mapped_column(ForeignKey("employers.id", ondelete="CASCADE"), index=True, nullable=False)
     employer: Mapped["Employer"] = relationship(back_populates="jobs")
+    applications: Mapped[list["Application"]] = relationship(back_populates="job", cascade="all, delete-orphan")
 
     skills: Mapped[List["Skill"]] = relationship(
         "Skill",
