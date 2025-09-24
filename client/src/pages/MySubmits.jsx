@@ -27,21 +27,46 @@ export default function MySubmits() {
     <div className="p-6">
       <h1 className="text-2xl text-emerald font-bold mb-4">My Job Applications</h1>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {applications &&
           applications.map((application) => (
             <div
               key={application.id}
-              className="p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+              className="p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors hover:shadow-md h-full flex flex-col"
               onClick={() => handleApplicationClick(application)}
             >
-              <h3 className="font-semibold text-lg text-federal-blue">{application.job_title}</h3>
-              <p className="text-gray-600">{application.company}</p>
-              <p className="text-gray-500 text-sm">Status: {application.status}</p>
-              <p className="text-gray-500 text-sm">Score: {application.score}</p>
-              <p className="text-gray-500 text-sm">
-                Applied: {new Date(application.applied_at).toLocaleDateString()}
-              </p>
+              <h3 className="font-semibold text-lg text-federal-blue mb-2 line-clamp-2">
+                {application.job_title}
+              </h3>
+              <p className="text-gray-600 mb-2">{application.company}</p>
+
+              <div className="mb-2">
+                <span
+                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    application.status === "in_review"
+                      ? "bg-blue-100 text-blue-800"
+                      : application.status === "applied"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  {application.status === "in_review"
+                    ? "In Review"
+                    : application.status === "applied"
+                      ? "Applied"
+                      : application.status}
+                </span>
+              </div>
+
+              <div className="mt-auto space-y-1">
+                <p className="text-gray-500 text-sm">
+                  <span className="font-medium">Score:</span> {application.score}/100
+                </p>
+                <p className="text-gray-500 text-sm">
+                  <span className="font-medium">Applied:</span>{" "}
+                  {new Date(application.applied_at).toLocaleDateString()}
+                </p>
+              </div>
             </div>
           ))}
       </div>
