@@ -2,20 +2,26 @@ import api from "../api";
 
 export const getAllJobs = async () => {
   try {
-    const response = await api.get("/jobs.json");
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw error;
+    const res = await api.get("/jobs");
+    return { data: res.data, isSuccess: true, errorStatus: null };
+  } catch (err) {
+    return {
+      data: [],
+      isSuccess: false,
+      errorStatus: err.response?.status || 500,
+    };
   }
 };
 
 export const getHighestRatedJobs = async () => {
   try {
-    const response = await api.get("/top_paid_jobs.json");
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
+    const res = await api.get("/jobs/highest-rated");
+    return { data: res.data, isSuccess: true, errorStatus: null };
+  } catch (err) {
+    return {
+      data: [],
+      isSuccess: false,
+      errorStatus: err.response?.status || 500,
+    };
   }
 };
