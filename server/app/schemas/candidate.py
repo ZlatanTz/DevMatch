@@ -13,7 +13,7 @@ class CandidateBase(BaseModel):
 
 class CandidateCreate(CandidateBase):
     user_id: int
-    skills: Optional[List[int]] = []  # list of skill IDs
+    skills: Optional[List[int]] = [] 
 
 class CandidateUpdate(BaseModel):
     first_name: Optional[str] = Field(None, max_length=255)
@@ -23,7 +23,7 @@ class CandidateUpdate(BaseModel):
     bio: Optional[str] = None
     resume_url: Optional[str] = None
     desired_salary: Optional[int] = None
-    skills: Optional[List[int]] = None  # replace skills
+    skills: Optional[List[int]] = None  #
 
 class CandidateRead(CandidateBase):
     model_config = {"from_attributes": True}

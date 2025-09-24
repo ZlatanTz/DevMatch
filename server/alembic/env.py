@@ -52,7 +52,7 @@ else:
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
     context.configure(
-        url=DATABASE_URL,
+        url=SYNC_DATABASE_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},

@@ -1,0 +1,20 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
+from app.core import get_db
+from app import schemas
+from app.services import applications
+
+router = APIRouter()
+
+@router.get("/{application_id}", response_model=schemas.ApplicationOut)
+async def get_application(application_id: int, db: AsyncSession = Depends(get_db)):
+    return await applications.get_application(db, application_id)
+
+@router.patch("/{application_id}", response_model=schemas.ApplicationOut)
+async def update_application(application_id: int, update: schemas.ApplicationUpdate, db: AsyncSession = Depends(get_db)):
+    if update.status is not None:
+        return await applications.update_application_status(db, application_id, update.status)
+    
+
+

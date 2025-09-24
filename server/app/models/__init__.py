@@ -7,7 +7,7 @@ from .job import Job
 from .skill import Skill
 from .associations import job_skills, candidate_skills
 from app.core import Base
-
+from .application import Application
 __all__ = [
   "Base",
   "User",
@@ -19,4 +19,5 @@ __all__ = [
   "Skill",
   "job_skills",
   "candidate_skills",
+  'Application',
 ]

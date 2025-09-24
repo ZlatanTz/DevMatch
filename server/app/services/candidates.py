@@ -1,12 +1,12 @@
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+
 from app.models import Candidate
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.candidate import CandidateUpdate
 from ..services.users import get_user
 from fastapi import HTTPException
 from app.models import Skill
-
+from typing import List, cast
 
 async def list_candidates(db: AsyncSession):
     result = await db.execute(
@@ -38,16 +38,19 @@ async def candidate_update(id: int, candidate_update: CandidateUpdate, db: Async
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found for this user")
 
-    update_data = candidate_update.dict(exclude_unset=True)
+    update_data = candidate_update.model_dump(exclude_unset=True)
 
     if "skills" in update_data and update_data["skills"] is not None:
         skill_ids = update_data.pop("skills") 
-        result = await db.execute(select(Skill).where(Skill.id.in_(skill_ids)))
-        candidate.skills = result.scalars().all()
-
+        skills = (
+            await db.execute(select(Skill).where(Skill.id.in_(skill_ids)))
+        ).scalars().all()
+        candidate.skills = cast(List[Skill], list(skills))
     for key, value in update_data.items():
         setattr(candidate, key, value)
 
     await db.commit()
     await db.refresh(candidate)
     return candidate
+
+
