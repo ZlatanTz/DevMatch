@@ -19,6 +19,7 @@ import ManageUsers from "./pages/Admin/ManageUsers";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
+import { applicationsLoader } from "./routes/loaders/applicationsLoader";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -45,7 +46,7 @@ export const router = createBrowserRouter([
         loader: jobsLoader,
         errorElement: <ErrorPage />,
       },
-      { path: "my-submits", element: <MySubmits /> },
+      { path: "applications", element: <MySubmits />, loader: applicationsLoader },
       { path: "contact", element: <Contact /> },
       { path: "profile", element: <Profile />, loader: profileLoader },
       { path: "profile/edit/:id", element: <EditProfile /> },

@@ -255,18 +255,6 @@ export default function Header() {
                     >
                       <div className="flex flex-col">
                         <NavLink
-                          to="/applications"
-                          className={({ isActive }) =>
-                            `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
-                              isActive
-                                ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
-                                : "text-white/85 hover:text-emerald hover:bg-white/5"
-                            }`
-                          }
-                        >
-                          My Applications
-                        </NavLink>
-                        <NavLink
                           to="/profile"
                           className={({ isActive }) =>
                             `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
@@ -277,6 +265,18 @@ export default function Header() {
                           }
                         >
                           Profile
+                        </NavLink>
+                        <NavLink
+                          to="/applications"
+                          className={({ isActive }) =>
+                            `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
+                              isActive
+                                ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                                : "text-white/85 hover:text-emerald hover:bg-white/5"
+                            }`
+                          }
+                        >
+                          My Applications
                         </NavLink>
                         <div className="my-2 h-px bg-white/10" />
                         <button
