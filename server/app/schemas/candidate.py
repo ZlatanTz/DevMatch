@@ -3,7 +3,8 @@ from pydantic import BaseModel, Field
 from app.schemas.skill import SkillRead
 
 class CandidateBase(BaseModel):
-    full_name: str = Field(..., max_length=255)
+    first_name: Optional[str] = Field(None, max_length=255)
+    last_name: Optional[str] = Field(None, max_length=255)
     location: Optional[str] = None
     years_exp: Optional[int] = None
     bio: Optional[str] = None
@@ -15,7 +16,8 @@ class CandidateCreate(CandidateBase):
     skills: Optional[List[int]] = []  # list of skill IDs
 
 class CandidateUpdate(BaseModel):
-    full_name: Optional[str] = Field(None, max_length=255)
+    first_name: Optional[str] = Field(None, max_length=255)
+    last_name: Optional[str] = Field(None, max_length=255)
     location: Optional[str] = None
     years_exp: Optional[int] = None
     bio: Optional[str] = None

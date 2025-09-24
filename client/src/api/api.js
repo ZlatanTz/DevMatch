@@ -1,10 +1,13 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/mock/",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
+    Accept: "application/json",
   },
+
+  // TODO: Create Request and Response API interceptor
 });
 
 export default api;
