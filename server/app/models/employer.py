@@ -21,7 +21,6 @@ class Employer(Base):
     location: Mapped[Optional[str]] = mapped_column(String(255))
     country: Mapped[Optional[str]] = mapped_column(String(100))
     tel: Mapped[Optional[str]] = mapped_column(String(50))
-
     user: Mapped["User"] = relationship(back_populates="employer")
     jobs: Mapped[List["Job"]] = relationship(
         back_populates="employer", cascade="all, delete-orphan", lazy="selectin"

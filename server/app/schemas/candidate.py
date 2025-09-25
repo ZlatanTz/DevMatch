@@ -10,9 +10,11 @@ class CandidateBase(BaseModel):
     bio: Optional[str] = None
     resume_url: Optional[str] = None
     desired_salary: Optional[int] = None
+    country: Optional[str] = None
+    tel: Optional[str] = None
+    img_path: Optional[str] = None
 
 class CandidateCreate(CandidateBase):
-    user_id: int
     skills: Optional[List[int]] = []  # list of skill IDs
 
 class CandidateUpdate(BaseModel):

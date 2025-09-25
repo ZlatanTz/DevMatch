@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 
 class Candidate(Base):
     __tablename__ = "candidates"
-   
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
@@ -23,7 +22,9 @@ class Candidate(Base):
     bio: Mapped[Optional[str]] = mapped_column(Text)
     resume_url: Mapped[Optional[str]] = mapped_column(String(255))
     desired_salary: Mapped[Optional[int]] = mapped_column(Integer)
-
+    country: Mapped[Optional[str]] = mapped_column(String(100))
+    tel: Mapped[Optional[str]] = mapped_column(String(20))
+    img_path: Mapped[Optional[str]] = mapped_column(String(255))
     user: Mapped["User"] = relationship(back_populates="candidate")
 
     skills: Mapped[List["Skill"]] = relationship(

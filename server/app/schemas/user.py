@@ -2,13 +2,11 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr
 from app.schemas.role import RoleRead
+from app.schemas.candidate import CandidateBase
+from app.schemas.employer import EmployerBase
 
 class UserBase(BaseModel):
     email: EmailStr
-
-class UserCreate(UserBase):
-    hashed_password: str
-    role_id: int
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
@@ -23,3 +21,9 @@ class UserRead(UserBase):
     created_at: datetime
     updated_at: datetime
     role: RoleRead
+
+class UserCreate(BaseModel):
+    password: str
+    role_id: int
+    candidate: CandidateBase | None = None
+    employer: EmployerBase | None = None
