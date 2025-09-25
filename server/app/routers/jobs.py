@@ -10,6 +10,34 @@ from app.schemas import common, job
 router = APIRouter()
 
 
+@router.get("/detailed", response_model=common.Page[schemas.JobReadDetailed])
+async def get_all_jobs_detailed(
+    q: schemas.job.JobListQuery = Depends(schemas.job.job_list_query),
+    db: AsyncSession = Depends(get_db),
+):
+    rows, total = await jobs.list_jobs_with_employer(q, db)
+    pages = (total + q.page_size - 1) // q.page_size
+    items: List[schemas.JobReadDetailed] = [
+        schemas.JobReadDetailed.model_validate(r, from_attributes=True) for r in rows
+    ]
+    return common.Page[schemas.JobReadDetailed](
+        items=items,
+        meta=common.PageMeta(
+            page=q.page,
+            page_size=q.page_size,
+            total=total,
+            pages=pages,
+        ),
+    )
+
+@router.get("/{id}/detailed", response_model=schemas.JobReadDetailed)
+async def get_job_detailed(id: int, db: AsyncSession = Depends(get_db)):
+    job = await jobs.get_job_with_employer(db, id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return schemas.JobReadDetailed.model_validate(job, from_attributes=True)
+
+
 @router.get("/", response_model=common.Page[schemas.JobRead])
 async def get_all_jobs(
     q: job.JobListQuery = Depends(job.job_list_query),
@@ -32,15 +60,12 @@ async def get_all_jobs(
         ),
     )
 
-
-
 @router.get("/{id}", response_model=schemas.JobRead)
 async def get_job(id: int, db: AsyncSession = Depends(get_db)):
     job = await jobs.get_job_by_id(db, id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return schemas.JobRead.model_validate(job, from_attributes=True)
-
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_job(id: int, db: AsyncSession = Depends(get_db)):

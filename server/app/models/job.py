@@ -30,7 +30,7 @@ class Job(Base):
     benefits: Mapped[Optional[List[str]]] = mapped_column(ARRAY(String), default=list)
 
     employer_id: Mapped[int] = mapped_column(ForeignKey("employers.id", ondelete="CASCADE"), index=True, nullable=False)
-    employer: Mapped["Employer"] = relationship(back_populates="jobs")
+    employer: Mapped["Employer"] = relationship(back_populates="jobs", lazy="selectin")
     applications: Mapped[list["Application"]] = relationship(back_populates="job", cascade="all, delete-orphan")
 
     skills: Mapped[List["Skill"]] = relationship(

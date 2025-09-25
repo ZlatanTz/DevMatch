@@ -1,4 +1,4 @@
-import { getAllJobs, getHighestRatedJobs } from "@/api/services/jobs";
+import { getAllJobsDetailed, getHighestRatedJobs } from "@/api/services/jobs";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -20,10 +20,10 @@ const HomePage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    Promise.all([getAllJobs(), getHighestRatedJobs()])
+    Promise.all([getAllJobsDetailed(), getHighestRatedJobs()])
       .then(([jobsData, highestPaidData]) => {
-        setJobs(jobsData);
-        setHighestPaidJobs(highestPaidData);
+        setJobs(jobsData.items || []);
+        setHighestPaidJobs(highestPaidData.items || []);
       })
       .catch((err) => {
         setError(err.message || "Something went wrong");
@@ -92,7 +92,7 @@ const HomePage = () => {
                         </h3>
 
                         <p className="relative text-xs sm:text-sm text-muted-foreground text-center mb-1 truncate">
-                          {job.company}
+                          {job.employer.company_name}
                         </p>
 
                         <p className="relative text-xs sm:text-sm text-foreground/80 text-center italic mb-2">
@@ -106,10 +106,10 @@ const HomePage = () => {
                         <div className="relative flex flex-wrap justify-center gap-1.5 mb-2">
                           {job.skills.slice(0, 3).map((skill) => (
                             <span
-                              key={skill}
+                              key={skill.name}
                               className="px-2 py-1 text-[11px] sm:text-xs rounded-full bg-muted text-foreground/80 border border-border"
                             >
-                              {skill.length > 8 ? skill.substring(0, 8) + "..." : `Skill ${skill}`}
+                              {skill.length > 8 ? skill.substring(0, 8) + "..." : `${skill.name}`}
                             </span>
                           ))}
                           {job.skills.length > 3 && (
@@ -142,7 +142,7 @@ const HomePage = () => {
           </h2>
 
           <div className="flex flex-col gap-3">
-            {highestPaidJobs.map((job, index) => (
+            {highestPaidJobs.slice(0, 3).map((job, index) => (
               <Link key={job.id} to={`/jobs/${job.id}`}>
                 <div className="relative rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all motion-safe:duration-300">
                   <div className="absolute top-2 right-2">
@@ -183,7 +183,7 @@ const HomePage = () => {
                   {job.title}
                 </h3>
                 <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">
-                  {job.company}
+                  {job.employer.company_name}
                 </p>
                 <p className="text-xs italic text-foreground/80 mb-3">{job.employment_type}</p>
 

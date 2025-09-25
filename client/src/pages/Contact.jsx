@@ -38,7 +38,7 @@ function Contact() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-[50px] mb-[120px] grid grid-cols-1 md:grid-cols-2 items-center">
+    <div className="max-w-5xl mx-auto mt-[50px] mb-[50px] grid grid-cols-1 md:grid-cols-2 items-center">
       <div className="bg-white p-6 rounded-xl shadow">
         <h1 className="text-2xl font-bold mb-6">Contact Us</h1>
 

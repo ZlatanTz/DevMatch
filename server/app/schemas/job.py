@@ -3,6 +3,8 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 from .skill import SkillRead 
 from fastapi import Query
+from .employer import EmployerRead
+
 class JobBase(BaseModel):
     title: str = Field(..., max_length=255)
     location: Optional[str] = None
@@ -43,6 +45,8 @@ class JobRead(JobBase):
     skills: List[SkillRead] = Field(default_factory=list)
     model_config = {"from_attributes": True}
 
+class JobReadDetailed(JobRead):
+    employer: EmployerRead
 
 class JobListQuery(BaseModel):
 

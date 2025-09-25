@@ -13,7 +13,7 @@ const JobDetails = () => {
 
   const {
     title,
-    company,
+    employer_id,
     company_img,
     location,
     employment_type,
@@ -26,6 +26,7 @@ const JobDetails = () => {
     description,
     company_description,
     benefits,
+    employer,
   } = job;
 
   const [visibleCount, setVisibleCount] = useState(3);
@@ -35,7 +36,6 @@ const JobDetails = () => {
   // console.log(job);
   const loggedIn = user ? true : false;
   // console.log(loggedIn);
-
   const [candidateLoggedIn, setCandidateLoggedIn] = useState(loggedIn); //da li je ulogovan candidate
 
   const date = new Date(created_at);
@@ -46,7 +46,6 @@ const JobDetails = () => {
   const skillNames = getNamesForIds(skill_ids);
   // console.log(skill_ids);
   // console.log(skillNames);
-
   //sad je visak
   const handleLogIn = () => {
     setCandidateLoggedIn(!candidateLoggedIn);
@@ -156,12 +155,12 @@ const JobDetails = () => {
     <div className="max-w-6xl mx-auto px-4 py-8 bg-white min-h-screen min-w-[320px]">
       <img
         src={company_img}
-        alt={`${company} logo`}
+        alt={`${employer_id} logo`}
         className="w-full h-64 sm:h-80 md:h-96 lg:h-[400px] object-contain object-center rounded-lg mb-6 shadow-md"
       />
 
       <div className="flex flex-col items-center space-y-2 sm:flex-row sm:flex-wrap sm:justify-around sm:space-y-0 p-4 rounded-lg mb-8 bg-federal-blue text-white">
-        <p className="mx-2 font-medium">{company}</p>
+        <p className="mx-2 font-medium">{employer.company_name}</p>
         <p className="mx-2 font-medium">{title}</p>
         <p className="mx-2 font-medium">{location}</p>
         <p className="mx-2 font-medium">{seniority}</p>

@@ -10,7 +10,7 @@ export default function BasicModal({ id }) {
   const job = jobs.find((job) => job.id === parseInt(id));
   const {
     title,
-    company,
+    employer_id,
     company_img,
     location,
     employment_type,
@@ -23,6 +23,7 @@ export default function BasicModal({ id }) {
     description,
     company_description,
     benefits,
+    employer,
   } = job;
 
   const date = new Date(created_at);
@@ -57,12 +58,12 @@ export default function BasicModal({ id }) {
               <div className="max-w-6xl mx-auto px-4 py-4 bg-white min-w-[320px]">
                 <img
                   src={company_img}
-                  alt={`${company} logo`}
+                  alt={`${employer_id} logo`}
                   className="w-full h-48 sm:h-56 md:h-64 object-contain object-center rounded-lg mb-6 shadow-md mx-auto"
                 />
 
                 <div className="flex flex-col items-center space-y-2 sm:flex-row sm:flex-wrap sm:justify-around sm:space-y-0 p-4 rounded-lg mb-8 bg-federal-blue text-white">
-                  <p className="mx-2 font-medium">{company}</p>
+                  <p className="mx-2 font-medium">{employer.company_name}</p>
                   <p className="mx-2 font-medium">{title}</p>
                   <p className="mx-2 font-medium">{location}</p>
                   <p className="mx-2 font-medium">{seniority}</p>
