@@ -25,11 +25,13 @@ class CandidateUpdate(BaseModel):
     bio: Optional[str] = None
     resume_url: Optional[str] = None
     desired_salary: Optional[int] = None
-    skills: Optional[List[int]] = None  #
+    skills: Optional[List[int]] = None
+    email: Optional[str] = None  #
 
 class CandidateRead(CandidateBase):
     model_config = {"from_attributes": True}
     id: int
     user_id: int
     email: str
+    role: str
     skills: List[SkillRead] = []
