@@ -5,7 +5,7 @@ from .employer import EmployerBase, EmployerCreate, EmployerUpdate, EmployerRead
 from .job import JobBase, JobCreate, JobUpdate, JobRead
 from .role import RoleBase, RoleCreate, RoleRead
 from .application import ApplicationBase, ApplicationCreate, ApplicationOut, ApplicationUpdate, ApplicationStatus
-
+from .recommendation import JobRecommendation, ApplicationRecommendation
 __all__ = [
     # Skill
     "SkillBase", "SkillCreate", "SkillRead",
@@ -26,5 +26,8 @@ __all__ = [
     "JobBase", "JobCreate", "JobUpdate", "JobRead",
 
     # Application
-    "ApplicationBase", "ApplicationCreate", "ApplicationOut", "ApplicationUpdate", "ApplicationStatus"
+    "ApplicationBase", "ApplicationCreate", "ApplicationOut", "ApplicationUpdate", "ApplicationStatus",
+
+    # Recommendation
+    "JobRecommendation", "ApplicationRecommendation"
 ]

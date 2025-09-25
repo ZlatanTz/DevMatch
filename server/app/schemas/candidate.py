@@ -10,6 +10,8 @@ class CandidateBase(BaseModel):
     bio: Optional[str] = None
     resume_url: Optional[str] = None
     desired_salary: Optional[int] = None
+    prefers_remote: Optional[bool] = None
+    seniority: Optional[str] = None
 
 class CandidateCreate(CandidateBase):
     user_id: int
