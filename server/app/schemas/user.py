@@ -1,19 +1,23 @@
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
+from .role import RoleRead
 
 class UserBase(BaseModel):
-    role: str = Field(..., max_length=50)
     email: EmailStr
 
 class UserCreate(UserBase):
-    pass
+    hashed_password: str
+    role_id: int
 
 class UserUpdate(BaseModel):
-    role: Optional[str] = Field(None, max_length=50)
     email: Optional[EmailStr] = None
+    hashed_password: Optional[str] = None
+    role_id: Optional[int] = None
 
-class UserRead(UserBase):
+class UserRead(BaseModel):
     id: int
+    email: EmailStr
+    role: RoleRead  
     model_config = {"from_attributes": True}
 
 class AdminRead(BaseModel):

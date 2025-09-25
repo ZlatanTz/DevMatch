@@ -20,7 +20,7 @@ export const getAllJobs = async (params = {}) => {
 
 export const getAllJobsDetailed = async (params = {}) => {
   try {
-    const response = await api.get("/jobs/detailed", {
+    const response = await api.get("/jobs/detailed/", {
       params: {
         page: 1,
         page_size: 15,
@@ -48,7 +48,7 @@ export const getJobById = async (id) => {
 
 export const getJobByIdDetailed = async (id) => {
   try {
-    const response = await api.get(`/jobs/${id}/detailed`);
+    const response = await api.get(`/jobs/${id}/detailed/`);
     return response.data;
   } catch (error) {
     console.error(error);

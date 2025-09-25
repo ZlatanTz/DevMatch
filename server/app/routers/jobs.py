@@ -10,7 +10,7 @@ from app.schemas import common, job
 router = APIRouter()
 
 
-@router.get("/detailed", response_model=common.Page[schemas.JobReadDetailed])
+@router.get("/detailed/", response_model=common.Page[schemas.JobReadDetailed])
 async def get_all_jobs_detailed(
     q: schemas.job.JobListQuery = Depends(schemas.job.job_list_query),
     db: AsyncSession = Depends(get_db),
@@ -30,7 +30,7 @@ async def get_all_jobs_detailed(
         ),
     )
 
-@router.get("/{id}/detailed", response_model=schemas.JobReadDetailed)
+@router.get("/{id}/detailed/", response_model=schemas.JobReadDetailed)
 async def get_job_detailed(id: int, db: AsyncSession = Depends(get_db)):
     job = await jobs.get_job_with_employer(db, id)
     if not job:
@@ -60,14 +60,14 @@ async def get_all_jobs(
         ),
     )
 
-@router.get("/{id}", response_model=schemas.JobRead)
+@router.get("/{id}/", response_model=schemas.JobRead)
 async def get_job(id: int, db: AsyncSession = Depends(get_db)):
     job = await jobs.get_job_by_id(db, id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return schemas.JobRead.model_validate(job, from_attributes=True)
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_job(id: int, db: AsyncSession = Depends(get_db)):
     deleted = await jobs.delete_job_by_id(db, id)
     if not deleted:
@@ -75,7 +75,7 @@ async def delete_job(id: int, db: AsyncSession = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.put("/{id}", response_model=schemas.JobRead, status_code=status.HTTP_200_OK)
+@router.put("/{id}/", response_model=schemas.JobRead, status_code=status.HTTP_200_OK)
 async def update_job(
     id: int,
     job_update: schemas.JobUpdate,
@@ -96,7 +96,7 @@ async def create_new_job(
     return schemas.JobRead.model_validate(job, from_attributes=True)
 
 
-@router.post("/{id}/apply", response_model=schemas.ApplicationOut)
+@router.post("/{id}/apply/", response_model=schemas.ApplicationOut)
 async def apply_to_job(
     id: int,
     payload: schemas.ApplicationCreate,
@@ -105,7 +105,7 @@ async def apply_to_job(
     return await applications.create_application(db, payload, id)
 
 
-@router.get("/{id}/applications", response_model=List[schemas.ApplicationOut])
+@router.get("/{id}/applications/", response_model=List[schemas.ApplicationOut])
 async def list_job_apps(
     id: int,
     db: AsyncSession = Depends(get_db),
