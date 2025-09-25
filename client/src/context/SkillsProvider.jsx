@@ -11,7 +11,8 @@ export function SkillsProvider({ children }) {
   useEffect(() => {
     async function load() {
       try {
-        const url = `${import.meta.env.BASE_URL}mock/skills.json`;
+        // const url = `${import.meta.env.BASE_URL}mock/skills.json`;
+        const url = `${import.meta.env.VITE_API_BASE_URL}/skills`;
         const res = await axios.get(url);
         const data = res.data;
         const safe = Array.isArray(data) ? data : [];

@@ -1,6 +1,6 @@
 import { useSkills } from "@/hooks/useSkills";
 import { useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import SkillList from "./SkillList";
 
 export default function BasicModal({ id }) {
@@ -10,7 +10,7 @@ export default function BasicModal({ id }) {
   const job = jobs.find((job) => job.id === parseInt(id));
   const {
     title,
-    company,
+    employer_id,
     company_img,
     location,
     employment_type,
@@ -19,18 +19,19 @@ export default function BasicModal({ id }) {
     max_salary,
     is_remote,
     status,
-    skills,
     created_at,
     description,
     company_description,
     benefits,
+    employer,
   } = job;
 
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
+  const skill_ids = job.skills.map((skill) => skill.id);
   const { getNamesForIds } = useSkills();
-  const skillNames = getNamesForIds(skills);
+  const skillNames = getNamesForIds(skill_ids);
 
   return (
     <div>
@@ -57,12 +58,12 @@ export default function BasicModal({ id }) {
               <div className="max-w-6xl mx-auto px-4 py-4 bg-white min-w-[320px]">
                 <img
                   src={company_img}
-                  alt={`${company} logo`}
+                  alt={`${employer_id} logo`}
                   className="w-full h-48 sm:h-56 md:h-64 object-contain object-center rounded-lg mb-6 shadow-md mx-auto"
                 />
 
                 <div className="flex flex-col items-center space-y-2 sm:flex-row sm:flex-wrap sm:justify-around sm:space-y-0 p-4 rounded-lg mb-8 bg-federal-blue text-white">
-                  <p className="mx-2 font-medium">{company}</p>
+                  <p className="mx-2 font-medium">{employer.company_name}</p>
                   <p className="mx-2 font-medium">{title}</p>
                   <p className="mx-2 font-medium">{location}</p>
                   <p className="mx-2 font-medium">{seniority}</p>
@@ -119,12 +120,14 @@ export default function BasicModal({ id }) {
             </div>
 
             <div className="flex justify-center pt-4 ">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-6 py-2 bg-emerald rounded-lg hover:brightness-90 transition-colors text-lg text-white"
-              >
-                Close
-              </button>
+              <Link to={`/jobs/${id}`}>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="px-6 py-2 bg-emerald rounded-lg hover:opacity-90 transition-colors text-lg text-white"
+                >
+                  Apply
+                </button>
+              </Link>
             </div>
           </div>
         </div>

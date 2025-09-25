@@ -3,22 +3,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_db
 from app.schemas import UserRead, UserCreate, UserUpdate
-from app.services.users import list_users, get_user, create_user, user_update, delete_user, get_user_by_email, user_update_by_email, delete_user_by_email
+from app.services.users import list_users, get_user, create_user, user_update, delete_user
+# from app.services.users import get_user_by_email, user_update_by_email, delete_user_by_email
 
 router = APIRouter()
 
 #USING email as QUERY parameter
-@router.get("/by-email", response_model=UserRead)
-async def get_user_by_email_route_query(email: str, db: AsyncSession = Depends(get_db)):
-    return await get_user_by_email(email, db)
+# @router.get("/by-email", response_model=UserRead)
+# async def get_user_by_email_route_query(email: str, db: AsyncSession = Depends(get_db)):
+#     return await get_user_by_email(email, db)
 
-@router.put("/by-email", response_model=UserRead)
-async def update_user_by_email_route_query(email: str, user_change: UserUpdate, db: AsyncSession = Depends(get_db)):
-    return await user_update_by_email(email, user_change, db)
+# @router.put("/by-email", response_model=UserRead)
+# async def update_user_by_email_route_query(email: str, user_change: UserUpdate, db: AsyncSession = Depends(get_db)):
+#     return await user_update_by_email(email, user_change, db)
 
-@router.delete("/by-email")
-async def delete_user_by_email_route_query(email: str, db: AsyncSession = Depends(get_db)):
-    return await delete_user_by_email(email, db)
+# @router.delete("/by-email")
+# async def delete_user_by_email_route_query(email: str, db: AsyncSession = Depends(get_db)):
+#     return await delete_user_by_email(email, db)
 
 #USING ID as PATH parameter
 @router.get("/{id}", response_model=UserRead)
