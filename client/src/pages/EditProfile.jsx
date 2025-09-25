@@ -1,5 +1,4 @@
-import { useLoaderData } from "react-router-dom";
-import { useSkills } from "../hooks/useSkills";
+import { useLoaderData, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
@@ -11,68 +10,55 @@ import {
 } from "@/schemas/registrationSchemas";
 
 function EditProfile() {
-  const { getNamesForIds } = useSkills();
-  const [skills, setSkills] = useState([]);
-  const [skillOptions, setSkillOptions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const user = useLoaderData();
 
-  const schema =
-    user.role === "Candidate" ? candidateRegistrationSchema : employerRegistrationSchema;
+  const [allSkills, setAllSkills] = useState([]); // full list from API
+  const [skillOptions, setSkillOptions] = useState([]); // formatted for react-select
+  const [selectedSkills, setSelectedSkills] = useState([]); // user’s chosen skill IDs
 
   useEffect(() => {
     async function fetchSkills() {
       try {
         const res = await axios.get("http://127.0.0.1:8000/skills/");
-        setSkills(res.data);
+        setAllSkills(res.data);
       } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
+        console.log(err);
       }
     }
-
     fetchSkills();
   }, []);
 
   useEffect(() => {
+    const defaultSkillIds = (user.skills || []).map((s) => s.id);
+    setSelectedSkills(defaultSkillIds);
+
+    const mergedSkills = [...allSkills, ...(user.skills || [])];
+    const uniqueSkills = Array.from(new Map(mergedSkills.map((s) => [s.id, s])).values());
+
     setSkillOptions(
-      skills.map((skill) => ({
+      uniqueSkills.map((skill) => ({
         value: skill.id,
         label: skill.name,
       })),
     );
-  }, [skills]);
+  }, [allSkills, user.skills]);
 
-  const defaultSkillIds = (user.skills || []).map((s) => s.id);
+  const [firstName, setFirstName] = useState(user.first_name || "");
+  const [lastName, setLastName] = useState(user.last_name || "");
+  const [location, setLocation] = useState(user.location || "");
+  const [country, setCountry] = useState(user.country || "");
+  const [yearsExp, setYearsExp] = useState(user.years_exp || 0);
+  const [bio, setBio] = useState(user.bio || "");
+  const [resumeUrl, setResumeUrl] = useState(user.resume_url || "");
+  const [desiredSalary, setDesiredSalary] = useState(user.desired_salary || 0);
+  const [img, setImg] = useState(user.img || "");
+  const [companyName, setCompanyName] = useState(user.company_name || "");
+  const [website, setWebsite] = useState(user.website || "");
+  const [about, setAbout] = useState(user.about || "");
+  const [tel, setTel] = useState(user.tel || "");
+  const [email, setEmail] = useState(user.email || "");
 
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(schema),
-    mode: "onChange",
-    defaultValues: {
-      first_name: user.first_name || "",
-      last_name: user.last_name || "",
-      location: user.location || "",
-      country: user.country || "",
-      years_exp: user.years_exp || 0,
-      bio: user.bio || "",
-      resume_url: user.resume_url || "",
-      desired_salary: user.desired_salary || "",
-      skills: defaultSkillIds,
-      img: user.img || "",
-      company_name: user.company_name || "",
-      website: user.website || "",
-      about: user.about || "",
-      tel: user.tel || "",
-      email: user.email,
-    },
-  });
+  const navigate = useNavigate();
 
   const [imgPreview, setImgPreview] = useState(user.img || "");
 
@@ -81,53 +67,60 @@ function EditProfile() {
     if (file) setImgPreview(URL.createObjectURL(file));
   };
 
-  const onSubmit = async (data) => {
-    const role = user.role.toLowerCase(); // "candidate" or "employer"
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const role = user.role.toLowerCase();
     const id = user.user_id;
-    console.log("Form data:", data);
 
     const url =
       role === "candidate"
         ? `http://127.0.0.1:8000/candidates/${id}`
         : `http://127.0.0.1:8000/employers/${id}`;
 
-    const payload =
-      role === "employer"
-        ? {
-            company_name: data.company_name,
-            website: data.website,
-            about: data.about,
-            location: data.location,
-            country: data.country,
-            tel: data.tel,
-            email: data.email,
-          }
-        : data;
+    let payload;
+
+    if (role === "employer") {
+      payload = {
+        company_name: companyName,
+        website,
+        about,
+        location,
+        country,
+        tel,
+        email,
+      };
+    } else {
+      payload = {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        location,
+        years_exp: yearsExp,
+        bio,
+        resume_url: resumeUrl,
+        desired_salary: desiredSalary,
+        skills: selectedSkills,
+      };
+    }
+
+    console.log("Submitting payload:", payload);
 
     try {
       const res = await axios.put(url, payload);
       console.log("Updated profile:", res.data);
+      navigate(`/profile/${id}`);
     } catch (err) {
       console.log("Error:", err.response?.data || err.message);
     }
   };
 
-  const debugSubmit = (data) => {
-    console.log("handleSubmit called!", data);
-    onSubmit(data);
-  };
-
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow mt-10 mb-10">
       <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
+
       <div>
         <label className="block font-medium">Profile Image</label>
-        <input
-          type="file"
-          {...register("img")}
-          onChange={handleImgChange}
-          className="w-full border rounded-lg p-2"
-        />
+        <input type="file" onChange={handleImgChange} className="w-full border rounded-lg p-2" />
         {imgPreview && (
           <img
             src={imgPreview}
@@ -137,14 +130,15 @@ function EditProfile() {
         )}
       </div>
 
-      <form onSubmit={handleSubmit(debugSubmit)} className="space-y-4 mt-4">
+      <form onSubmit={onSubmit} className="space-y-4 mt-4">
         {user.role === "Candidate" ? (
           <>
             <div>
               <label className="block font-medium">First Name</label>
               <input
                 type="text"
-                {...register("first_name")}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 className="w-full border rounded-lg p-2"
               />
             </div>
@@ -153,21 +147,28 @@ function EditProfile() {
               <label className="block font-medium">Last Name</label>
               <input
                 type="text"
-                {...register("last_name")}
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 className="w-full border rounded-lg p-2"
               />
             </div>
 
             <div>
               <label className="block font-medium">Email</label>
-              <input type="email" {...register("email")} className="w-full border rounded-lg p-2" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border rounded-lg p-2"
+              />
             </div>
 
             <div>
               <label className="block font-medium">Location</label>
               <input
                 type="text"
-                {...register("location")}
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 className="w-full border rounded-lg p-2"
               />
             </div>
@@ -176,52 +177,66 @@ function EditProfile() {
               <label className="block font-medium">Years of Experience</label>
               <input
                 type="number"
-                {...register("years_exp")}
+                value={yearsExp}
+                onChange={(e) => setYearsExp(Number(e.target.value))}
+                className="w-full border rounded-lg p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Desired Salary</label>
+              <input
+                type="number"
+                value={desiredSalary}
+                onChange={(e) => setDesiredSalary(Number(e.target.value))}
                 className="w-full border rounded-lg p-2"
               />
             </div>
 
             <div>
               <label className="block font-medium">Bio</label>
-              <textarea {...register("bio")} rows="4" className="w-full border rounded-lg p-2" />
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows={4}
+                className="w-full border rounded-lg p-2"
+              />
             </div>
 
             <div>
               <label className="block font-medium">Resume URL</label>
               <input
                 type="url"
-                {...register("resume_url")}
+                value={resumeUrl}
+                onChange={(e) => setResumeUrl(e.target.value)}
                 className="w-full border rounded-lg p-2"
               />
             </div>
 
-            <Controller
-              name="skills"
-              control={control}
-              render={({ field }) => (
-                <CreatableSelect
-                  isMulti
-                  options={skillOptions}
-                  classNamePrefix="react-select"
-                  value={skillOptions.filter((opt) => field.value.includes(opt.value))}
-                  onChange={(selected) => {
-                    const ids = selected.map((opt) =>
-                      typeof opt.value === "number" ? opt.value : opt.tempId,
-                    );
-                    field.onChange(ids);
-                  }}
-                  onCreateOption={(inputValue) => {
-                    const newOption = {
-                      value: inputValue,
-                      label: inputValue,
-                      tempId: Date.now() * -1,
-                    };
-                    setSkillOptions([...skillOptions, newOption]);
-                    field.onChange([...field.value, newOption.tempId]);
-                  }}
-                />
-              )}
-            />
+            <div>
+              <label className="block font-medium">Skills</label>
+              <CreatableSelect
+                isMulti
+                options={skillOptions}
+                classNamePrefix="react-select"
+                value={skillOptions.filter((opt) => selectedSkills.includes(opt.value))}
+                onChange={(selected) => {
+                  const ids = selected.map((opt) =>
+                    typeof opt.value === "number" ? opt.value : opt.tempId,
+                  );
+                  setSelectedSkills(ids);
+                }}
+                onCreateOption={(inputValue) => {
+                  const newOption = {
+                    value: Date.now() * -1,
+                    label: inputValue,
+                    tempId: Date.now() * -1,
+                  };
+                  setSkillOptions([...skillOptions, newOption]);
+                  setSelectedSkills([...selectedSkills, newOption.value]);
+                }}
+              />
+            </div>
           </>
         ) : (
           <>
@@ -229,26 +244,38 @@ function EditProfile() {
               <label className="block font-medium">Company Name</label>
               <input
                 type="text"
-                {...register("company_name")}
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
                 className="w-full border rounded-lg p-2"
               />
             </div>
 
             <div>
               <label className="block font-medium">Website</label>
-              <input type="url" {...register("website")} className="w-full border rounded-lg p-2" />
+              <input
+                type="url"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="w-full border rounded-lg p-2"
+              />
             </div>
 
             <div>
               <label className="block font-medium">About</label>
-              <textarea {...register("about")} rows="4" className="w-full border rounded-lg p-2" />
+              <textarea
+                value={about}
+                onChange={(e) => setAbout(e.target.value)}
+                rows={4}
+                className="w-full border rounded-lg p-2"
+              />
             </div>
 
             <div>
               <label className="block font-medium">Location</label>
               <input
                 type="text"
-                {...register("location")}
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 className="w-full border rounded-lg p-2"
               />
             </div>
@@ -257,22 +284,34 @@ function EditProfile() {
               <label className="block font-medium">Country</label>
               <input
                 type="text"
-                {...register("country")}
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
                 className="w-full border rounded-lg p-2"
               />
             </div>
 
             <div>
               <label className="block font-medium">Email</label>
-              <input type="email" {...register("email")} className="w-full border rounded-lg p-2" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border rounded-lg p-2"
+              />
             </div>
 
             <div>
               <label className="block font-medium">Telephone</label>
-              <input type="tel" {...register("tel")} className="w-full border rounded-lg p-2" />
+              <input
+                type="tel"
+                value={tel}
+                onChange={(e) => setTel(e.target.value)}
+                className="w-full border rounded-lg p-2"
+              />
             </div>
           </>
         )}
+
         <div className="w-full flex justify-center">
           <button
             type="submit"

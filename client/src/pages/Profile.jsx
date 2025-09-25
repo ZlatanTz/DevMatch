@@ -54,11 +54,15 @@ const Profile = () => {
             <p className="mt-2 text-sm md:text-base">{user.bio}</p>
           </div>
 
-          <div className="w-full px-3 md:px-5">
-            <h1 className="text-2xl md:text-3xl mb-1">Skills</h1>
-            <SkillList names={getNamesForIds(user.skills.map((skill) => skill.id))} />
+          <div className="w-full px-3 md:px-5 mb-10">
+            <h1 className="text-2xl md:text-3xl mb-1">Desired Salary</h1>
+            <h2>{user.desired_salary}€</h2>
           </div>
 
+          <div className="w-full px-3 md:px-5">
+            <h1 className="text-2xl md:text-3xl mb-1">Skills</h1>
+            <SkillList names={user.skills.map((skill) => skill.name)} />
+          </div>
           <div className="w-full h-50px mt-8 flex justify-center">
             <Link to={`/profile/edit/${user.id}`}>
               <button className="bg-emerald hover:opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium shadow cursor-pointer">

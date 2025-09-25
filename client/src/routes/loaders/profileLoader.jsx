@@ -16,6 +16,6 @@ export async function profileLoader({ params }) {
     const res = await axios.get(`http://127.0.0.1:8000/employers/${id}`);
     return res.data;
   } catch (err) {
-    throw new Response("Profile not found", { status: 404 });
+    throw new Response(err, { status: 404 });
   }
 }
