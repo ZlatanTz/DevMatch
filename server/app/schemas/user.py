@@ -21,6 +21,7 @@ class UserRead(UserBase):
     created_at: datetime
     updated_at: datetime
     role: RoleRead
+    is_verified: bool
 
 class UserCreate(BaseModel):
     password: str
@@ -35,7 +36,7 @@ class UserOut(BaseModel):
     role: str
     is_active: bool
     is_suspended: bool
-
+    is_verified: bool
     model_config = {"from_attributes": True}
 
 class CandidateRead(CandidateBase):
