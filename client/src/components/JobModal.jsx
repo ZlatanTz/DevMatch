@@ -1,6 +1,6 @@
 import { useSkills } from "@/hooks/useSkills";
 import { useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import SkillList from "./SkillList";
 
 export default function BasicModal({ id }) {
@@ -119,12 +119,14 @@ export default function BasicModal({ id }) {
             </div>
 
             <div className="flex justify-center pt-4 ">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-6 py-2 bg-emerald rounded-lg hover:brightness-90 transition-colors text-lg text-white"
-              >
-                Close
-              </button>
+              <Link to={`/jobs/${id}`}>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="px-6 py-2 bg-emerald rounded-lg hover:brightness-90 transition-colors text-lg text-white"
+                >
+                  Apply
+                </button>
+              </Link>
             </div>
           </div>
         </div>
