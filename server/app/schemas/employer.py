@@ -25,4 +25,5 @@ class EmployerUpdate(BaseModel):
 class EmployerRead(EmployerBase):
     id: int
     user_id: int
+    email: str
     model_config = {"from_attributes": True}
