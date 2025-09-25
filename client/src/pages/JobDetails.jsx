@@ -7,9 +7,10 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 
 const JobDetails = () => {
-  const jobs = useLoaderData();
+  const job = useLoaderData();
   const { id } = useParams(); // ID iz URL-a
-  const job = jobs.find((job) => job.id === parseInt(id));
+  // const job = jobs.find((job) => job.id === parseInt(id));
+
   const {
     title,
     company,
@@ -21,7 +22,6 @@ const JobDetails = () => {
     max_salary,
     is_remote,
     status,
-    skills,
     created_at,
     description,
     company_description,
@@ -31,7 +31,8 @@ const JobDetails = () => {
   const [visibleCount, setVisibleCount] = useState(3);
 
   const { user } = useAuth();
-  console.log(user);
+  // console.log(user);
+  // console.log(job);
   const loggedIn = user ? true : false;
   // console.log(loggedIn);
 
@@ -40,8 +41,11 @@ const JobDetails = () => {
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
+  const skill_ids = job.skills.map((skill) => skill.id);
   const { getNamesForIds } = useSkills();
-  const skillNames = getNamesForIds(skills);
+  const skillNames = getNamesForIds(skill_ids);
+  // console.log(skill_ids);
+  // console.log(skillNames);
 
   //sad je visak
   const handleLogIn = () => {
@@ -64,19 +68,33 @@ const JobDetails = () => {
 
   //const [selectedSkills, setSelectedSkills] = useState([]);
 
+  const [jobs, setJobs] = useState([]);
+
   useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        email: user.email || "",
-        phone: user.phone || "",
-        location: user.location || "",
-        experience: user.years_experiance || "",
-      }));
-    }
-  }, [user]);
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`)
+      .then((res) => res.json())
+      .then((data) => setJobs(data.items || []));
+  }, []);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`)
+      .then((res) => res.json())
+      .then((data) => setJobs(data.items || []));
+  }, []);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       firstName: user.firstName || "",
+  //       lastName: user.lastName || "",
+  //       email: user.email || "",
+  //       phone: user.phone || "",
+  //       location: user.location || "",
+  //       experience: user.years_experiance || "",
+  //     }));
+  //   }
+  // }, [user]);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -364,7 +382,7 @@ const JobDetails = () => {
                 >
                   Skill <span className="text-emerald">*</span>
                 </label>
-                <AllSkillsList max={3} value={formData.skills} onChange={handleSkillsChange} />
+                <AllSkillsList max={3} value={true} onChange={handleSkillsChange} />
               </div>
 
               <div>

@@ -8,7 +8,7 @@ const About = () => {
           <img
             src={Logo}
             alt="Contact illustration"
-            className="w-full max-w-xl rounded-xl shadow-md p-8"
+            className="w-1/2 max-w-md  rounded-xl shadow-md p-8"
           />
         </div>
 
@@ -53,20 +53,20 @@ const About = () => {
             <h3 className="text-2xl font-semibold text-emerald mb-6">Why Dev-Match?</h3>
             <ul className="list-disc list-inside space-y-3 text-lg leading-relaxed">
               <li>
-                <strong>IT specialization</strong> – focused exclusively on developers, designers,
-                administrators, and other tech professionals.
+                <span className="font-semibold text-federal-blue">IT specialization</span> – focused
+                exclusively on developers, designers, administrators, and other tech professionals.
               </li>
               <li>
-                <strong>Speed & efficiency</strong> – our system enables quick and accurate matches
-                between talent and companies.
+                <span className="font-semibold text-federal-blue">Speed & efficiency</span> – our
+                system enables quick and accurate matches between talent and companies.
               </li>
               <li>
-                <strong>Transparency</strong> – we believe in clear and fair communication between
-                employers and candidates.
+                <span className="font-semibold text-federal-blue">Transparency</span> – we believe
+                in clear and fair communication between employers and candidates.
               </li>
               <li>
-                <strong>Community growth</strong> – building a network of professionals and
-                companies who share values and strive for progress.
+                <span className="font-semibold text-federal-blue">Community growth</span> – building
+                a network of professionals and companies who share values and strive for progress.
               </li>
             </ul>
           </div>

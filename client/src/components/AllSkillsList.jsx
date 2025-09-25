@@ -10,7 +10,7 @@ export default function AllSkillsList({ max = 4, value = [], onChange }) {
 
   return (
     <div className="flex gap-2 flex-wrap">
-      <SkillList names={skillNames} max={max} value={value} onChange={onChange} />
+      <SkillList names={skillNames} max={max} value={value} onChange={onChange} clickable={true} />
     </div>
   );
 }

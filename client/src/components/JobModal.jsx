@@ -19,7 +19,6 @@ export default function BasicModal({ id }) {
     max_salary,
     is_remote,
     status,
-    skills,
     created_at,
     description,
     company_description,
@@ -29,8 +28,9 @@ export default function BasicModal({ id }) {
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
+  const skill_ids = job.skills.map((skill) => skill.id);
   const { getNamesForIds } = useSkills();
-  const skillNames = getNamesForIds(skills);
+  const skillNames = getNamesForIds(skill_ids);
 
   return (
     <div>
@@ -122,7 +122,7 @@ export default function BasicModal({ id }) {
               <Link to={`/jobs/${id}`}>
                 <button
                   onClick={() => setOpen(false)}
-                  className="px-6 py-2 bg-emerald rounded-lg hover:brightness-90 transition-colors text-lg text-white"
+                  className="px-6 py-2 bg-emerald rounded-lg hover:opacity-90 transition-colors text-lg text-white"
                 >
                   Apply
                 </button>

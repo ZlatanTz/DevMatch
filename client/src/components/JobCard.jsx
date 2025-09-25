@@ -12,8 +12,10 @@ export function JobCard({
   description,
   skills = [],
 }) {
+  // console.log(skills);
+  const skill_ids = skills.map((skill) => skill.id);
   const { getNamesForIds } = useSkills();
-  const skillNames = getNamesForIds(skills);
+  const skillNames = getNamesForIds(skill_ids);
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6 flex flex-col h-full">

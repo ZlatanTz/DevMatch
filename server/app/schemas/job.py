@@ -40,7 +40,6 @@ class JobRead(JobBase):
     id: int
     employer_id: int
     created_at: datetime
-
     skills: List[SkillRead] = Field(default_factory=list)
     model_config = {"from_attributes": True}
 

@@ -98,7 +98,7 @@ function Contact() {
           <div className="w-full flex justify-center">
             <button
               type="submit"
-              className="cursor-pointer bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
+              className="cursor-pointer bg-emerald text-white px-4 py-2 rounded-lg hover:opacity-90"
             >
               Send Message
             </button>
@@ -106,7 +106,7 @@ function Contact() {
         </Form>
       </div>
       <div className="flex justify-center">
-        <img src={Logo} alt="Contact illustration" className="w-full max-w-md rounded-xl  " />
+        <img src={Logo} alt="Contact illustration" className="w-full max-w-md rounded-xl p-4" />
       </div>
     </div>
   );

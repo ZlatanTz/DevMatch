@@ -1,6 +1,7 @@
-export async function jobsLoader({ request }) {
+export async function jobLoader({ params, request }) {
+  const { id } = params;
   // const url = `${import.meta.env.BASE_URL}mock/jobs.json`;
-  const url = `${import.meta.env.VITE_API_BASE_URL}/jobs/?page=1&page_size=15&sort_by=created_at&sort_dir=desc`;
+  const url = `${import.meta.env.VITE_API_BASE_URL}/jobs/${id}`;
   const res = await fetch(url, { signal: request.signal });
 
   if (!res.ok) {
@@ -11,6 +12,6 @@ export async function jobsLoader({ request }) {
   await new Promise((resolve) => setTimeout(resolve, 700));
 
   // console.log(data.items);
-  // return data;
-  return data.items || [];
+  return data;
+  // return data.items || [];
 }
