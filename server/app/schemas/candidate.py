@@ -30,4 +30,5 @@ class CandidateRead(CandidateBase):
     id: int
     user_id: int
     email: str
+    role: str
     skills: List[SkillRead] = []

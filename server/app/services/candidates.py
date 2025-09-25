@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from app.models import Candidate, User
+from app.models import Candidate, User, Role
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.candidate import CandidateUpdate
 from ..services.users import get_user
@@ -35,10 +35,10 @@ async def list_candidates(db: AsyncSession):
     return candidates_with_email
 
 async def get_candidate(user_id: int, db: AsyncSession):
-
     result = await db.execute(
-        select(Candidate, User.email)
+        select(Candidate, User.email, Role.name)
         .join(User, Candidate.user_id == User.id)
+        .join(Role, User.role_id == Role.id)
         .where(Candidate.user_id == user_id)
     )
     
@@ -46,7 +46,7 @@ async def get_candidate(user_id: int, db: AsyncSession):
     if not row:
         raise HTTPException(status_code=404, detail="Candidate not found")
 
-    candidate, email = row
+    candidate, email, role_name = row
     return {
         "id": candidate.id,
         "first_name": candidate.first_name,
@@ -58,8 +58,10 @@ async def get_candidate(user_id: int, db: AsyncSession):
         "desired_salary": candidate.desired_salary,
         "user_id": candidate.user_id,
         "email": email,
+        "role": role_name,   # now returns string from Roles table
         "skills": candidate.skills
     }
+
 
 async def candidate_update(id: int, candidate_update: CandidateUpdate, db: AsyncSession):
     user = await get_user(id, db)
