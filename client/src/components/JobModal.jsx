@@ -5,8 +5,7 @@ import SkillList from "./SkillList";
 
 export default function BasicModal({ id }) {
   const [open, setOpen] = useState(false);
-
-  const jobs = useLoaderData();
+  const { items: jobs } = useLoaderData();
   const job = jobs.find((job) => job.id === parseInt(id));
   const {
     title,

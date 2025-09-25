@@ -68,6 +68,7 @@ export default function Toolbar() {
       seniority: values.seniority,
       skills: values.skills,
       sort: values.sort,
+      page: 1,
     });
   };
 
@@ -79,6 +80,7 @@ export default function Toolbar() {
       seniority: [],
       skills: [],
       sort: [],
+      page: 1,
     });
   };
 
