@@ -54,25 +54,25 @@ async def delete_user(id: int, db: AsyncSession):
 
     return {"detail": f"User {id} deleted successfully"}
 
-async def get_user_by_email(email: str, db: AsyncSession):
-    result = await db.execute(
-        select(User).options(selectinload(User.role)).where(User.email == email)
-    )
-    user = result.scalars().first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+# async def get_user_by_email(email: str, db: AsyncSession):
+#     result = await db.execute(
+#         select(User).options(selectinload(User.role)).where(User.email == email)
+#     )
+#     user = result.scalars().first()
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return user
 
-async def user_update_by_email(email: str, user_update: UserUpdate, db: AsyncSession):
-    user = await get_user_by_email(email, db)
-    for key, value in user_update.model_dump(exclude_unset=True).items():
-        setattr(user, key, value)
-    await db.commit()
-    await db.refresh(user)
-    return user
+# async def user_update_by_email(email: str, user_update: UserUpdate, db: AsyncSession):
+#     user = await get_user_by_email(email, db)
+#     for key, value in user_update.model_dump(exclude_unset=True).items():
+#         setattr(user, key, value)
+#     await db.commit()
+#     await db.refresh(user)
+#     return user
 
-async def delete_user_by_email(email: str, db: AsyncSession):
-    user = await get_user_by_email(email, db)
-    await db.delete(user)
-    await db.commit()
-    return {"detail": f"User {email} deleted successfully"}
+# async def delete_user_by_email(email: str, db: AsyncSession):
+#     user = await get_user_by_email(email, db)
+#     await db.delete(user)
+#     await db.commit()
+#     return {"detail": f"User {email} deleted successfully"}
