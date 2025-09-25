@@ -41,8 +41,6 @@ class Job(Base):
     )
     __table_args__ = (
     Index("ix_jobs_title", "title"),
-    Index("ix_jobs_status", "status"),
-    Index("ix_jobs_location", "location"),
     CheckConstraint(
         "(min_salary IS NULL) OR (max_salary IS NULL) OR (min_salary <= max_salary)",
         name="ck_salary_range",
