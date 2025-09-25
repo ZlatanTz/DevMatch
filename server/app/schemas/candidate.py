@@ -31,4 +31,5 @@ class CandidateRead(CandidateBase):
     model_config = {"from_attributes": True}
     id: int
     user_id: int
+    email: str
     skills: List[SkillRead] = []
