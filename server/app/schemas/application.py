@@ -23,7 +23,6 @@ class ApplicationCreate(ApplicationBase):
 
 class ApplicationUpdate(BaseModel):
     status: Optional[ApplicationStatus] = None
-    cover_letter: Optional[str] = None
 
 class ApplicationOut(ApplicationBase):
     id: int
