@@ -6,14 +6,14 @@ from app.schemas.candidate import CandidateBase
 from app.schemas.employer import EmployerBase
 
 class UserBase(BaseModel):
-    role: str = Field(..., max_length=50)
     email: EmailStr
 
 class UserUpdate(BaseModel):
-    role: Optional[str] = Field(None, max_length=50)
     email: Optional[EmailStr] = None
+    hashed_password: Optional[str] = None
+    role_id: Optional[int] = None
 
-class UserRead(UserBase):
+class UserRead(BaseModel):
     id: int
     is_active: bool
     is_suspended: bool

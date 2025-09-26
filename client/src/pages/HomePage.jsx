@@ -1,4 +1,4 @@
-import { getAllJobs, getHighestRatedJobs } from "@/api/services/jobs";
+import { getAllJobsDetailed, getHighestRatedJobs } from "@/api/services/jobs";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ServerResponseWrapper from "@/components/ServerResponseWrapper";
@@ -22,16 +22,10 @@ const HomePage = () => {
   const [errorStatus, setErrorStatus] = useState(null);
 
   useEffect(() => {
-    Promise.all([getAllJobs(), getHighestRatedJobs()])
-      .then(([jobsRes, highestPaidRes]) => {
-        if (jobsRes.isSuccess && highestPaidRes.isSuccess) {
-          setJobs(jobsRes.data);
-          setHighestPaidJobs(highestPaidRes.data);
-          setIsSuccess(true);
-        } else {
-          setIsError(true);
-          setErrorStatus(jobsRes.errorStatus || highestPaidRes.errorStatus);
-        }
+    Promise.all([getAllJobsDetailed(), getHighestRatedJobs()])
+      .then(([jobsData, highestPaidData]) => {
+        setJobs(jobsData.items || []);
+        setHighestPaidJobs(highestPaidData.items || []);
       })
       .catch(() => {
         setIsError(true);
@@ -98,9 +92,9 @@ const HomePage = () => {
                             {job.title}
                           </h3>
 
-                          <p className="relative text-xs sm:text-sm text-muted-foreground text-center mb-1 truncate">
-                            {job.company}
-                          </p>
+                        <p className="relative text-xs sm:text-sm text-muted-foreground text-center mb-1 truncate">
+                          {job.employer.company_name}
+                        </p>
 
                           <p className="relative text-xs sm:text-sm text-foreground/80 text-center italic mb-2">
                             {job.employment_type}
@@ -110,23 +104,21 @@ const HomePage = () => {
                             {job.min_salary}€ – {job.max_salary}€
                           </p>
 
-                          <div className="relative flex flex-wrap justify-center gap-1.5 mb-2">
-                            {job.skills.slice(0, 3).map((skill) => (
-                              <span
-                                key={skill}
-                                className="px-2 py-1 text-[11px] sm:text-xs rounded-full bg-muted text-foreground/80 border border-border"
-                              >
-                                {skill.length > 8
-                                  ? skill.substring(0, 8) + "..."
-                                  : `Skill ${skill}`}
-                              </span>
-                            ))}
-                            {job.skills.length > 3 && (
-                              <span className="px-2 py-1 text-[11px] sm:text-xs rounded-full bg-muted text-foreground/80 border border-border">
-                                +{job.skills.length - 3}
-                              </span>
-                            )}
-                          </div>
+                        <div className="relative flex flex-wrap justify-center gap-1.5 mb-2">
+                          {job.skills.slice(0, 3).map((skill) => (
+                            <span
+                              key={skill.name}
+                              className="px-2 py-1 text-[11px] sm:text-xs rounded-full bg-muted text-foreground/80 border border-border"
+                            >
+                              {skill.length > 8 ? skill.substring(0, 8) + "..." : `${skill.name}`}
+                            </span>
+                          ))}
+                          {job.skills.length > 3 && (
+                            <span className="px-2 py-1 text-[11px] sm:text-xs rounded-full bg-muted text-foreground/80 border border-border">
+                              +{job.skills.length - 3}
+                            </span>
+                          )}
+                        </div>
 
                           <p className="relative text-[11px] sm:text-xs text-muted-foreground text-center">
                             {daysAgo(job.created_at)}
@@ -150,25 +142,14 @@ const HomePage = () => {
               Top 3 highest-paid
             </h2>
 
-            <div className="flex flex-col gap-3">
-              {highestPaidJobs.map((job, index) => (
-                <Link key={job.id} to={`/jobs/${job.id}`}>
-                  <div className="relative rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all motion-safe:duration-300">
-                    <div className="absolute top-2 right-2">
-                      <span className="inline-flex items-center justify-center rounded-full bg-emerald text-white text-[11px] px-2 py-1 shadow-sm">
-                        #{index + 1}
-                      </span>
-                    </div>
-
-                    <p className="text-xs sm:text-sm font-semibold mb-1 pr-10 line-clamp-2">
-                      {job.title}
-                    </p>
-                    <p className="text-[11px] sm:text-xs text-muted-foreground mb-2 truncate">
-                      {job.company}
-                    </p>
-                    <p className="text-sm sm:text-base font-extrabold text-emerald">
-                      {job.min_salary}€ – {job.max_salary}€
-                    </p>
+          <div className="flex flex-col gap-3">
+            {highestPaidJobs.slice(0, 3).map((job, index) => (
+              <Link key={job.id} to={`/jobs/${job.id}`}>
+                <div className="relative rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all motion-safe:duration-300">
+                  <div className="absolute top-2 right-2">
+                    <span className="inline-flex items-center justify-center rounded-full bg-emerald text-white text-[11px] px-2 py-1 shadow-sm">
+                      #{index + 1}
+                    </span>
                   </div>
                 </Link>
               ))}
@@ -196,12 +177,31 @@ const HomePage = () => {
                   </p>
                   <p className="text-xs italic text-foreground/80 mb-3">{job.employment_type}</p>
 
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-foreground/80">Rating: 4.5</p>
-                    <div className="flex text-yellow-400" aria-hidden="true">
-                      {"★".repeat(4)}
-                      {"☆".repeat(1)}
-                    </div>
+      {/* Top Rated */}
+      <div className="col-span-1 lg:col-span-4">
+        <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">Top rated</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {jobs.slice(0, visibleCount).map((job) => (
+              <Link
+                key={job.id}
+                to={`/jobs/${job.id}`}
+                className="block rounded-2xl border-2 border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
+              >
+                <h3 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">
+                  {job.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">
+                  {job.employer.company_name}
+                </p>
+                <p className="text-xs italic text-foreground/80 mb-3">{job.employment_type}</p>
+
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-foreground/80">Rating: 4.5</p>
+                  <div className="flex text-yellow-400" aria-hidden="true">
+                    {"★".repeat(4)}
+                    {"☆".repeat(1)}
                   </div>
                 </Link>
               ))}

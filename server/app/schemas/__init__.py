@@ -23,7 +23,7 @@ __all__ = [
     "EmployerBase", "EmployerRead", "EmployerRegister"
 
     # Job
-    "JobBase", "JobCreate", "JobUpdate", "JobRead",
+    "JobBase", "JobCreate", "JobUpdate", "JobRead", "JobReadDetailed",
 
     # Application
     "ApplicationBase", "ApplicationCreate", "ApplicationOut", "ApplicationUpdate", "ApplicationStatus",

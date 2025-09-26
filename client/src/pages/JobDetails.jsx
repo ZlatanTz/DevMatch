@@ -7,12 +7,13 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 
 const JobDetails = () => {
-  const jobs = useLoaderData();
+  const job = useLoaderData();
   const { id } = useParams(); // ID iz URL-a
-  const job = jobs.find((job) => job.id === parseInt(id));
+  // const job = jobs.find((job) => job.id === parseInt(id));
+
   const {
     title,
-    company,
+    employer_id,
     company_img,
     location,
     employment_type,
@@ -21,28 +22,30 @@ const JobDetails = () => {
     max_salary,
     is_remote,
     status,
-    skills,
     created_at,
     description,
     company_description,
     benefits,
+    employer,
   } = job;
 
   const [visibleCount, setVisibleCount] = useState(3);
 
   const { user } = useAuth();
-  console.log(user);
+  // console.log(user);
+  // console.log(job);
   const loggedIn = user ? true : false;
   // console.log(loggedIn);
-
   const [candidateLoggedIn, setCandidateLoggedIn] = useState(loggedIn); //da li je ulogovan candidate
 
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
+  const skill_ids = job.skills.map((skill) => skill.id);
   const { getNamesForIds } = useSkills();
-  const skillNames = getNamesForIds(skills);
-
+  const skillNames = getNamesForIds(skill_ids);
+  // console.log(skill_ids);
+  // console.log(skillNames);
   //sad je visak
   const handleLogIn = () => {
     setCandidateLoggedIn(!candidateLoggedIn);
@@ -64,19 +67,33 @@ const JobDetails = () => {
 
   //const [selectedSkills, setSelectedSkills] = useState([]);
 
+  const [jobs, setJobs] = useState([]);
+
   useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        email: user.email || "",
-        phone: user.phone || "",
-        location: user.location || "",
-        experience: user.years_experiance || "",
-      }));
-    }
-  }, [user]);
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`)
+      .then((res) => res.json())
+      .then((data) => setJobs(data.items || []));
+  }, []);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`)
+      .then((res) => res.json())
+      .then((data) => setJobs(data.items || []));
+  }, []);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       firstName: user.firstName || "",
+  //       lastName: user.lastName || "",
+  //       email: user.email || "",
+  //       phone: user.phone || "",
+  //       location: user.location || "",
+  //       experience: user.years_experiance || "",
+  //     }));
+  //   }
+  // }, [user]);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -138,12 +155,12 @@ const JobDetails = () => {
     <div className="max-w-6xl mx-auto px-4 py-8 bg-white min-h-screen min-w-[320px]">
       <img
         src={company_img}
-        alt={`${company} logo`}
+        alt={`${employer_id} logo`}
         className="w-full h-64 sm:h-80 md:h-96 lg:h-[400px] object-contain object-center rounded-lg mb-6 shadow-md"
       />
 
       <div className="flex flex-col items-center space-y-2 sm:flex-row sm:flex-wrap sm:justify-around sm:space-y-0 p-4 rounded-lg mb-8 bg-federal-blue text-white">
-        <p className="mx-2 font-medium">{company}</p>
+        <p className="mx-2 font-medium">{employer.company_name}</p>
         <p className="mx-2 font-medium">{title}</p>
         <p className="mx-2 font-medium">{location}</p>
         <p className="mx-2 font-medium">{seniority}</p>
@@ -364,7 +381,7 @@ const JobDetails = () => {
                 >
                   Skill <span className="text-emerald">*</span>
                 </label>
-                <AllSkillsList max={3} value={formData.skills} onChange={handleSkillsChange} />
+                <AllSkillsList max={3} value={true} onChange={handleSkillsChange} />
               </div>
 
               <div>
@@ -408,7 +425,7 @@ const JobDetails = () => {
           </div>
         )}
         {!candidateLoggedIn && (
-          <Link to="/login">
+          <Link to="/login" state={{ from: window.location.pathname }}>
             <button
               onClick={handleLogIn}
               className="w-full bg-emerald text-white mb-8 py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"

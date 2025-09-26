@@ -4,6 +4,7 @@ import App from "./App";
 import JobDetails from "./pages/JobDetails";
 import { Jobs } from "./pages/Jobs";
 import { jobsLoader } from "./routes/loaders/jobsLoader";
+import { jobLoader } from "./routes/loaders/jobLoader";
 import EditProfile from "./pages/EditProfile";
 import MySubmits from "./pages/MySubmits";
 import Profile from "./pages/Profile";
@@ -43,7 +44,7 @@ export const router = createBrowserRouter([
       {
         path: "jobs/:id",
         element: <JobDetails />,
-        loader: jobsLoader,
+        loader: jobLoader,
         errorElement: <ErrorPage />,
       },
       { path: "applications", element: <MySubmits />, loader: applicationsLoader },
