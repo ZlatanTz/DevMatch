@@ -1,20 +1,14 @@
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
-from pydantic import BaseModel, Field
+
+class EmployerRegister(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=6)
+
+    employer: "EmployerBase"
 
 class EmployerBase(BaseModel):
     company_name: str = Field(..., max_length=255)
-    website: Optional[str] = None
-    about: Optional[str] = None
-    location: Optional[str] = None
-    verified: bool = False
-    country: Optional[str] = None
-    tel: Optional[str] = None
-
-class EmployerCreate(EmployerBase):
-    user_id: int
-
-class EmployerUpdate(BaseModel):
-    company_name: Optional[str] = None
     website: Optional[str] = None
     about: Optional[str] = None
     location: Optional[str] = None
@@ -25,6 +19,4 @@ class EmployerUpdate(BaseModel):
 class EmployerRead(EmployerBase):
     id: int
     user_id: int
-    email: str
-    role: str
     model_config = {"from_attributes": True}

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import roles_router, users_router, jobs_router, applications_router, candidates_router, employers_router, skills_router
+from app.routers import roles_router, users_router, jobs_router, applications_router, candidates_router, employers_router, auth_router, skills_router
 
 app = FastAPI(title="DevMatch API", version="0.1.0")
 
@@ -17,7 +17,7 @@ app.add_middleware(
 async def root():
     return {"message": "OK"}
 
-
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(roles_router, prefix="/roles", tags=["roles"])
 app.include_router(users_router, prefix="/users", tags=["users"])
 app.include_router(jobs_router, prefix="/jobs", tags=["jobs"])
@@ -27,6 +27,3 @@ app.include_router(employers_router, prefix="/employers", tags=["employers"])
 app.include_router(skills_router, prefix="/skills", tags=["skills"])
 
 
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
