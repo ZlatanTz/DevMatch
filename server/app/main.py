@@ -20,8 +20,9 @@ app.include_router(jobs_router, prefix="/jobs", tags=["jobs"])
 app.include_router(skills_router, prefix="/skills", tags=["skills"])
 app.include_router(candidates_router, prefix="/candidates", tags=["candidates"])
 app.include_router(employers_router, prefix="/employers", tags=["employers"])
+app.include_router(applications_router, prefix="/applications", tags=["applications"])
 
 
-@app.get("/health")
+@app.get("/health/")
 async def health():
     return {"status": "ok"}

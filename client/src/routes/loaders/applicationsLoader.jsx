@@ -16,17 +16,3 @@ export async function applicationsLoader({ request }) {
 
   return { applications, jobs };
 }
-
-// export async function applicationsLoader({ request }) {
-//   const url = `${import.meta.env.BASE_URL}mock/applications.json`;
-//   const res = await fetch(url, { signal: request.signal });
-
-//   if (!res.ok) {
-//     throw new Response("Failed to load jobs", { status: res.status });
-//   }
-
-//   const data = await res.json();
-//   await new Promise((resolve) => setTimeout(resolve, 700));
-
-//   return data;
-// }

@@ -18,20 +18,8 @@ export const Jobs = () => {
   const isLoading = navigation.state === "loading";
 
   const params = useMemo(() => readParams(sp), [sp.toString()]);
-
-  // Dodaj debug ispise
-  console.log("URL params:", sp.toString());
-  console.log("Parsed params:", params);
-  console.log("All jobs:", allJobs?.length);
-
   const filteredJobs = useMemo(() => {
     const result = filterAndSort(allJobs || [], params);
-    console.log("Filtering debug:", {
-      params,
-      inputCount: allJobs?.length,
-      outputCount: result.length,
-      skillsFilter: params.ski,
-    });
     return result;
   }, [allJobs, params]);
 
