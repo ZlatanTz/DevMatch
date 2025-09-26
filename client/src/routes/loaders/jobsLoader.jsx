@@ -5,13 +5,12 @@ export async function jobsLoader({ request }) {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") || "1", 10);
 
-    // Učitavamo sve jobove (ili dovoljno veliki broj da pokrije sve)
     const data = await getAllJobsDetailed({ page_size: 100 });
 
     return {
       items: data.items || [],
       page,
-      pageSize: 15, // koliko želimo prikazati po stranici
+      pageSize: 12,
     };
   } catch (error) {
     console.error(error);
@@ -23,7 +22,7 @@ export async function jobsLoader({ request }) {
 //   try {
 //     const url = new URL(request.url);
 //     const page = parseInt(url.searchParams.get("page") || "1", 10);
-//     const data = await getAllJobsDetailed({ page, page_size: 15 });
+//     const data = await getAllJobsDetailed({ page, page_size: 12 });
 
 //     await new Promise((resolve) => setTimeout(resolve, 700));
 
@@ -31,19 +30,8 @@ export async function jobsLoader({ request }) {
 //       items: data.items || [],
 //       total: data.meta?.total || 0,
 //       page: data.meta?.page || page,
-//       pageSize: data.meta?.page_size || 15,
+//       pageSize: data.meta?.page_size || 12,
 //     };
-//   } catch (error) {
-//     console.error(error);
-//     throw new Response("Failed to load jobs", { status: error.response?.status || 500 });
-//   }
-// }
-
-// export async function jobsLoader() {
-//   try {
-//     const data = await getAllJobsDetailed(); // koristi default parametre
-//     await new Promise((resolve) => setTimeout(resolve, 700));
-//     return data.items || [];
 //   } catch (error) {
 //     console.error(error);
 //     throw new Response("Failed to load jobs", { status: error.response?.status || 500 });

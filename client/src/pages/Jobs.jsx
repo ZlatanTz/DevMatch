@@ -12,15 +12,21 @@
 // import { JobCardSkeletonGrid } from "../components/Skeleton";
 
 // export const Jobs = () => {
-//   const { items: allJobs, total, page, pageSize } = useLoaderData();
+//   const { items: allJobs, page, pageSize } = useLoaderData();
 //   const [sp] = useSearchParams();
 //   const navigation = useNavigation();
 //   const isLoading = navigation.state === "loading";
 
 //   const params = useMemo(() => readParams(sp), [sp.toString()]);
-//   const jobs = useMemo(() => filterAndSort(allJobs || [], params), [allJobs, params]);
 
-//   const totalPages = Math.ceil(total / pageSize);
+//   const filteredJobs = useMemo(() => filterAndSort(allJobs || [], params), [allJobs, params]);
+
+//   const paginatedJobs = useMemo(() => {
+//     const start = (page - 1) * pageSize;
+//     return filteredJobs.slice(start, start + pageSize);
+//   }, [filteredJobs, page, pageSize]);
+
+//   const totalPages = Math.ceil(filteredJobs.length / pageSize);
 
 //   const preserveFilters = (newPage) => {
 //     const params = Object.fromEntries(sp.entries());
@@ -29,7 +35,7 @@
 //   };
 
 //   return (
-//     <section>
+//     <section className="min-h-[80vh] relative">
 //       <Toolbar />
 
 //       {isLoading ? (
@@ -37,12 +43,12 @@
 //       ) : (
 //         <>
 //           <section className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 m-10">
-//             {jobs.map((job) => (
+//             {paginatedJobs.map((job) => (
 //               <JobCard key={job.id} {...job} />
 //             ))}
 //           </section>
 
-//           <div className="flex justify-center gap-2 mt-3 mb-6">
+//           <div className="flex justify-center gap-2 mt-6 mb-10 sticky bottom-0 bg-white/50 py-4">
 //             {Array.from({ length: totalPages }).map((_, i) => (
 //               <Link
 //                 key={i}
@@ -78,13 +84,24 @@ export const Jobs = () => {
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
 
-  // Čitamo filter parametre iz URL-a
   const params = useMemo(() => readParams(sp), [sp.toString()]);
 
-  // Primjena filtera i sortiranja na cijelu listu
-  const filteredJobs = useMemo(() => filterAndSort(allJobs || [], params), [allJobs, params]);
+  // Dodaj debug ispise
+  console.log("URL params:", sp.toString());
+  console.log("Parsed params:", params);
+  console.log("All jobs:", allJobs?.length);
 
-  // Pagination: slice filtrirane liste
+  const filteredJobs = useMemo(() => {
+    const result = filterAndSort(allJobs || [], params);
+    console.log("Filtering debug:", {
+      params,
+      inputCount: allJobs?.length,
+      outputCount: result.length,
+      skillsFilter: params.ski,
+    });
+    return result;
+  }, [allJobs, params]);
+
   const paginatedJobs = useMemo(() => {
     const start = (page - 1) * pageSize;
     return filteredJobs.slice(start, start + pageSize);
@@ -112,7 +129,6 @@ export const Jobs = () => {
             ))}
           </section>
 
-          {/* Pagination - fiksirano iznad footera */}
           <div className="flex justify-center gap-2 mt-6 mb-10 sticky bottom-0 bg-white/50 py-4">
             {Array.from({ length: totalPages }).map((_, i) => (
               <Link
