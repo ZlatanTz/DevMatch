@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from app.models import Employer
+from app.models import Employer, User
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..services.users import get_user
 from fastapi import HTTPException
@@ -8,16 +8,35 @@ from fastapi import HTTPException
 
 async def list_employers(db: AsyncSession):
     result = await db.execute(
-        select(Employer)
+        select(Employer, User.email).join(User, Employer.user_id == User.id)
     )
-    return result.scalars().all()
 
-async def get_employer(id: int, db: AsyncSession):
+    employers_with_email = []
+    for employer, email in result.all():
+        employers_with_email.append({
+            "id": employer.id,
+            "company_name": employer.company_name,
+            "website": employer.website,
+            "about": employer.about,
+            "location": employer.location,
+            "country": employer.country,
+            "tel": employer.tel,
+            "user_id": employer.user_id,
+            "email": email
+        })
 
-    user = await get_user(id, db)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    return employers_with_email
+async def get_employer(user_id: int, db: AsyncSession):
 
+    result = await db.execute(
+        select(Employer, User.email)
+        .join(User, Employer.user_id == User.id)
+        .where(Employer.user_id == user_id)
+    )
+    
+    row = result.first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Employer not found")
 
     result = await db.execute(select(Employer).where(Employer.user_id == user.id))
     employer = result.scalars().first()

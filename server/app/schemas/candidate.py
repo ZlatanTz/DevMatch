@@ -25,7 +25,7 @@ class CandidateUpdate(BaseModel):
     bio: Optional[str] = None
     resume_url: Optional[str] = None
     desired_salary: Optional[int] = None
-    skills: Optional[List[int]] = None  # replace skills
+    skills: Optional[List[int]] = None  #
 
 class CandidateRead(CandidateBase):
     model_config = {"from_attributes": True}

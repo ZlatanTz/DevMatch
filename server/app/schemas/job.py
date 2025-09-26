@@ -2,10 +2,9 @@ from typing import Optional, List, Literal
 from datetime import datetime
 from pydantic import BaseModel, Field
 from .skill import SkillRead 
+from fastapi import Query
 class JobBase(BaseModel):
     title: str = Field(..., max_length=255)
-    company: Optional[str] = None
-    company_img: Optional[str] = None
     location: Optional[str] = None
     employment_type: Optional[str] = None
     seniority: Optional[str] = None
@@ -23,8 +22,8 @@ class JobCreate(JobBase):
 
 class JobUpdate(BaseModel):
     title: Optional[str] = None
-    company: Optional[str] = None
-    company_img: Optional[str] = None
+    # company: Optional[str] = None
+    # company_img: Optional[str] = None
     location: Optional[str] = None
     employment_type: Optional[str] = None
     seniority: Optional[str] = None
@@ -57,4 +56,27 @@ class JobListQuery(BaseModel):
     title_contains: Optional[str] = None          
     is_remote: Optional[bool] = None              
     seniorities: Optional[List[str]] = None       
-    skill_ids_any: Optional[List[int]] = None     
+    skill_ids_any: Optional[List[int]] = None 
+
+
+def job_list_query(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    sort_by: Literal["created_at", "max_salary"] = Query("created_at"),
+    sort_dir: Literal["asc", "desc"] = Query("desc"),
+    title_contains: Optional[str] = Query(None),
+    is_remote: Optional[bool] = Query(None),
+
+    seniorities: Optional[List[str]] = Query(None),
+    skill_ids_any: Optional[List[int]] = Query(None),
+) -> JobListQuery:
+    return JobListQuery(
+        page=page,
+        page_size=page_size,
+        sort_by=sort_by,
+        sort_dir=sort_dir,
+        title_contains=title_contains,
+        is_remote=is_remote,
+        seniorities=seniorities,
+        skill_ids_any=skill_ids_any,
+    )

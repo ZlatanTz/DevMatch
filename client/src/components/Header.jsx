@@ -1,11 +1,9 @@
 import { NavLink, useLocation, useNavigation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import logo from "../assets/devmatch.svg";
-import profileImage from "../assets/profileIcon.jpg";
 import { useAuth } from "../context/AuthContext";
 
 const navItems = [
-  { to: "/", label: "Home" },
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
 ];
@@ -93,17 +91,12 @@ export default function Header() {
             </NavLink>
 
             <nav className="hidden items-center gap-1 md:flex">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `${linkBase} ${isActive ? linkActive : linkInactive}`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
+              <NavLink
+                to="/"
+                className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkInactive}`}
+              >
+                Home
+              </NavLink>
               <div className="relative group">
                 <NavLink
                   to="/jobs"
@@ -178,6 +171,17 @@ export default function Header() {
                   </div>
                 </div>
               </div>
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `${linkBase} ${isActive ? linkActive : linkInactive}`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
             </nav>
           </div>
 
@@ -244,7 +248,7 @@ export default function Header() {
                     aria-expanded={dropdownOpen}
                     onClick={() => setDropdownOpen((v) => !v)}
                   >
-                    <img src={profileImage} alt="Profile" className="h-full w-full object-cover" />
+                    <img src={user.img} alt="Profile" className="h-full w-full object-cover" />
                   </button>
 
                   {dropdownOpen && (

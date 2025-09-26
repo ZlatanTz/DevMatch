@@ -9,7 +9,7 @@ from .associations import candidate_skills
 if TYPE_CHECKING:
     from .user import User
     from .skill import Skill
-
+    from .application import Application
 class Candidate(Base):
     __tablename__ = "candidates"
 
@@ -26,7 +26,7 @@ class Candidate(Base):
     tel: Mapped[Optional[str]] = mapped_column(String(20))
     img_path: Mapped[Optional[str]] = mapped_column(String(255))
     user: Mapped["User"] = relationship(back_populates="candidate")
-
+    applications: Mapped[list["Application"]] = relationship(back_populates="candidate", cascade="all, delete-orphan")
     skills: Mapped[List["Skill"]] = relationship(
         "Skill",
         secondary=candidate_skills,
