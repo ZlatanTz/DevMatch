@@ -101,7 +101,7 @@ async def list_ranked_applications_for_job(
     limit: int = Query(20, ge=1, le=200),
     min_score: float = Query(0.0, ge=0.0, le=1.0),
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(require_roles("candidate"))
+    current_user = Depends(require_roles("employer"))
 ):
 
     recs = await recommendations.rank_applications_for_job(db, id, limit=limit)
@@ -110,7 +110,7 @@ async def list_ranked_applications_for_job(
         return []
 
 
-    cand_ids = [r["candidate_id"] for r in recs if r.get("candidate_id") is not None]
+    cand_ids = [r["candidate_id"] for   r in recs if r.get("candidate_id") is not None]
     rows = (await db.execute(select(models.Candidate).where(models.Candidate.id.in_(cand_ids)))).scalars().all()
     cand_by_id: Dict[int, models.Candidate] = {c.id: c for c in rows}
 

@@ -7,7 +7,7 @@ from app.core import get_db
 from app import schemas, models
 from app.services.candidates import list_candidates, get_candidate, candidate_update
 from app.services import applications, recommendations
-
+from app.utils.auth import require_roles
 router = APIRouter()
 
 @router.get("/", response_model=List[schemas.CandidateRead])
@@ -45,6 +45,7 @@ async def list_recommended_jobs(
     page_size: int = Query(20, ge=1, le=100),
 
     db: AsyncSession = Depends(get_db),
+    current_user = Depends(require_roles("employer"))
 ):
     recs = await recommendations.recommend_jobs_for_candidate(db, candidate_id, limit=limit)
     recs = [r for r in recs if r.get("score", 0.0) >= min_score]
