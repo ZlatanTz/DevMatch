@@ -72,7 +72,7 @@ async def get_current_user(
 
     result = await db.execute(
         select(User)
-        .options(selectinload(User.candidate), selectinload(User.employer))
+        .options(selectinload(User.candidate), selectinload(User.employer), selectinload(User.role))
         .where(User.id == int(user_id))
     )
     user = result.scalars().first()
