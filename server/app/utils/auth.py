@@ -11,19 +11,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from app.models import User
+from app.core.config import settings
 
-# TEMPORARY, will be pulled from .env
-SECRET_KEY = os.getenv("JWT_SECRET", "change-me-please")
+SECRET_KEY = settings.JWT_SECRET
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
-# enum that will be pulled from our /roles endpoint
 ROLE_MAP = {
     1: "admin",
     2: "employer",
     3: "candidate",
 }
 
+async def get_user_by_email(db: AsyncSession, email: str):
+    result = await db.execute(select(User).where(User.email == email))
+    return result.scalars().first()
 
 _pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

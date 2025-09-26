@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from app.schemas.candidate import CandidateCreate
+from app.schemas.user import UserWithProfile
 
 class RegisterCandidate(BaseModel):
     email: EmailStr
@@ -13,4 +14,6 @@ class LoginRequest(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-
+    
+class MessageRegisterResponse(BaseModel):
+    message: str
