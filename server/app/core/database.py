@@ -11,23 +11,20 @@ from app.core.config import settings
 
 
 def _to_asyncpg_url(raw: str) -> str:
-
     if not raw:
         raise ValueError("DATABASE_URL is empty")
 
-    
     if raw.startswith("postgres://"):
         raw = "postgresql://" + raw[len("postgres://"):]
     if not raw.startswith("postgresql+asyncpg://"):
         raw = "postgresql+asyncpg://" + raw[len("postgresql://"):]
 
-    
-    parsed = urlparse(raw)
-    q = dict(parse_qsl(parsed.query, keep_blank_values=True))
-    q.setdefault("ssl", "true")  
-    new_query = urlencode(q)
+    p = urlparse(raw)
+    q = dict(parse_qsl(p.query, keep_blank_values=True))
+    q.pop("ssl", None)
+    q.pop("sslmode", None)
+    return urlunparse(p._replace(query=urlencode(q)))
 
-    return urlunparse(parsed._replace(query=new_query))
 
 
 ASYNC_DATABASE_URL = _to_asyncpg_url(settings.DATABASE_URL)
@@ -35,7 +32,8 @@ ASYNC_DATABASE_URL = _to_asyncpg_url(settings.DATABASE_URL)
 engine = create_async_engine(
     ASYNC_DATABASE_URL,
     echo=True,             
-    pool_pre_ping=True,    
+    pool_pre_ping=True,
+    connect_args={"ssl": True}
     
 )
 
