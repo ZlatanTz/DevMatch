@@ -2,6 +2,9 @@
 
 BEGIN;
 
+-- enable pgcrypto so we can use crypt() to hash passwords in the seed
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- Start fresh
 TRUNCATE TABLE
   applications,
@@ -27,11 +30,11 @@ INSERT INTO roles (name) VALUES
 -- role ids will be 1: admin, 2: employer, 3: candidate
 INSERT INTO users (email, hashed_password, is_active, is_suspended, role_id)
 VALUES
-  ('admin@example.com',    '$2b$12$examplehashadmin..............', true,  false, 1),
-  ('employer1@example.com','$2b$12$examplehashemp1...............', true,  false, 2),
-  ('employer2@example.com','$2b$12$examplehashemp2...............', true,  false, 2),
-  ('cand1@example.com',    '$2b$12$examplehashcand1..............', true,  false, 3),
-  ('cand2@example.com',    '$2b$12$examplehashcand2..............', true,  false, 3);
+  ('admin@devmatch.com', crypt('admin', gen_salt('bf', 12)), true,  false, 1),
+  ('employer1@example.com', crypt('employer1', gen_salt('bf', 12)), true,  false, 2),
+  ('employer2@example.com', crypt('employer2', gen_salt('bf', 12)), true,  false, 2),
+  ('cand1@example.com', crypt('cand1', gen_salt('bf', 12)), true,  false, 3),
+  ('cand2@example.com', crypt('cand2', gen_salt('bf', 12)), true,  false, 3);
 
 -- ===== Admin (ties to user 1) =====
 INSERT INTO admins (user_id) VALUES (1);

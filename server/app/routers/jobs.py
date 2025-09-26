@@ -7,6 +7,7 @@ from app import schemas
 from app import models
 from app.services import jobs, applications, recommendations
 from app.schemas import common, job
+from app.utils.auth import require_roles
 
 router = APIRouter()
 
@@ -44,7 +45,7 @@ async def get_job(id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_job(id: int, db: AsyncSession = Depends(get_db)):
+async def delete_job(id: int, db: AsyncSession = Depends(get_db), current_user = Depends(require_roles("employer"))):
     deleted = await jobs.delete_job_by_id(db, id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Job not found")
@@ -56,6 +57,7 @@ async def update_job(
     id: int,
     job_update: schemas.JobUpdate,
     db: AsyncSession = Depends(get_db),
+    current_user = Depends(require_roles("employer"))
 ):
     job = await jobs.update_job_by_id(db, id, job_update)
     if not job:
@@ -67,6 +69,7 @@ async def update_job(
 async def create_new_job(
     job_create: schemas.JobCreate,
     db: AsyncSession = Depends(get_db),
+    current_user = Depends(require_roles("employer"))
 ):
     job = await jobs.create_job(db, job_create)
     return schemas.JobRead.model_validate(job, from_attributes=True)
@@ -77,6 +80,7 @@ async def apply_to_job(
     id: int,
     payload: schemas.ApplicationCreate,
     db: AsyncSession = Depends(get_db),
+    current_user = Depends(require_roles("candidate"))
 ):
     return await applications.create_application(db, payload, id)
 
@@ -85,6 +89,7 @@ async def apply_to_job(
 async def list_job_apps(
     id: int,
     db: AsyncSession = Depends(get_db),
+    current_user = Depends(require_roles("employer"))
 ):
     return await applications.list_applications_for_job(db, id)
 
@@ -96,6 +101,7 @@ async def list_ranked_applications_for_job(
     limit: int = Query(20, ge=1, le=200),
     min_score: float = Query(0.0, ge=0.0, le=1.0),
     db: AsyncSession = Depends(get_db),
+    current_user = Depends(require_roles("candidate"))
 ):
 
     recs = await recommendations.rank_applications_for_job(db, id, limit=limit)
