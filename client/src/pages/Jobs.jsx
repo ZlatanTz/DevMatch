@@ -85,7 +85,7 @@ export const Jobs = () => {
             ))}
           </section>
 
-          <div className="flex justify-center gap-2 my-2 bottom-0 bg-white/50 py-4">
+          <div className="flex justify-center gap-2 mt-2 bottom-0 py-4">
             {getPages().map((p, i) =>
               p === "..." ? (
                 <span key={i} className="px-3 py-1">
