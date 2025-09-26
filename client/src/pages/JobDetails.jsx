@@ -425,7 +425,7 @@ const JobDetails = () => {
           </div>
         )}
         {!candidateLoggedIn && (
-          <Link to="/login">
+          <Link to="/login" state={{ from: window.location.pathname }}>
             <button
               onClick={handleLogIn}
               className="w-full bg-emerald text-white mb-8 py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"

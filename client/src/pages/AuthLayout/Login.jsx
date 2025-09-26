@@ -1,7 +1,7 @@
 import AuthSidebar from "./AuthSidebar";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import { loginSchema } from "@/schemas/loginSchemas";
 import Input from "./Input";
@@ -10,6 +10,8 @@ import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/";
   const { login } = useAuth();
   const {
     register,
@@ -23,7 +25,8 @@ const Login = () => {
   const onSubmit = (data) => {
     // TODO: Call API service
     login(data);
-    navigate("/");
+    // navigate("/");
+    navigate(from, { replace: true });
   };
   return (
     <div className="flex flex-col lg:flex-row w-full min-h-[100vh]">
