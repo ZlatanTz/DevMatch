@@ -43,6 +43,7 @@ async def register_new_candidate(db: AsyncSession, data):
         country=data.candidate.country,
         tel=data.candidate.tel,
         img_path=data.candidate.img_path,
+        prefers_remote=data.candidate.prefers_remote,
     )
     db.add(new_candidate)
     
