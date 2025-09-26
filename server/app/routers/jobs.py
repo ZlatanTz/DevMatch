@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
-
+from typing import List, Dict
+from sqlalchemy import select
 from app.core import get_db
 from app import schemas
-from app.services import jobs, applications
+from app import models
+from app.services import jobs, applications, recommendations
 from app.schemas import common, job
 
 router = APIRouter()
@@ -88,3 +89,41 @@ async def list_job_apps(
     return await applications.list_applications_for_job(db, id)
 
 
+
+@router.get("/{id}/ranked-applications", response_model=List[schemas.ApplicationRecommendation])
+async def list_ranked_applications_for_job(
+    id: int,
+    limit: int = Query(20, ge=1, le=200),
+    min_score: float = Query(0.0, ge=0.0, le=1.0),
+    db: AsyncSession = Depends(get_db),
+):
+
+    recs = await recommendations.rank_applications_for_job(db, id, limit=limit)
+    recs = [r for r in recs if r.get("score", 0.0) >= min_score]
+    if not recs:
+        return []
+
+
+    cand_ids = [r["candidate_id"] for r in recs if r.get("candidate_id") is not None]
+    rows = (await db.execute(select(models.Candidate).where(models.Candidate.id.in_(cand_ids)))).scalars().all()
+    cand_by_id: Dict[int, models.Candidate] = {c.id: c for c in rows}
+
+   
+    out: List[schemas.ApplicationRecommendation] = []
+    for r in recs:
+        cid = r.get("candidate_id")
+        if cid is None:
+            continue
+        candidate = cand_by_id.get(cid)
+        if candidate is None:
+            continue
+        out.append(
+            schemas.ApplicationRecommendation(
+                application_id=r["application_id"],
+                candidate=schemas.CandidateRead.model_validate(candidate, from_attributes=True),
+                score=float(r["score"]),
+                parts=r.get("parts", {}),
+                reasons=r.get("reasons", []),
+            )
+        )
+    return out

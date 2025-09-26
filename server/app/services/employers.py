@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from app.models import Employer, User
+from app.models import Employer, User, Role
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..services.users import get_user
 from fastapi import HTTPException
@@ -27,10 +27,10 @@ async def list_employers(db: AsyncSession):
 
     return employers_with_email
 async def get_employer(user_id: int, db: AsyncSession):
-
     result = await db.execute(
-        select(Employer, User.email)
+        select(Employer, User.email, Role.name)
         .join(User, Employer.user_id == User.id)
+        .join(Role, User.role_id == Role.id)
         .where(Employer.user_id == user_id)
     )
     

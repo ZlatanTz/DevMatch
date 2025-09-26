@@ -13,6 +13,8 @@ class CandidateBase(BaseModel):
     country: Optional[str] = None
     tel: Optional[str] = None
     img_path: Optional[str] = None
+    prefers_remote: Optional[bool] = None
+    seniority: Optional[str] = None
 
 class CandidateCreate(CandidateBase):
     skills: Optional[List[int]] = []  # list of skill IDs
@@ -25,7 +27,8 @@ class CandidateUpdate(BaseModel):
     bio: Optional[str] = None
     resume_url: Optional[str] = None
     desired_salary: Optional[int] = None
-    skills: Optional[List[int]] = None  #
+    skills: Optional[List[int]] = None
+    email: Optional[str] = None  #
 
 class CandidateRead(CandidateBase):
     model_config = {"from_attributes": True}

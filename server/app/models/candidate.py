@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Optional, TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, Text, ForeignKey, Index
+from sqlalchemy import Integer, String, Text, ForeignKey, Index, Boolean
 from app.core import Base
 from .associations import candidate_skills
 
@@ -25,6 +25,7 @@ class Candidate(Base):
     country: Mapped[Optional[str]] = mapped_column(String(100))
     tel: Mapped[Optional[str]] = mapped_column(String(20))
     img_path: Mapped[Optional[str]] = mapped_column(String(255))
+    prefers_remote: Mapped[Optional[bool]] = mapped_column(Boolean)
     user: Mapped["User"] = relationship(back_populates="candidate")
     applications: Mapped[list["Application"]] = relationship(back_populates="candidate", cascade="all, delete-orphan")
     skills: Mapped[List["Skill"]] = relationship(

@@ -11,7 +11,7 @@ router = APIRouter()
 async def get_application(application_id: int, db: AsyncSession = Depends(get_db)):
     return await applications.get_application(db, application_id)
 
-@router.patch("/{application_id}", response_model=schemas.ApplicationOut)
+@router.put("/{application_id}", response_model=schemas.ApplicationOut)
 async def update_application(application_id: int, update: schemas.ApplicationUpdate, db: AsyncSession = Depends(get_db)):
     if update.status is not None:
         return await applications.update_application_status(db, application_id, update.status)
