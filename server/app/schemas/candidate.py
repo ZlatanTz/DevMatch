@@ -34,4 +34,6 @@ class CandidateRead(CandidateBase):
     model_config = {"from_attributes": True}
     id: int
     user_id: int
-    skills: List[SkillRead] = []
+    email: Optional[str] = None
+    role: Optional[str] = None
+    skills: List[SkillRead] = Field(default_factory=list)
