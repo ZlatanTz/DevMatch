@@ -15,6 +15,7 @@ from app.core.config import settings
 
 SECRET_KEY = settings.JWT_SECRET
 ALGORITHM = "HS256"
+REFRESH_TOKEN = settings.REFRESH_TOKEN_EXPIRE_DAYS
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
 ROLE_MAP = {
@@ -41,6 +42,12 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def create_refresh_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN)
+    to_encode.update({"exp": expire, "scope": "refresh_token"})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def decode_token(token: str) -> Dict[str, Any]:
