@@ -2,6 +2,7 @@ import api from "../api";
 
 export const getAllJobs = async (params = {}) => {
   try {
+
     const response = await api.get("/jobs/", {
       params: {
         page: 1,
@@ -71,5 +72,6 @@ export const getHighestRatedJobs = async (params = {}) => {
   } catch (error) {
     console.error(error);
     throw error;
+
   }
 };

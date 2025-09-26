@@ -130,3 +130,4 @@ INSERT INTO applications (
    5, 'senior', ARRAY['JavaScript','React','Node.js']::varchar[], '/cv/luka.pdf', NULL, 'pending');
 
 COMMIT;
+

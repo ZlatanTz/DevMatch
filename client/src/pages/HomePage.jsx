@@ -1,7 +1,7 @@
 import { getAllJobsDetailed, getHighestRatedJobs } from "@/api/services/jobs";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import ServerResponseWrapper from "@/components/ServerResponseWrapper";
 import {
   Carousel,
   CarouselContent,
@@ -16,20 +16,24 @@ const HomePage = () => {
   const [highestPaidJobs, setHighestPaidJobs] = useState([]);
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorStatus, setErrorStatus] = useState(null);
 
   useEffect(() => {
     Promise.all([getAllJobsDetailed(), getHighestRatedJobs()])
       .then(([jobsData, highestPaidData]) => {
         setJobs(jobsData.items || []);
         setHighestPaidJobs(highestPaidData.items || []);
+
       })
-      .catch((err) => {
-        setError(err.message || "Something went wrong");
+      .catch(() => {
+        setIsError(true);
+        setErrorStatus(500);
       })
       .finally(() => {
-        setLoading(false);
+        setIsLoading(false);
       });
   }, []);
 
@@ -132,7 +136,7 @@ const HomePage = () => {
             </Carousel>
           </div>
         </div>
-      </div>
+
 
       {/* Highest paid */}
       <div className="col-span-1 order-last lg:order-none">
@@ -149,14 +153,33 @@ const HomePage = () => {
                     <span className="inline-flex items-center justify-center rounded-full bg-emerald text-white text-[11px] px-2 py-1 shadow-sm">
                       #{index + 1}
                     </span>
-                  </div>
 
-                  <p className="text-xs sm:text-sm font-semibold mb-1 pr-10 line-clamp-2">
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Top Rated */}
+        <div className="col-span-1 lg:col-span-4">
+          <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">Top rated</h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {jobs.slice(0, visibleCount).map((job) => (
+                <Link
+                  key={job.id}
+                  to={`/jobs/${job.id}`}
+                  className="block rounded-2xl border-2 border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                >
+                  <h3 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">
                     {job.title}
-                  </p>
-                  <p className="text-[11px] sm:text-xs text-muted-foreground mb-2 truncate">
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">
                     {job.company}
                   </p>
+
                   <p className="text-sm sm:text-base font-extrabold text-emerald">
                     {job.min_salary}€ – {job.max_salary}€
                   </p>
@@ -192,29 +215,30 @@ const HomePage = () => {
                   <div className="flex text-yellow-400" aria-hidden="true">
                     {"★".repeat(4)}
                     {"☆".repeat(1)}
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
 
-          {jobs.length > 6 && (
-            <div className="flex justify-center mt-4 sm:mt-6">
-              <Button
-                onClick={
-                  visibleCount >= jobs.length
-                    ? () => setVisibleCount(6)
-                    : () => setVisibleCount((prev) => prev + 6)
-                }
-                className="bg-emerald text-white hover:bg-emerald/80 px-4 py-2 sm:py-4 w-28 sm:w-32 text-sm sm:text-base rounded-full shadow-md"
-              >
-                {visibleCount >= jobs.length ? "Show Less" : "Load More"}
-              </Button>
+                  </div>
+                </Link>
+              ))}
             </div>
-          )}
+
+            {jobs.length > 6 && (
+              <div className="flex justify-center mt-4 sm:mt-6">
+                <Button
+                  onClick={
+                    visibleCount >= jobs.length
+                      ? () => setVisibleCount(6)
+                      : () => setVisibleCount((prev) => prev + 6)
+                  }
+                  className="bg-emerald text-white hover:bg-emerald/80 px-4 py-2 sm:py-4 w-28 sm:w-32 text-sm sm:text-base rounded-full shadow-md"
+                >
+                  {visibleCount >= jobs.length ? "Show Less" : "Load More"}
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </ServerResponseWrapper>
   );
 };
 
