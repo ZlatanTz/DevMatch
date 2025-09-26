@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core import get_db
-from app.schemas.user import UserRead, UserUpdate
+from app.schemas.user import ResetPasswordRequest, UserRead, UserUpdate
 from app.models.user import User
-from app.utils.auth import get_current_user
+from app.utils.auth import get_current_user, hash_password, verify_password
 from app.schemas.candidate import CandidateUpdate
 from app.schemas.employer import EmployerUpdate
 from app.models.skill import Skill
@@ -56,4 +56,18 @@ async def update_me(
 
     else:
         raise HTTPException(status_code=403, detail="Role not allowed for update")
+
+@router.put("/reset-password")
+async def reset_password(
+    data: ResetPasswordRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if not verify_password(data.old_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Old password is incorrect")
+
+    current_user.hashed_password = hash_password(data.new_password)
+
+    await db.commit()
+    return {"message": "Password updated successfully"}
 
