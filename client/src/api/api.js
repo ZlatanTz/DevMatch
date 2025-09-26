@@ -6,6 +6,8 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+
+  // TODO: Create Request and Response API interceptor
 });
 
 export default api;
