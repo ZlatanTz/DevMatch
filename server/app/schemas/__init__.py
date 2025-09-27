@@ -2,7 +2,7 @@ from .skill import SkillBase, SkillCreate, SkillRead
 from .user import UserBase, UserCreate, UserUpdate, UserRead
 from .candidate import CandidateBase, CandidateCreate, CandidateUpdate, CandidateRead
 from .employer import EmployerBase, EmployerRead
-from .job import JobBase, JobCreate, JobUpdate, JobRead
+from .job import JobBase, JobCreate, JobUpdate, JobRead, JobReadDetailed
 from .role import RoleBase, RoleCreate, RoleRead
 from .application import ApplicationBase, ApplicationCreate, ApplicationOut, ApplicationUpdate, ApplicationStatus
 from .recommendation import JobRecommendation, ApplicationRecommendation
@@ -23,7 +23,7 @@ __all__ = [
     "EmployerBase", "EmployerRead",
 
     # Job
-    "JobBase", "JobCreate", "JobUpdate", "JobRead",
+    "JobBase", "JobCreate", "JobUpdate", "JobRead", "JobReadDetailed",
 
     # Application
     "ApplicationBase", "ApplicationCreate", "ApplicationOut", "ApplicationUpdate", "ApplicationStatus",

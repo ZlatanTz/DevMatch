@@ -4,10 +4,11 @@ import SkillTag from "./SkillTag";
 export default function SkillList({
   names = [],
   max = 8,
-  pageSize = 6,
+  pageSize = 5,
   value, // optional controlled: string[]
   defaultValue = [], // uncontrolled initial selection
   onChange, // (selected: string[]) => void
+  clickable = false,
 }) {
   // Normalize names -> array of strings
   const list = useMemo(() => {
@@ -66,20 +67,28 @@ export default function SkillList({
   return (
     <div className="flex gap-2 flex-wrap">
       {shown.map((name) => (
-        <SkillTag key={name} isSelected={selectedSet.has(name)} onClick={() => toggle(name)}>
+        <SkillTag
+          key={name}
+          isSelected={selectedSet.has(name)}
+          onClick={clickable ? () => toggle(name) : undefined}
+          clickable={clickable}
+        >
           {name}
         </SkillTag>
       ))}
 
-      {extra > 0 && (
-        <button
-          type="button"
-          onClick={() => setCurrentMax((n) => n + pageSize)}
-          className="px-2 py-1 rounded bg-emerald hover:bg-emerald/80 text-white text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-        >
-          Load more
-        </button>
-      )}
+      {extra > 0 &&
+        (clickable ? (
+          <button
+            type="button"
+            onClick={() => setCurrentMax((n) => n + pageSize)}
+            className="px-2 py-1 rounded bg-emerald hover:bg-emerald/80 text-white text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+          >
+            Load more
+          </button>
+        ) : (
+          <span className="px-2 py-1 rounded bg-gray-300 text-gray-700 text-xs">+{extra} more</span>
+        ))}
     </div>
   );
 }

@@ -6,14 +6,16 @@ import BasicModal from "./JobModal";
 export function JobCard({
   id,
   title,
-  company,
   location,
   employment_type,
   description,
   skills = [],
+  employer,
 }) {
+  // console.log(skills);
+  const skill_ids = skills.map((skill) => skill.id);
   const { getNamesForIds } = useSkills();
-  const skillNames = getNamesForIds(skills);
+  const skillNames = getNamesForIds(skill_ids);
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6 flex flex-col h-full">
@@ -26,7 +28,7 @@ export function JobCard({
       </div>
 
       <div className="mt-2 flex items-center text-sm text-paynes-gray gap-3">
-        <span>{company}</span>
+        <span>{employer.company_name}</span>
         <span>•</span>
         <span>{location}</span>
       </div>
