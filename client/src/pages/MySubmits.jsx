@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getAllCandidateApplications } from "@/api/services/applications";
-import { getJobById, getJobByIdDetailed } from "@/api/services/jobs";
+import { getJobByIdDetailed } from "@/api/services/jobs";
 import { useSkills } from "@/hooks/useSkills";
 import SkillList from "../components/SkillList";
 
@@ -18,8 +18,7 @@ export default function MySubmits() {
         setApplications(apps);
 
         const jobIds = [...new Set(apps.map((app) => app.job_id))];
-
-        const jobsData = await Promise.all(jobIds.map((id) => getJobById(id)));
+        const jobsData = await Promise.all(jobIds.map((id) => getJobByIdDetailed(id)));
         setJobs(jobsData);
       } catch (error) {
         console.error("Failed to fetch applications/jobs:", error);
@@ -29,13 +28,23 @@ export default function MySubmits() {
     if (userId) fetchApplicationsAndJobs();
   }, [userId]);
 
-  const findJobById = (jobId) => {
-    return jobs.find((job) => job.id === jobId);
-  };
+  const mergedApplications = useMemo(() => {
+    return applications.map((app) => {
+      const job = jobs.find((j) => j.id === app.job_id);
+      return {
+        ...app,
+        job: job
+          ? {
+              ...job,
+              formattedDate: new Date(job.created_at).toLocaleDateString("en-GB"),
+            }
+          : null,
+      };
+    });
+  }, [applications, jobs]);
 
-  const handleApplicationClick = (application) => {
-    const job = findJobById(application.job_id);
-    setSelectedJob(job);
+  const handleApplicationClick = (mergedApp) => {
+    setSelectedJob(mergedApp.job);
   };
 
   const closeModal = () => {
@@ -44,47 +53,48 @@ export default function MySubmits() {
 
   const skillIds = selectedJob?.skills?.map((skill) => skill.id) || [];
   const skillNames = getNamesForIds(skillIds);
+
   return (
     <div className="p-6">
       <h1 className="text-2xl text-emerald font-bold mb-4">My Job Applications</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {applications.map((application) => (
+        {mergedApplications.map((mergedApp) => (
           <div
-            key={application.id}
+            key={mergedApp.id}
             className="p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors hover:shadow-md h-full flex flex-col"
-            onClick={() => handleApplicationClick(application)}
+            onClick={() => handleApplicationClick(mergedApp)}
           >
             <h3 className="font-semibold text-lg text-federal-blue mb-2 line-clamp-2">
-              {application.job_id}
+              {mergedApp.job?.title || mergedApp.job_id}
             </h3>
-            <p className="text-gray-600 mb-2">{application.company}</p>
+            <p className="text-gray-600 mb-2">{mergedApp.job.employer.company_name}</p>
 
             <div className="mb-2">
               <span
                 className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                  application.status === "in_review"
+                  mergedApp.status === "in_review"
                     ? "bg-blue-100 text-blue-800"
-                    : application.status === "applied"
+                    : mergedApp.status === "applied"
                       ? "bg-green-100 text-green-800"
                       : "bg-gray-100 text-gray-800"
                 }`}
               >
-                {application.status === "in_review"
+                {mergedApp.status === "in_review"
                   ? "In Review"
-                  : application.status === "applied"
+                  : mergedApp.status === "applied"
                     ? "Applied"
-                    : application.status}
+                    : mergedApp.status}
               </span>
             </div>
 
             <div className="mt-auto space-y-1">
               <p className="text-gray-500 text-sm">
-                <span className="font-medium">Score:</span> {application.score}/100
+                <span className="font-medium">Score:</span> {mergedApp.score}/100
               </p>
               <p className="text-gray-500 text-sm">
                 <span className="font-medium">Applied:</span>{" "}
-                {new Date(application.created_at).toLocaleDateString()}
+                {new Date(mergedApp.created_at).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -107,12 +117,12 @@ export default function MySubmits() {
               <div className="min-w-0">
                 <img
                   src={selectedJob.company_img}
-                  alt={`${selectedJob.company} logo`}
+                  alt={`${selectedJob.employer.company_name} logo`}
                   className="w-full h-48 sm:h-56 md:h-64 object-contain object-center rounded-lg mb-6 shadow-md mx-auto"
                 />
 
                 <div className="flex flex-col items-center space-y-2 sm:flex-row sm:flex-wrap sm:justify-around sm:space-y-0 p-4 rounded-lg mb-8 bg-federal-blue text-white">
-                  <p className="mx-2 font-medium">{selectedJob.company}</p>
+                  <p className="mx-2 font-medium">{selectedJob.employer.company_name}</p>
                   <p className="mx-2 font-medium">{selectedJob.title}</p>
                   <p className="mx-2 font-medium">{selectedJob.location}</p>
                   <p className="mx-2 font-medium">{selectedJob.seniority}</p>
@@ -140,27 +150,58 @@ export default function MySubmits() {
                         ))}
                       </ul>
                     </div>
-                    <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200 md:self-start order-1 md:order-2">
-                      <div className="flex justify-start items-center mb-4">
-                        <p className="text-paynes-gray font-medium">Status:</p>
-                        <p className="text-gray-700 pl-1">
-                          {selectedJob.status === "open" ? "Open" : "Closed"}
-                        </p>
-                      </div>
+                    <div className="flex flex-col gap-6 order-1 md:order-2 lg:w-3/10 md:w-4/10">
+                      <div className="job-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Status:</p>
+                          <p className="text-gray-700 pl-1">
+                            {status === "open" ? "Open" : "Closed"}
+                          </p>
+                        </div>
 
-                      <div className="flex justify-start items-center mb-4">
-                        <p className="text-paynes-gray font-medium">Date posted:</p>
-                        <p className="text-gray-700 pl-1">{selectedJob.formattedDate}</p>
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Date posted:</p>
+                          <p className="text-gray-700 pl-1">{selectedJob.employer.company_name}</p>
+                        </div>
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Location:</p>
+                          <p className="text-gray-700 pl-1">{selectedJob.location}</p>
+                        </div>
+                        <div className="flex justify-start items-center ">
+                          <p className="text-paynes-gray font-medium">Salary:</p>
+                          <p className="text-gray-700 pl-1">
+                            {selectedJob.min_salary}€ - {selectedJob.max_salary}€
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex justify-start items-center mb-4">
-                        <p className="text-paynes-gray font-medium">Location:</p>
-                        <p className="text-gray-700 pl-1">{selectedJob.location}</p>
-                      </div>
-                      <div className="flex justify-start items-center ">
-                        <p className="text-paynes-gray font-medium">Salary:</p>
-                        <p className="text-gray-700 pl-1">
-                          {selectedJob.min_salary}€ - {selectedJob.max_salary}€
-                        </p>
+                      <div className="employer-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Compamy:</p>
+                          <p className="text-gray-700 pl-1">{selectedJob.employer.company_name}</p>
+                        </div>
+
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Location :</p>
+                          <p className="text-gray-700 pl-1">{selectedJob.employer.location}</p>
+                        </div>
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Country:</p>
+                          <p className="text-gray-700 pl-1">{selectedJob.employer.country}</p>
+                        </div>
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Phone:</p>
+                          <p className="text-gray-700 pl-1">{selectedJob.employer.tel}</p>
+                        </div>
+                        <div className="flex justify-start items-center ">
+                          <p className="text-paynes-gray font-medium">Website:</p>
+                          <a
+                            href={selectedJob.employer.website}
+                            target="_blank"
+                            className="text-gray-700 pl-1"
+                          >
+                            {selectedJob.employer.website}
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>

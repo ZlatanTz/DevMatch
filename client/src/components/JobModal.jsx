@@ -90,27 +90,54 @@ export default function BasicModal({ id }) {
                         ))}
                       </ul>
                     </div>
-                    <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200 md:self-start order-1 md:order-2">
-                      <div className="flex justify-start items-center mb-4">
-                        <p className="text-paynes-gray font-medium">Status:</p>
-                        <p className="text-gray-700 pl-1">
-                          {status === "open" ? "Open" : "Closed"}
-                        </p>
-                      </div>
+                    <div className="flex flex-col gap-6 order-1 md:order-2 lg:w-3/10 md:w-4/10">
+                      <div className="job-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Status:</p>
+                          <p className="text-gray-700 pl-1">
+                            {status === "open" ? "Open" : "Closed"}
+                          </p>
+                        </div>
 
-                      <div className="flex justify-start items-center mb-4">
-                        <p className="text-paynes-gray font-medium">Date posted:</p>
-                        <p className="text-gray-700 pl-1">{formattedDate}</p>
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Date posted:</p>
+                          <p className="text-gray-700 pl-1">{formattedDate}</p>
+                        </div>
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Location:</p>
+                          <p className="text-gray-700 pl-1">{location}</p>
+                        </div>
+                        <div className="flex justify-start items-center ">
+                          <p className="text-paynes-gray font-medium">Salary:</p>
+                          <p className="text-gray-700 pl-1">
+                            {min_salary}€ - {max_salary}€
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex justify-start items-center mb-4">
-                        <p className="text-paynes-gray font-medium">Location:</p>
-                        <p className="text-gray-700 pl-1">{location}</p>
-                      </div>
-                      <div className="flex justify-start items-center ">
-                        <p className="text-paynes-gray font-medium">Salary:</p>
-                        <p className="text-gray-700 pl-1">
-                          {min_salary}€ - {max_salary}€
-                        </p>
+                      <div className="employer-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Compamy:</p>
+                          <p className="text-gray-700 pl-1">{employer.company_name}</p>
+                        </div>
+
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Location :</p>
+                          <p className="text-gray-700 pl-1">{employer.location}</p>
+                        </div>
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Country:</p>
+                          <p className="text-gray-700 pl-1">{employer.country}</p>
+                        </div>
+                        <div className="flex justify-start items-center mb-4">
+                          <p className="text-paynes-gray font-medium">Phone:</p>
+                          <p className="text-gray-700 pl-1">{employer.tel}</p>
+                        </div>
+                        <div className="flex justify-start items-center ">
+                          <p className="text-paynes-gray font-medium">Website:</p>
+                          <a href={employer.website} target="_blank" className="text-gray-700 pl-1">
+                            {employer.website}
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
