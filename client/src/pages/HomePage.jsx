@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 
+import Autoplay from "embla-carousel-autoplay";
+
 const HomePage = () => {
   const [jobs, setJobs] = useState([]);
   const [highestPaidJobs, setHighestPaidJobs] = useState([]);
@@ -81,9 +83,10 @@ const HomePage = () => {
                 className="w-full"
                 opts={{
                   align: "start",
-                  loop: false,
+                  loop: true,
                   initial: 0,
                 }}
+                plugins={[Autoplay({ delay: 2000 })]}
               >
                 <CarouselContent className="flex gap-3 sm:gap-4">
                   {sortByNewest(jobs)
