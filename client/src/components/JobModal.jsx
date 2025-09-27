@@ -54,7 +54,7 @@ export default function BasicModal({ id }) {
             </div>
 
             <div className="overflow-y-auto flex-grow">
-              <div className="min-w-0">
+              <div className="container mx-auto">
                 <img
                   src={company_img}
                   alt={`${employer_id} logo`}

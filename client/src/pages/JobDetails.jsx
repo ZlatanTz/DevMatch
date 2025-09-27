@@ -394,10 +394,10 @@ const JobDetails = () => {
                   onChange={handleInputChange}
                 >
                   <option value="">Seniority</option>
-                  <option value="intern">Intern</option>
-                  <option value="junior">Junior</option>
-                  <option value="medior">Medior</option>
-                  <option value="senior">Senior</option>
+                  <option value="Intern">Intern</option>
+                  <option value="Junior">Junior</option>
+                  <option value="Medior">Medior</option>
+                  <option value="Senior">Senior</option>
                 </select>
               </div>
 
