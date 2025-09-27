@@ -49,3 +49,7 @@ class EmployerRead(EmployerBase):
 class UserWithProfile(UserOut):
     candidate: Optional[CandidateRead] = None
     employer: Optional[EmployerRead] = None
+
+class ResetPasswordRequest(BaseModel):
+    old_password: str
+    new_password: str

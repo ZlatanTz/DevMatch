@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Set
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models import Job, Candidate, Skill, Application
-from sqlalchemy import select
+from app.models import Job, Candidate, Skill, Application, job_skills
+from sqlalchemy import select, func, exists
 from sqlalchemy.orm import selectinload
+from app.schemas.job import JobListQuery
+
 
 SENIORITY_RANK = {
   'intern': 0,
@@ -256,3 +258,77 @@ async def recommend_jobs_for_candidate(db: AsyncSession, candidate_id: int, limi
 
     results.sort(key=lambda r: r["score"], reverse=True)
     return results[:limit]
+
+
+async def recommend_jobs_for_candidate_filtered(
+    db: AsyncSession,
+    candidate_id: int,
+    q: JobListQuery,
+    min_score: float = 0.0,
+) -> List[dict]:
+    cand: Candidate | None = await db.get(Candidate, candidate_id)
+    if not cand:
+        return []
+
+    try:
+        await db.refresh(cand, attribute_names=["skills"])
+    except Exception:
+        pass
+
+    cand_skill_names = _collect_skill_names(getattr(cand, "skills", []))
+
+    stmt = select(Job).where(Job.status == "open")
+
+    if q.title_contains:
+        stmt = stmt.where(func.lower(Job.title).ilike(f"%{q.title_contains.lower()}%"))
+
+    if q.is_remote is not None:
+        stmt = stmt.where(Job.is_remote.is_(q.is_remote))
+
+    if q.seniorities:
+        stmt = stmt.where(func.lower(Job.seniority).in_([s.lower() for s in q.seniorities]))
+
+    if q.skill_ids_any:
+        stmt = stmt.where(
+            exists(
+                select(1)
+                .select_from(job_skills)
+                .where(
+                    job_skills.c.job_id == Job.id,
+                    job_skills.c.skill_id.in_(q.skill_ids_any),
+                )
+            )
+        )
+
+    stmt = stmt.options(selectinload(Job.skills))
+
+    jobs = (await db.execute(stmt)).scalars().all()
+    if not jobs:
+        return []
+
+    recs: List[dict] = []
+    for job in jobs:
+        job_skill_names = _collect_skill_names(getattr(job, "skills", []))
+        sb = _score(
+            cand_skills=cand_skill_names,
+            job_skills=job_skill_names,
+            is_remote=bool(job.is_remote),
+            cand_remote_pref=getattr(cand, "prefers_remote", None),
+            desired_salary=getattr(cand, "desired_salary", None),
+            min_salary=job.min_salary,
+            max_salary=job.max_salary,
+            cand_seniority=getattr(cand, "seniority", None),
+            job_seniority=job.seniority,
+        )
+        if sb.total >= min_score:
+            recs.append({
+                "job": job,
+                "job_id": job.id,
+                "score": sb.total,
+                "parts": sb.parts,
+                "reasons": sb.reasons,
+                "created_at": job.created_at,
+                "max_salary": job.max_salary,
+            })
+
+    return recs

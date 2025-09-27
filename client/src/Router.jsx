@@ -20,7 +20,6 @@ import ManageUsers from "./pages/Admin/ManageUsers";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
-import { applicationsLoader } from "./routes/loaders/applicationsLoader";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -47,7 +46,7 @@ export const router = createBrowserRouter([
         loader: jobLoader,
         errorElement: <ErrorPage />,
       },
-      { path: "applications", element: <MySubmits />, loader: applicationsLoader },
+      { path: "applications", element: <MySubmits />, loader: jobsLoader },
       { path: "contact", element: <Contact /> },
       { path: "profile/:id", element: <Profile />, loader: profileLoader },
       { path: "profile/edit/:id", element: <EditProfile />, loader: profileLoader },

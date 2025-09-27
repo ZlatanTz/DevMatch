@@ -31,14 +31,7 @@ async def get_user_by_email(db: AsyncSession, email: str):
 _pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
-    # kodiramo u UTF-8 i uzimamo prvih 72 bytes
-    truncated_bytes = password.encode('utf-8')[:72]
-    # dekodiramo nazad u string ignorirajući nepotpune byte-ove na kraju
-    truncated_password = truncated_bytes.decode('utf-8', 'ignore')
-    return _pwd_ctx.hash(truncated_password)
-
-
-
+    return _pwd_ctx.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return _pwd_ctx.verify(plain_password, hashed_password)

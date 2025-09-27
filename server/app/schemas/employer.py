@@ -20,3 +20,11 @@ class EmployerRead(EmployerBase):
     id: int
     user_id: int
     model_config = {"from_attributes": True}
+
+class EmployerUpdate(BaseModel):
+    company_name: Optional[str] = None
+    website: Optional[str] = None
+    about: Optional[str] = None
+    location: Optional[str] = None
+    country: Optional[str] = None
+    tel: Optional[str] = None

@@ -1,11 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAllCandidateApplications } from "@/api/services/applications";
+import { getJobById, getJobByIdDetailed } from "@/api/services/jobs";
 import { useSkills } from "@/hooks/useSkills";
-import { useLoaderData } from "react-router-dom";
 import SkillList from "../components/SkillList";
 
 export default function MySubmits() {
-  const { applications, jobs } = useLoaderData();
+  const [applications, setApplications] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+  const { getNamesForIds } = useSkills();
+  const userId = 1;
+
+  useEffect(() => {
+    const fetchApplicationsAndJobs = async () => {
+      try {
+        const apps = await getAllCandidateApplications(userId);
+        setApplications(apps);
+
+        const jobIds = [...new Set(apps.map((app) => app.job_id))];
+
+        const jobsData = await Promise.all(jobIds.map((id) => getJobById(id)));
+        setJobs(jobsData);
+        console.log(jobsData);
+      } catch (error) {
+        console.error("Failed to fetch applications/jobs:", error);
+      }
+    };
+
+    if (userId) fetchApplicationsAndJobs();
+  }, [userId]);
 
   const findJobById = (jobId) => {
     return jobs.find((job) => job.id === jobId);
@@ -20,7 +43,6 @@ export default function MySubmits() {
     setSelectedJob(null);
   };
 
-  const { getNamesForIds } = useSkills();
   const skillNames = getNamesForIds(selectedJob?.skills);
 
   return (
@@ -28,47 +50,46 @@ export default function MySubmits() {
       <h1 className="text-2xl text-emerald font-bold mb-4">My Job Applications</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {applications &&
-          applications.map((application) => (
-            <div
-              key={application.id}
-              className="p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors hover:shadow-md h-full flex flex-col"
-              onClick={() => handleApplicationClick(application)}
-            >
-              <h3 className="font-semibold text-lg text-federal-blue mb-2 line-clamp-2">
-                {application.job_title}
-              </h3>
-              <p className="text-gray-600 mb-2">{application.company}</p>
+        {applications.map((application) => (
+          <div
+            key={application.id}
+            className="p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors hover:shadow-md h-full flex flex-col"
+            onClick={() => handleApplicationClick(application)}
+          >
+            <h3 className="font-semibold text-lg text-federal-blue mb-2 line-clamp-2">
+              {application.job_id}
+            </h3>
+            <p className="text-gray-600 mb-2">{application.company}</p>
 
-              <div className="mb-2">
-                <span
-                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    application.status === "in_review"
-                      ? "bg-blue-100 text-blue-800"
-                      : application.status === "applied"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800"
-                  }`}
-                >
-                  {application.status === "in_review"
-                    ? "In Review"
+            <div className="mb-2">
+              <span
+                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                  application.status === "in_review"
+                    ? "bg-blue-100 text-blue-800"
                     : application.status === "applied"
-                      ? "Applied"
-                      : application.status}
-                </span>
-              </div>
-
-              <div className="mt-auto space-y-1">
-                <p className="text-gray-500 text-sm">
-                  <span className="font-medium">Score:</span> {application.score}/100
-                </p>
-                <p className="text-gray-500 text-sm">
-                  <span className="font-medium">Applied:</span>{" "}
-                  {new Date(application.applied_at).toLocaleDateString()}
-                </p>
-              </div>
+                      ? "bg-green-100 text-green-800"
+                      : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {application.status === "in_review"
+                  ? "In Review"
+                  : application.status === "applied"
+                    ? "Applied"
+                    : application.status}
+              </span>
             </div>
-          ))}
+
+            <div className="mt-auto space-y-1">
+              <p className="text-gray-500 text-sm">
+                <span className="font-medium">Score:</span> {application.score}/100
+              </p>
+              <p className="text-gray-500 text-sm">
+                <span className="font-medium">Applied:</span>{" "}
+                {new Date(application.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
 
       {selectedJob && (
@@ -124,7 +145,7 @@ export default function MySubmits() {
                       <div className="flex justify-start items-center mb-4">
                         <p className="text-paynes-gray font-medium">Status:</p>
                         <p className="text-gray-700 pl-1">
-                          {status === "open" ? "Open" : "Closed"}
+                          {selectedJob.status === "open" ? "Open" : "Closed"}
                         </p>
                       </div>
 
@@ -148,7 +169,7 @@ export default function MySubmits() {
               </div>
             </div>
 
-            <div className="flex justify-center pt-4 ">
+            <div className="flex justify-center pt-4">
               <button
                 onClick={closeModal}
                 className="px-6 py-2 bg-emerald rounded-lg hover:brightness-90 transition-colors text-lg text-white"
