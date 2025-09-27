@@ -15,8 +15,7 @@ from app.core.config import settings
 
 SECRET_KEY = settings.JWT_SECRET
 ALGORITHM = "HS256"
-REFRESH_TOKEN = settings.REFRESH_TOKEN_EXPIRE_DAYS
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
+ACCESS_TOKEN_EXPIRE_MINUTES = 180
 
 ROLE_MAP = {
     1: "admin",

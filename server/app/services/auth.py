@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models import User, Candidate
-from app.utils.auth import ROLE_MAP, create_access_token, create_refresh_token, get_user_by_email, hash_password, verify_password
+from app.utils.auth import ROLE_MAP, create_access_token, get_user_by_email, hash_password, verify_password
 from app.models.skill import Skill
 from app.schemas.employer import EmployerRegister
 from app.models.employer import Employer
@@ -104,14 +104,12 @@ async def login_user(db: AsyncSession, email: str, password: str):
         )
 
     access_token = create_access_token({"sub": str(user.id), "role": user.role_id})
-    refresh_token = create_refresh_token({"sub": str(user.id)})
-    
+
     user_dict = user.__dict__.copy()
     user_dict["role"] = ROLE_MAP.get(user.role_id, "unknown")
 
     return {
         "access_token": access_token,
-        "refresh_token": refresh_token,
         "token_type": "bearer",
     }
 
