@@ -1,29 +1,12 @@
-// export async function applicationsLoader({ request }) {
-//   const url = `${import.meta.env.BASE_URL}mock/applications.json`;
-//   const res = await fetch(url, { signal: request.signal });
-
-//   if (!res.ok) {
-//     throw new Response("Failed to load jobs", { status: res.status });
-//   }
-
-//   const data = await res.json();
-//   await new Promise((resolve) => setTimeout(resolve, 700));
-
-//   return data;
-// }
-
 export async function applicationsLoader({ request }) {
-  // Učitaj applications.json
   const url = `${import.meta.env.BASE_URL}mock/applications.json`;
   const res = await fetch(url, { signal: request.signal });
   if (!res.ok) {
     throw new Response("Failed to load applications", { status: res.status });
   }
-
   const applications = await res.json();
   await new Promise((resolve) => setTimeout(resolve, 700));
 
-  // Učitaj jobs.json
   const url2 = `${import.meta.env.BASE_URL}mock/jobs.json`;
   const res2 = await fetch(url2, { signal: request.signal });
   if (!res.ok) {

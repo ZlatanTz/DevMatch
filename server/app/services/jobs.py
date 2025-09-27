@@ -114,3 +114,18 @@ async def list_jobs(q: JobListQuery, db: AsyncSession) -> Tuple[Sequence[Job], i
 
     rows = (await db.execute(stmt)).scalars().all()
     return rows, total
+
+
+async def list_jobs_with_employer(q, db):
+    stmt = select(Job).options(selectinload(Job.employer))
+    total = await db.scalar(select(func.count()).select_from(Job))
+    rows = (
+        await db.execute(stmt.offset((q.page-1)*q.page_size).limit(q.page_size))
+    ).scalars().all()
+    return rows, total
+
+async def get_job_with_employer(db, job_id: int):
+    stmt = select(Job).options(selectinload(Job.employer)).where(Job.id == job_id)
+    result = await db.execute(stmt)
+    job = result.scalar_one_or_none()
+    return job

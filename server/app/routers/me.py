@@ -70,4 +70,3 @@ async def reset_password(
 
     await db.commit()
     return {"message": "Password updated successfully"}
-
