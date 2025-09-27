@@ -5,6 +5,7 @@ import { useSkills } from "../hooks/useSkills";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
+import { applyToJob } from "@/api/services/applications";
 
 const JobDetails = () => {
   const job = useLoaderData();
@@ -122,43 +123,12 @@ const JobDetails = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const submitData = {
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      email: formData.email,
-      year_of_birth: formData.birthYear,
-      phone: formData.phone,
-      location: formData.location,
-      years_experience: formData.experience,
-      seniority_level: formData.seniority,
-      skills: formData.skills,
-      cover_letter: formData.coverLetter || "",
-      candidate_id: user.id,
-    };
-
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs/${id}/apply/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          //Authorization: `Bearer ${user.token}`, //token iz OAuth2
-        },
-        body: JSON.stringify(submitData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error applying:", errorData);
-        alert(errorData.detail || "Something went wrong");
-        return;
-      }
-
-      const data = await response.json();
+      const data = await applyToJob(id, user, formData);
       console.log("Application submitted:", data);
       alert("Application submitted successfully!");
     } catch (err) {
-      console.error("Network error:", err);
-      alert("Network error, try again later.");
+      alert(err.response?.data?.detail || "Something went wrong");
     }
   };
 
