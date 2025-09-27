@@ -80,9 +80,6 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="User not found")
     if user.is_suspended:
         raise HTTPException(status_code=403, detail="Account suspended")
-    if not user.is_active:
-        raise HTTPException(status_code=403, detail="Account inactive")
-
     return user
 
 def require_roles(*allowed_roles: str):
