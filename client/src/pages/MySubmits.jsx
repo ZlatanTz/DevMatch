@@ -162,7 +162,7 @@ export default function MySubmits() {
                           <div className="flex justify-start items-center mb-4">
                             <p className="text-paynes-gray font-medium">Status:</p>
                             <p className="text-gray-700 pl-1">
-                              {status === "open" ? "Open" : "Closed"}
+                              {selectedApp.job.status === "open" ? "Open" : "Closed"}
                             </p>
                           </div>
 
