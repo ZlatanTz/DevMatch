@@ -5,6 +5,7 @@ import { useSkills } from "../hooks/useSkills";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
+import { applyToJob } from "@/api/services/applications";
 
 const JobDetails = () => {
   const job = useLoaderData();
@@ -119,24 +120,16 @@ const JobDetails = () => {
     setVisibleCount(3);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const submissionData = {
-      ...formData,
-      jobId: id,
-    };
-
-    const submitFormData = new FormData();
-    Object.keys(submissionData).forEach((key) => {
-      if (key === "cv") {
-        submitFormData.append(key, submissionData[key]);
-      } else {
-        submitFormData.append(key, submissionData[key]);
-      }
-    });
-
-    console.log("Form submission data:", Object.fromEntries(submitFormData));
+    try {
+      const data = await applyToJob(id, user, formData);
+      console.log("Application submitted:", data);
+      alert("Application submitted successfully!");
+    } catch (err) {
+      alert(err.response?.data?.detail || "Something went wrong");
+    }
   };
 
   if (!job) {
@@ -170,7 +163,7 @@ const JobDetails = () => {
 
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
-          <div className="job-description lg:w-7/10 md:w-6/10 p-6 rounded-lg shadow border border-gray-200">
+          <div className="job-description lg:w-7/10 md:w-6/10 p-6 rounded-lg shadow border border-gray-200 order-2 md:order-1">
             <p className="font-semibold text-federal-blue text-2xl">About the job</p>
             <p className="mb-4 text-gray-700">{company_description}</p>
             <p className="font-semibold text-paynes-gray">The role entails:</p>
@@ -187,30 +180,57 @@ const JobDetails = () => {
               ))}
             </ul>
           </div>
-          <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200 md:self-start">
-            <div className="flex justify-start items-center mb-4">
-              <p className="text-paynes-gray font-medium">Status:</p>
-              <p className="text-gray-700 pl-1">{status === "open" ? "Open" : "Closed"}</p>
-            </div>
+          <div className="flex flex-col gap-6 order-1 md:order-2 lg:w-3/10 md:w-4/10">
+            <div className="job-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Status:</p>
+                <p className="text-gray-700 pl-1">{status === "open" ? "Open" : "Closed"}</p>
+              </div>
 
-            <div className="flex justify-start items-center mb-4">
-              <p className="text-paynes-gray font-medium">Date posted:</p>
-              <p className="text-gray-700 pl-1">{formattedDate}</p>
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Date posted:</p>
+                <p className="text-gray-700 pl-1">{formattedDate}</p>
+              </div>
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Location:</p>
+                <p className="text-gray-700 pl-1">{location}</p>
+              </div>
+              <div className="flex justify-start items-center ">
+                <p className="text-paynes-gray font-medium">Salary:</p>
+                <p className="text-gray-700 pl-1">
+                  {min_salary}€ - {max_salary}€
+                </p>
+              </div>
             </div>
-            <div className="flex justify-start items-center mb-4">
-              <p className="text-paynes-gray font-medium">Location:</p>
-              <p className="text-gray-700 pl-1">{location}</p>
-            </div>
-            <div className="flex justify-start items-center ">
-              <p className="text-paynes-gray font-medium">Salary:</p>
-              <p className="text-gray-700 pl-1">
-                {min_salary}€ - {max_salary}€
-              </p>
+            <div className="employer-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Compamy:</p>
+                <p className="text-gray-700 pl-1">{employer.company_name}</p>
+              </div>
+
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Location :</p>
+                <p className="text-gray-700 pl-1">{employer.location}</p>
+              </div>
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Country:</p>
+                <p className="text-gray-700 pl-1">{employer.country}</p>
+              </div>
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Phone:</p>
+                <p className="text-gray-700 pl-1">{employer.tel}</p>
+              </div>
+              <div className="flex justify-start items-center ">
+                <p className="text-paynes-gray font-medium">Website:</p>
+                <a href={employer.website} target="_blank" className="text-gray-700 pl-1">
+                  {employer.website}
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
-        {candidateLoggedIn && (
+        {candidateLoggedIn ? (
           <div className="job-apply-form bg-white p-6 rounded-lg shadow-md border border-gray-200">
             <h2 className="text-xl font-bold text-center mb-4 text-federal-blue">
               Apply for a job{" "}
@@ -367,10 +387,10 @@ const JobDetails = () => {
                   onChange={handleInputChange}
                 >
                   <option value="">Seniority</option>
-                  <option value="intern">Intern</option>
-                  <option value="junior">Junior</option>
-                  <option value="medior">Medior</option>
-                  <option value="senior">Senior</option>
+                  <option value="Intern">Intern</option>
+                  <option value="Junior">Junior</option>
+                  <option value="Medior">Medior</option>
+                  <option value="Senior">Senior</option>
                 </select>
               </div>
 
@@ -423,8 +443,7 @@ const JobDetails = () => {
               </button>
             </form>
           </div>
-        )}
-        {!candidateLoggedIn && (
+        ) : (
           <Link to="/login" state={{ from: window.location.pathname }}>
             <button
               onClick={handleLogIn}

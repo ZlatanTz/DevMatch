@@ -20,31 +20,30 @@ export default function Header() {
   const [isLogged, setIsLogged] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  // const [dark, setDark] = useState(() => localStorage.getItem("theme") === "dark");
-
-  // useEffect(() => {
-  //   if (dark) {
-  //     document.documentElement.classList.add("dark");
-  //     localStorage.setItem("theme", "dark");
-  //   } else {
-  //     document.documentElement.classList.remove("dark");
-  //     localStorage.setItem("theme", "light");
-  //   }
-  // }, [dark]);
+  const [jobsOpen, setJobsOpen] = useState(false);
+  const [selectedJobSort, setSelectedJobSort] = useState(""); // novo
+  const hideJobsTimeout = useRef(null);
 
   const location = useLocation();
   const avatarBtnRef = useRef(null);
   const userDropdownRef = useRef(null);
   const nav = useNavigation();
   const isLoading = nav.state !== "idle";
+
+  // const route =
+  //   user.role.name === "candidate"
+  //     ? "/applications"
+  //     : user.role.name === "employer"
+  //       ? "/jobpostings"
+  //       : "/admin";
+
   useEffect(() => {
     setDropdownOpen(false);
     setMobileOpen(false);
     if (user != null) {
       setIsLogged(true);
     }
-  }, [location.pathname]);
+  }, [location.pathname, user]);
 
   useEffect(() => {
     function handleDocClick(e) {
@@ -94,15 +93,32 @@ export default function Header() {
               <NavLink
                 to="/"
                 className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkInactive}`}
+                onClick={() => {
+                  setSelectedJobSort("");
+                }}
               >
                 Home
               </NavLink>
-              <div className="relative group">
+
+              {/* Desktop Jobs dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={() => {
+                  clearTimeout(hideJobsTimeout.current);
+                  setJobsOpen(true);
+                }}
+                onMouseLeave={() => {
+                  hideJobsTimeout.current = setTimeout(() => setJobsOpen(false), 150);
+                }}
+              >
                 <NavLink
                   to="/jobs"
                   className={({ isActive }) =>
                     `${linkBase} ${isActive ? linkActive : linkInactive} inline-flex items-center`
                   }
+                  onClick={() => {
+                    setSelectedJobSort("Newest");
+                  }}
                 >
                   Jobs
                   <svg
@@ -115,62 +131,30 @@ export default function Header() {
                   </svg>
                 </NavLink>
 
-                <div
-                  className="absolute left-0 top-full pt-2 opacity-0 translate-y-1 transition
-                  duration-150 ease-out group-hover:opacity-100 group-hover:translate-y-0"
-                >
-                  <div className="w-64 rounded-xl bg-federal-blue/95 p-2 shadow-lg ring-1 ring-white/10 backdrop-blur">
-                    <NavLink
-                      to={{ pathname: "/jobs", search: "?sort=date-desc" }}
-                      className={({ isActive }) =>
-                        `block rounded-lg px-3 py-2 text-sm ${
-                          isActive
-                            ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
-                            : "text-white/85 hover:text-emerald hover:bg-white/5"
-                        }`
-                      }
-                    >
-                      Newest
-                    </NavLink>
-                    <NavLink
-                      to={{ pathname: "/jobs", search: "?sort=date-asc" }}
-                      className={({ isActive }) =>
-                        `block rounded-lg px-3 py-2 text-sm ${
-                          isActive
-                            ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
-                            : "text-white/85 hover:text-emerald hover:bg-white/5"
-                        }`
-                      }
-                    >
-                      Oldest
-                    </NavLink>
-                    <NavLink
-                      to={{ pathname: "/jobs", search: "?sort=salary-desc" }}
-                      className={({ isActive }) =>
-                        `block rounded-lg px-3 py-2 text-sm ${
-                          isActive
-                            ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
-                            : "text-white/85 hover:text-emerald hover:bg-white/5"
-                        }`
-                      }
-                    >
-                      Salary High → Low
-                    </NavLink>
-                    <NavLink
-                      to={{ pathname: "/jobs", search: "?sort=salary-asc" }}
-                      className={({ isActive }) =>
-                        `block rounded-lg px-3 py-2 text-sm ${
-                          isActive
-                            ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
-                            : "text-white/85 hover:text-emerald hover:bg-white/5"
-                        }`
-                      }
-                    >
-                      Salary Low → High
-                    </NavLink>
+                {jobsOpen && (
+                  <div className="absolute left-0 top-full pt-2 transition duration-150 ease-out">
+                    <div className="w-64 rounded-xl bg-federal-blue/95 p-2 shadow-lg ring-1 ring-white/10 backdrop-blur">
+                      {sortLinks.map((item) => (
+                        <NavLink
+                          key={item.label}
+                          to={item.to}
+                          className={({ isActive }) =>
+                            `block px-3 py-2 text-sm transition-colors ${
+                              selectedJobSort === item.label
+                                ? "rounded-xl text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                                : "text-white/85 hover:text-emerald hover:bg-white/5"
+                            }`
+                          }
+                          onClick={() => setSelectedJobSort(item.label)}
+                        >
+                          {item.label}
+                        </NavLink>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
+
               {navItems.map((item) => (
                 <NavLink
                   key={item.to}
@@ -178,6 +162,9 @@ export default function Header() {
                   className={({ isActive }) =>
                     `${linkBase} ${isActive ? linkActive : linkInactive}`
                   }
+                  onClick={() => {
+                    setSelectedJobSort("");
+                  }}
                 >
                   {item.label}
                 </NavLink>
@@ -259,6 +246,7 @@ export default function Header() {
                     >
                       <div className="flex flex-col">
                         <NavLink
+                          // to={route}
                           to="/applications"
                           className={({ isActive }) =>
                             `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
@@ -268,6 +256,7 @@ export default function Header() {
                             }`
                           }
                         >
+                          {/* {route} */}
                           My Applications
                         </NavLink>
                         <NavLink
@@ -297,12 +286,6 @@ export default function Header() {
                   )}
                 </div>
               )}
-              {/* <button
-                onClick={() => setDark(!dark)}
-                className="mt-6 px-4 py-2 rounded bg-gray-200 dark:bg-gray-700"
-              >
-                Toggle Dark Mode
-              </button> */}
             </div>
           </div>
         </div>
@@ -313,22 +296,42 @@ export default function Header() {
             <nav className="flex flex-col p-2">
               {/* Jobs with sort links */}
               <div className="flex flex-col">
-                <span className="px-3 py-3 text-base font-semibold text-white/90">Jobs</span>
-                {sortLinks.map((item) => (
-                  <NavLink
-                    key={item.label}
-                    to={item.to}
-                    className={({ isActive }) =>
-                      `ml-4 rounded-xl px-3 py-2 text-sm transition-colors ${
-                        isActive
-                          ? "text-emerald bg-white/5"
-                          : "text-white/85 hover:text-emerald hover:bg-white/5"
-                      }`
-                    }
+                <div
+                  onClick={() => setJobsOpen((v) => !v)}
+                  className="flex items-center justify-between px-3 py-3"
+                >
+                  <button className="text-base font-semibold text-white/90">Jobs</button>
+                  <button
+                    onClick={() => setJobsOpen((v) => !v)}
+                    className="text-white/70 hover:text-emerald"
                   >
-                    {item.label}
-                  </NavLink>
-                ))}
+                    {jobsOpen ? "▲" : "▼"}
+                  </button>
+                </div>
+
+                {jobsOpen && (
+                  <div className="flex flex-col ml-4">
+                    {sortLinks.map((item) => (
+                      <NavLink
+                        key={item.label}
+                        to={item.to}
+                        className={({ isActive }) =>
+                          `rounded-xl px-3 py-2 text-base transition-colors ${
+                            selectedJobSort === item.label
+                              ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                              : "text-white/85 hover:text-emerald hover:bg-white/5"
+                          }`
+                        }
+                        onClick={() => {
+                          setSelectedJobSort(item.label);
+                          setMobileOpen(false);
+                        }}
+                      >
+                        {item.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="my-3 h-px bg-white/10" />
@@ -344,6 +347,9 @@ export default function Header() {
                         : "text-white/90 hover:text-emerald hover:bg-white/5"
                     }`
                   }
+                  onClick={() => {
+                    setSelectedJobSort("");
+                  }}
                 >
                   {item.label}
                 </NavLink>
@@ -369,6 +375,7 @@ export default function Header() {
               ) : (
                 <div className="flex flex-col">
                   <NavLink
+                    // to={route}
                     to="/applications"
                     className={({ isActive }) =>
                       `rounded-xl px-3 py-3 text-base transition-colors ${
@@ -378,6 +385,7 @@ export default function Header() {
                       }`
                     }
                   >
+                    {/* {route} */}
                     My Applications
                   </NavLink>
                   <NavLink
