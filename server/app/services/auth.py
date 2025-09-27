@@ -85,6 +85,7 @@ async def register_new_employer(db: AsyncSession, data: EmployerRegister):
         location=data.employer.location,
         country=data.employer.country,
         tel=data.employer.tel,
+        company_logo=data.employer.company_logo
     )
     db.add(new_employer)
 
