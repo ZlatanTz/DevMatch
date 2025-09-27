@@ -381,7 +381,7 @@ const JobDetails = () => {
                 >
                   Skill <span className="text-emerald">*</span>
                 </label>
-                <AllSkillsList max={3} value={true} onChange={handleSkillsChange} />
+                <AllSkillsList max={5} value={true} onChange={handleSkillsChange} />
               </div>
 
               <div>

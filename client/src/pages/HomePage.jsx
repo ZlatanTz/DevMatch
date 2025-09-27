@@ -72,7 +72,7 @@ const HomePage = () => {
         <div className="col-span-1 lg:col-span-3">
           <div className="relative h-full rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
             <div className="absolute inset-0 rounded-2xl pointer-events-none bg-gradient-to-tr from-federal-blue/5 via-paynes-gray/5 to-emerald/5" />
-            <h2 className="relative text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
+            <h2 className="relative text-xl text-federal-blue sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
               Latest Jobs
             </h2>
 
@@ -145,9 +145,9 @@ const HomePage = () => {
         </div>
 
         {/* Highest paid */}
-        <div className="col-span-1 order-last lg:order-none">
+        <div className="col-span-1 order-1 lg:order-none">
           <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 h-full shadow-sm">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
+            <h2 className="text-xl text-federal-blue sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
               Top 3 highest-paid
             </h2>
 
@@ -178,9 +178,11 @@ const HomePage = () => {
         </div>
 
         {/* Top Rated */}
-        <div className="col-span-1 lg:col-span-4">
+        <div className="col-span-1 lg:col-span-4 order-2 lg:order-none">
           <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">Top rated</h2>
+            <h2 className="text-xl text-federal-blue sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
+              Top rated
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {jobs.slice(0, visibleCount).map((job) => (

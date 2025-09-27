@@ -43,7 +43,7 @@ export default function BasicModal({ id }) {
 
       {open && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-[90vw] h-[90vh] relative flex flex-col">
+          <div className="bg-white rounded-2xl shadow-xl w-[90vw] h-[90vh] p-4 md:p-6 flex flex-col overflow-hidden">
             <div className="flex justify-end mb-4">
               <button
                 onClick={() => setOpen(false)}
@@ -54,7 +54,7 @@ export default function BasicModal({ id }) {
             </div>
 
             <div className="overflow-y-auto flex-grow">
-              <div className="max-w-6xl mx-auto px-4 py-4 bg-white min-w-[320px]">
+              <div className="min-w-0">
                 <img
                   src={company_img}
                   alt={`${employer_id} logo`}
@@ -72,7 +72,7 @@ export default function BasicModal({ id }) {
 
                 <div className="container mx-auto">
                   <div className="flex flex-col md:flex-row gap-6 mb-8">
-                    <div className="job-description lg:w-7/10 md:w-6/10 p-6 rounded-lg shadow border border-gray-200">
+                    <div className="job-description lg:w-7/10 md:w-6/10 p-6 rounded-lg shadow border border-gray-200 order-2 md:order-1">
                       <p className="font-semibold text-federal-blue text-2xl">About the job</p>
                       <p className="mb-4 text-gray-700">{company_description}</p>
                       <p className="font-semibold text-paynes-gray">The role entails:</p>
@@ -90,7 +90,7 @@ export default function BasicModal({ id }) {
                         ))}
                       </ul>
                     </div>
-                    <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200 md:self-start">
+                    <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200 md:self-start order-1 md:order-2">
                       <div className="flex justify-start items-center mb-4">
                         <p className="text-paynes-gray font-medium">Status:</p>
                         <p className="text-gray-700 pl-1">

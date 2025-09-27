@@ -5,7 +5,7 @@ export const getAllJobs = async (params = {}) => {
     const response = await api.get("/jobs/", {
       params: {
         page: 1,
-        page_size: 15,
+        page_size: 18,
         sort_by: "created_at",
         sort_dir: "desc",
         ...params,
@@ -23,7 +23,7 @@ export const getAllJobsDetailed = async (params = {}) => {
     const response = await api.get("/jobs/detailed/", {
       params: {
         page: 1,
-        page_size: 15,
+        page_size: 18,
         sort_by: "created_at",
         sort_dir: "desc",
         ...params,
@@ -61,7 +61,7 @@ export const getHighestRatedJobs = async (params = {}) => {
     const response = await api.get("/jobs/", {
       params: {
         page: 1,
-        page_size: 15,
+        page_size: 18,
         sort_by: "max_salary",
         sort_dir: "desc",
         ...params,

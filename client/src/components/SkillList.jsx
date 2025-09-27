@@ -4,7 +4,7 @@ import SkillTag from "./SkillTag";
 export default function SkillList({
   names = [],
   max = 8,
-  pageSize = 6,
+  pageSize = 5,
   value, // optional controlled: string[]
   defaultValue = [], // uncontrolled initial selection
   onChange, // (selected: string[]) => void

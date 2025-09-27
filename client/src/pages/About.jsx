@@ -1,16 +1,16 @@
-import Logo from "../assets/devmatch.svg";
+// import Logo from "../assets/devmatch.svg";
 import ProfileIcon from "../assets/profileIcon.jpg";
 const About = () => {
   return (
     <section id="about-us" className="py-16 px-6 lg:px-20 bg-background text-foreground">
       <div className="max-w-5xl mx-auto">
-        <div className="flex justify-center mb-12">
+        {/* <div className="flex justify-center mb-12">
           <img
             src={Logo}
             alt="Contact illustration"
             className="w-1/2 max-w-md  rounded-xl shadow-md p-8"
           />
-        </div>
+        </div> */}
 
         <h2 className=" text-4xl font-bold text-center mb-12 text-emerald">About Us</h2>
 

@@ -38,7 +38,7 @@ function Contact() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-[50px] mb-[50px] grid grid-cols-1 md:grid-cols-2 items-center">
+    <div className="max-w-5xl mx-auto mt-[50px] mb-[20px] grid grid-cols-1 md:grid-cols-2 items-center">
       <div className="bg-white p-6 rounded-xl shadow">
         <h1 className="text-2xl font-bold mb-6">Contact Us</h1>
 
@@ -106,11 +106,14 @@ function Contact() {
         </Form>
       </div>
       <div className="flex justify-center">
-        <img src={Logo} alt="Contact illustration" className="w-full max-w-md rounded-xl p-4" />
+        <img
+          src={Logo}
+          alt="Contact illustration"
+          className="w-full max-w-[200px] sm:max-w-[250px] mx-4 mt-4 md:max-w-[350px] mx-4 mt-4  lg:max-w-[450px] mx-4 mt-4 xl:max-w-[550px] mx-4 mt-4 rounded-xl p-2"
+        />
       </div>
     </div>
   );
 }
 
 export default Contact;
-//service_u7hd7lb service id
