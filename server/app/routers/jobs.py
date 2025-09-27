@@ -82,7 +82,7 @@ async def apply_to_job(
     db: AsyncSession = Depends(get_db),
     current_user = Depends(require_roles("candidate"))
 ):
-    return await applications.create_application(db, payload, id)
+    return await applications.create_application(db, payload, id, current_user.id)
 
 
 @router.get("/{id}/applications", response_model=List[schemas.ApplicationOut])
@@ -101,7 +101,7 @@ async def list_ranked_applications_for_job(
     limit: int = Query(20, ge=1, le=200),
     min_score: float = Query(0.0, ge=0.0, le=1.0),
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(require_roles("candidate"))
+    current_user = Depends(require_roles("employer"))
 ):
 
     recs = await recommendations.rank_applications_for_job(db, id, limit=limit)

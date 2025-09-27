@@ -19,7 +19,7 @@ class ApplicationBase(BaseModel):
 class ApplicationCreate(ApplicationBase):
     cv_path: str 
     candidate_id: int
-    job_id: int
+
 
 class ApplicationUpdate(BaseModel):
     status: Optional[ApplicationStatus] = None

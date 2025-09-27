@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, TYPE_CHECKING
-from sqlalchemy import String, Integer, DateTime, ForeignKey, Text, func
+from sqlalchemy import String, Integer, DateTime, ForeignKey, Text, func, UniqueConstraint
 from sqlalchemy import Enum as SAEnum
 from app.enums.application_status import ApplicationStatus
 
@@ -44,5 +44,8 @@ class Application(Base):
     candidate: Mapped["Candidate"] = relationship(back_populates="applications")
     job: Mapped["Job"] = relationship(back_populates="applications")
 
+    __table_args__ = (
+        UniqueConstraint("job_id", "candidate_id", name="uq_application_job_candidate"),
+    )
     def __repr__(self) -> str:
         return f"<Application id={self.id} job_id={self.job_id} candidate_id={self.candidate_id} status={self.status}>"
