@@ -30,6 +30,13 @@ export default function Header() {
   const nav = useNavigation();
   const isLoading = nav.state !== "idle";
 
+  // const route =
+  //   user.role.name === "candidate"
+  //     ? "/applications"
+  //     : user.role.name === "employer"
+  //       ? "/jobpostings"
+  //       : "/admin";
+
   useEffect(() => {
     setDropdownOpen(false);
     setMobileOpen(false);
@@ -239,6 +246,7 @@ export default function Header() {
                     >
                       <div className="flex flex-col">
                         <NavLink
+                          // to={route}
                           to="/applications"
                           className={({ isActive }) =>
                             `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
@@ -248,6 +256,7 @@ export default function Header() {
                             }`
                           }
                         >
+                          {/* {route} */}
                           My Applications
                         </NavLink>
                         <NavLink
@@ -366,6 +375,7 @@ export default function Header() {
               ) : (
                 <div className="flex flex-col">
                   <NavLink
+                    // to={route}
                     to="/applications"
                     className={({ isActive }) =>
                       `rounded-xl px-3 py-3 text-base transition-colors ${
@@ -375,6 +385,7 @@ export default function Header() {
                       }`
                     }
                   >
+                    {/* {route} */}
                     My Applications
                   </NavLink>
                   <NavLink

@@ -119,24 +119,47 @@ const JobDetails = () => {
     setVisibleCount(3);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const submissionData = {
-      ...formData,
-      jobId: id,
+    const submitData = {
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      email: formData.email,
+      year_of_birth: formData.birthYear,
+      phone: formData.phone,
+      location: formData.location,
+      years_experience: formData.experience,
+      seniority_level: formData.seniority,
+      skills: formData.skills,
+      cover_letter: formData.coverLetter || "",
+      candidate_id: user.id,
     };
 
-    const submitFormData = new FormData();
-    Object.keys(submissionData).forEach((key) => {
-      if (key === "cv") {
-        submitFormData.append(key, submissionData[key]);
-      } else {
-        submitFormData.append(key, submissionData[key]);
-      }
-    });
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs/${id}/apply/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          //Authorization: `Bearer ${user.token}`, //token iz OAuth2
+        },
+        body: JSON.stringify(submitData),
+      });
 
-    console.log("Form submission data:", Object.fromEntries(submitFormData));
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error applying:", errorData);
+        alert(errorData.detail || "Something went wrong");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Application submitted:", data);
+      alert("Application submitted successfully!");
+    } catch (err) {
+      console.error("Network error:", err);
+      alert("Network error, try again later.");
+    }
   };
 
   if (!job) {
