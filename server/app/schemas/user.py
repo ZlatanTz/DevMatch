@@ -15,6 +15,7 @@ class UserUpdate(BaseModel):
 
 class UserRead(BaseModel):
     id: int
+    email: str
     is_active: bool
     is_suspended: bool
     created_at: datetime
