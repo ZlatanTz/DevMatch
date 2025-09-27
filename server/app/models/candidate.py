@@ -25,6 +25,9 @@ class Candidate(Base):
     seniority: Mapped[Optional[str]] = mapped_column(String)
     desired_salary: Mapped[Optional[int]] = mapped_column(Integer)
     prefers_remote: Mapped[Optional[bool]] = mapped_column(Boolean)
+    country: Mapped[Optional[str]] = mapped_column(String(100))
+    tel: Mapped[Optional[str]] = mapped_column(String(20))
+    img_path: Mapped[Optional[str]] = mapped_column(String(255))
     user: Mapped["User"] = relationship(back_populates="candidate")
     applications: Mapped[list["Application"]] = relationship(back_populates="candidate", cascade="all, delete-orphan")
     skills: Mapped[List["Skill"]] = relationship(
