@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 from app.schemas.role import RoleRead
-from app.schemas.candidate import CandidateBase
-from app.schemas.employer import EmployerBase
+from app.schemas.candidate import CandidateBase, CandidateRead
+from app.schemas.employer import EmployerBase, EmployerRead
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -21,6 +21,13 @@ class UserRead(BaseModel):
     updated_at: datetime
     role: RoleRead
     is_verified: bool
+
+class ExtendedUserRead(UserRead):
+    employer: EmployerRead | None = None
+    candidate: CandidateRead | None = None
+
+class UserActiveStatus(BaseModel):
+    is_active: bool
 
 class UserCreate(BaseModel):
     password: str
