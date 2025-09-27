@@ -9,12 +9,12 @@ export default function MySubmits() {
   const [jobs, setJobs] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
   const { getNamesForIds } = useSkills();
-  const userId = 1;
+  const candidateId = 1;
 
   useEffect(() => {
     const fetchApplicationsAndJobs = async () => {
       try {
-        const apps = await getAllCandidateApplications(userId);
+        const apps = await getAllCandidateApplications(candidateId);
         setApplications(apps);
 
         const jobIds = [...new Set(apps.map((app) => app.job_id))];
@@ -25,8 +25,8 @@ export default function MySubmits() {
       }
     };
 
-    if (userId) fetchApplicationsAndJobs();
-  }, [userId]);
+    if (candidateId) fetchApplicationsAndJobs();
+  }, [candidateId]);
 
   const mergedApplications = useMemo(() => {
     return applications.map((app) => {
