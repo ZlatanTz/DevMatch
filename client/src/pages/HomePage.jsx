@@ -1,4 +1,4 @@
-import { getAllJobs, getHighestRatedJobs } from "@/api/services/jobs";
+import { getAllJobsDetailed, getHighestRatedJobs } from "@/api/services/jobs";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ServerResponseWrapper from "@/components/ServerResponseWrapper";
@@ -22,16 +22,11 @@ const HomePage = () => {
   const [errorStatus, setErrorStatus] = useState(null);
 
   useEffect(() => {
-    Promise.all([getAllJobs(), getHighestRatedJobs()])
-      .then(([jobsRes, highestPaidRes]) => {
-        if (jobsRes.isSuccess && highestPaidRes.isSuccess) {
-          setJobs(jobsRes.data);
-          setHighestPaidJobs(highestPaidRes.data);
-          setIsSuccess(true);
-        } else {
-          setIsError(true);
-          setErrorStatus(jobsRes.errorStatus || highestPaidRes.errorStatus);
-        }
+    Promise.all([getAllJobsDetailed(), getHighestRatedJobs()])
+      .then(([jobsData, highestPaidData]) => {
+        setJobs(jobsData.items || []);
+        setHighestPaidJobs(highestPaidData.items || []);
+        setIsSuccess(true);
       })
       .catch(() => {
         setIsError(true);
@@ -57,7 +52,15 @@ const HomePage = () => {
   const sortByNewest = (jobs) =>
     [...jobs].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-  return (
+  return isLoading ? (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-emerald/90 border-solid"></div>
+    </div>
+  ) : isError ? (
+    <div className="mx-auto max-w-lg mt-8 rounded-xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 text-center shadow-sm">
+      <p className="text-sm text-red-600">{String(error || "erorr")}</p>
+    </div>
+  ) : (
     <ServerResponseWrapper
       isLoading={isLoading}
       isError={isError}
@@ -69,7 +72,7 @@ const HomePage = () => {
         <div className="col-span-1 lg:col-span-3">
           <div className="relative h-full rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
             <div className="absolute inset-0 rounded-2xl pointer-events-none bg-gradient-to-tr from-federal-blue/5 via-paynes-gray/5 to-emerald/5" />
-            <h2 className="relative text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
+            <h2 className="relative text-xl text-federal-blue sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
               Latest Jobs
             </h2>
 
@@ -99,7 +102,7 @@ const HomePage = () => {
                           </h3>
 
                           <p className="relative text-xs sm:text-sm text-muted-foreground text-center mb-1 truncate">
-                            {job.company}
+                            {job.employer.company_name}
                           </p>
 
                           <p className="relative text-xs sm:text-sm text-foreground/80 text-center italic mb-2">
@@ -113,12 +116,10 @@ const HomePage = () => {
                           <div className="relative flex flex-wrap justify-center gap-1.5 mb-2">
                             {job.skills.slice(0, 3).map((skill) => (
                               <span
-                                key={skill}
+                                key={skill.name}
                                 className="px-2 py-1 text-[11px] sm:text-xs rounded-full bg-muted text-foreground/80 border border-border"
                               >
-                                {skill.length > 8
-                                  ? skill.substring(0, 8) + "..."
-                                  : `Skill ${skill}`}
+                                {skill.length > 8 ? skill.substring(0, 8) + "..." : `${skill.name}`}
                               </span>
                             ))}
                             {job.skills.length > 3 && (
@@ -144,14 +145,14 @@ const HomePage = () => {
         </div>
 
         {/* Highest paid */}
-        <div className="col-span-1 order-last lg:order-none">
+        <div className="col-span-1 order-1 lg:order-none">
           <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 h-full shadow-sm">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
+            <h2 className="text-xl text-federal-blue sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
               Top 3 highest-paid
             </h2>
 
             <div className="flex flex-col gap-3">
-              {highestPaidJobs.map((job, index) => (
+              {highestPaidJobs.slice(0, 3).map((job, index) => (
                 <Link key={job.id} to={`/jobs/${job.id}`}>
                   <div className="relative rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all motion-safe:duration-300">
                     <div className="absolute top-2 right-2">
@@ -177,9 +178,11 @@ const HomePage = () => {
         </div>
 
         {/* Top Rated */}
-        <div className="col-span-1 lg:col-span-4">
+        <div className="col-span-1 lg:col-span-4 order-2 lg:order-none">
           <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">Top rated</h2>
+            <h2 className="text-xl text-federal-blue sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
+              Top rated
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {jobs.slice(0, visibleCount).map((job) => (
@@ -192,7 +195,7 @@ const HomePage = () => {
                     {job.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">
-                    {job.company}
+                    {job.employer.company_name}
                   </p>
                   <p className="text-xs italic text-foreground/80 mb-3">{job.employment_type}</p>
 

@@ -5,6 +5,7 @@ import { useSkills } from "../hooks/useSkills";
 import MultiSelect from "@/pages/AuthLayout/MultiSelect";
 
 export default function Toolbar() {
+  const [isCandidate, setIsCandidate] = useState(true);
   const { q, location, seniority, skills, sort, setSearchParams, searchParams } = useJobsFilter();
   const { skills: allSkills = [], loading: skillsLoading } = useSkills();
 
@@ -68,6 +69,7 @@ export default function Toolbar() {
       seniority: values.seniority,
       skills: values.skills,
       sort: values.sort,
+      page: 1,
     });
   };
 
@@ -79,6 +81,7 @@ export default function Toolbar() {
       seniority: [],
       skills: [],
       sort: [],
+      page: 1,
     });
   };
 
@@ -148,21 +151,23 @@ export default function Toolbar() {
             placeholder="Search jobs..."
             className="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="inline-flex items-center gap-2 px-3 py-2 bg-emerald text-white rounded-md "
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-4 h-4"
+          {isCandidate && (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="inline-flex items-center gap-2 px-3 py-2 bg-emerald text-white rounded-md "
             >
-              <path d="M12 5a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H6a1 1 0 110-2h5V6a1 1 0 011-1z" />
-            </svg>
-            Add job
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-4 h-4"
+              >
+                <path d="M12 5a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H6a1 1 0 110-2h5V6a1 1 0 011-1z" />
+              </svg>
+              Add job
+            </button>
+          )}
         </div>
 
         <div className="flex flex-wrap items-start gap-4">
@@ -207,7 +212,7 @@ export default function Toolbar() {
         </div>
       </form>
 
-      {open && (
+      {open && isCandidate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
           <div className="relative bg-white rounded-xl shadow-xl w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto p-6">
@@ -419,7 +424,10 @@ export default function Toolbar() {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 bg-emerald-600 text-white rounded-md">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-emerald hover:bg-emerald/80 text-white rounded-md"
+                >
                   Save job
                 </button>
               </div>

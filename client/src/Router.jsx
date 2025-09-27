@@ -4,6 +4,7 @@ import App from "./App";
 import JobDetails from "./pages/JobDetails";
 import { Jobs } from "./pages/Jobs";
 import { jobsLoader } from "./routes/loaders/jobsLoader";
+import { jobLoader } from "./routes/loaders/jobLoader";
 import EditProfile from "./pages/EditProfile";
 import MySubmits from "./pages/MySubmits";
 import Profile from "./pages/Profile";
@@ -19,7 +20,6 @@ import ManageUsers from "./pages/Admin/ManageUsers";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
-import { applicationsLoader } from "./routes/loaders/applicationsLoader";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -43,10 +43,10 @@ export const router = createBrowserRouter([
       {
         path: "jobs/:id",
         element: <JobDetails />,
-        loader: jobsLoader,
+        loader: jobLoader,
         errorElement: <ErrorPage />,
       },
-      { path: "applications", element: <MySubmits />, loader: applicationsLoader },
+      { path: "applications", element: <MySubmits />, loader: jobsLoader },
       { path: "contact", element: <Contact /> },
       { path: "profile/:id", element: <Profile />, loader: profileLoader },
       { path: "profile/edit/:id", element: <EditProfile />, loader: profileLoader },
