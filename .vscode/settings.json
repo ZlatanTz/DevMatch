@@ -5,5 +5,6 @@
   "eslint.alwaysShowStatus": true,
   "files.associations": { "*.css": "postcss" },
   "css.lint.unknownAtRules": "ignore",
-  "tailwindCSS.emmetCompletions": true
+  "tailwindCSS.emmetCompletions": true,
+  "python-envs.pythonProjects": []
 }
