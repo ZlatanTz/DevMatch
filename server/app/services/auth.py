@@ -51,7 +51,12 @@ async def register_new_candidate(db: AsyncSession, data):
     await db.commit()
     await db.refresh(new_candidate)
 
-    return new_candidate
+    access_token = create_access_token({"sub": str(new_user.id), "role": new_user.role_id})
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
 
 
 async def register_new_employer(db: AsyncSession, data: EmployerRegister):
@@ -86,7 +91,13 @@ async def register_new_employer(db: AsyncSession, data: EmployerRegister):
     await db.commit()
     await db.refresh(new_employer)
 
-    return new_employer
+    access_token = create_access_token({"sub": str(new_user.id), "role": new_user.role_id})
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
+
 
 
 async def login_user(db: AsyncSession, email: str, password: str):

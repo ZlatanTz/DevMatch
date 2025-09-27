@@ -11,15 +11,15 @@ ALGORITHM = settings.ALGORITHM
 
 router = APIRouter()
 
-@router.post("/register-candidate", status_code=status.HTTP_201_CREATED, response_model=MessageRegisterResponse)
+@router.post("/register-candidate", status_code=status.HTTP_201_CREATED, response_model=TokenResponse)
 async def register_candidate(data: RegisterCandidate, db: AsyncSession = Depends(get_db)):
-    await register_new_candidate(db, data)
-    return MessageRegisterResponse(message="Candidate created successfully")
+    return await register_new_candidate(db, data)
 
-@router.post("/register-employer", status_code=status.HTTP_201_CREATED, response_model=MessageRegisterResponse)
+
+@router.post("/register-employer", status_code=status.HTTP_201_CREATED, response_model=TokenResponse)
 async def register_employer(data: EmployerRegister, db: AsyncSession = Depends(get_db)):
-    await register_new_employer(db, data)
-    return MessageRegisterResponse(message="Employer created successfully")
+    return await register_new_employer(db, data)
+    
 
 @router.post("/login", response_model=TokenResponse)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
