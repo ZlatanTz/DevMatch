@@ -210,7 +210,7 @@ export default function MySubmits() {
                             <a
                               href={selectedApp.job.employer.website}
                               target="_blank"
-                              className="text-gray-700 pl-1"
+                              className="text-emerald pl-1"
                             >
                               {selectedApp.job.employer.website}
                             </a>
