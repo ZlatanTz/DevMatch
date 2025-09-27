@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Dict
+from typing import Any, Iterable, Optional, List, Dict, Set, Mapping
+from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 from app.core import get_db
 from app import schemas
@@ -115,41 +116,119 @@ async def list_job_apps(
 
 
 
+
+
+def collect_skill_names(skills: Optional[Iterable[Any]]) -> List[str]:
+    out: List[str] = []
+    for s in skills or []:
+        if s is None:
+            continue
+        if hasattr(s, "name"):         
+            name = getattr(s, "name", "")
+        elif isinstance(s, str):       
+            name = s
+        elif isinstance(s, dict):      
+            name = s.get("name", "")
+        else:
+            continue
+        if name:
+            out.append(name.strip().lower())
+    return out
+
+
 @router.get("/{id}/ranked-applications", response_model=List[schemas.ApplicationRecommendation])
 async def list_ranked_applications_for_job(
     id: int,
     limit: int = Query(20, ge=1, le=200),
     min_score: float = Query(0.0, ge=0.0, le=1.0),
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(require_roles("employer"))
+    current_user = Depends(require_roles("employer")),
 ):
+    # 0) authorize ownership
+    employer = await db.scalar(
+        select(models.Employer).where(models.Employer.user_id == current_user.id)
+    )
+    if not employer:
+        raise HTTPException(status_code=400, detail="employer profile not found")
 
-    recs = await recommendations.rank_applications_for_job(db, id, limit=limit)
-    recs = [r for r in recs if r.get("score", 0.0) >= min_score]
+    job = await db.scalar(select(models.Job).where(models.Job.id == id))
+    if not job:
+        raise HTTPException(status_code=404, detail="job not found")
+    if job.employer_id != employer.id:
+        raise HTTPException(status_code=403, detail="not authorized for this job")
+
+    # 1) get recs
+    recs_raw: List[Mapping[str, Any]] = await recommendations.rank_applications_for_job(db, id, limit=limit)
+
+    # 2) normalize types and apply score filter
+    def to_int(x: Any) -> Optional[int]:
+        if isinstance(x, int):
+            return x
+        if isinstance(x, str) and x.isdigit():
+            return int(x)
+        return None
+
+    recs: List[Dict[str, Any]] = []
+    for r in recs_raw:
+        # score
+        try:
+            score = float(r.get("score", 0.0))
+        except (TypeError, ValueError):
+            continue
+        if score < min_score:
+            continue
+
+        app_id = to_int(r.get("application_id"))
+        cand_id = to_int(r.get("candidate_id"))
+        if app_id is None or cand_id is None:
+            continue
+
+        recs.append({
+            "application_id": app_id,
+            "candidate_id": cand_id,
+            "score": score,
+            "parts": r.get("parts", {}) or {},
+            "reasons": r.get("reasons", []) or [],
+        })
+
     if not recs:
         return []
 
+    # 3) verify applications belong to this job
+    app_ids = [r["application_id"] for r in recs]
+    valid_app_ids: Set[int] = set(
+        (await db.execute(
+            select(models.Application.id).where(
+                models.Application.id.in_(app_ids),
+                models.Application.job_id == id,
+            )
+        )).scalars().all()
+    )
+    recs = [r for r in recs if r["application_id"] in valid_app_ids]
+    if not recs:
+        return []
 
-    cand_ids = [r["candidate_id"] for   r in recs if r.get("candidate_id") is not None]
-    rows = (await db.execute(select(models.Candidate).where(models.Candidate.id.in_(cand_ids)))).scalars().all()
-    cand_by_id: Dict[int, models.Candidate] = {c.id: c for c in rows}
+    # 4) bulk load candidates (and EAGER-LOAD skills if your CandidateRead touches them)
+    candidates = (await db.execute(
+        select(models.Candidate)
+        .options(selectinload(models.Candidate.skills))  # avoids async lazy-load explosions
+        .where(models.Candidate.id.in_([r["candidate_id"] for r in recs]))
+    )).scalars().all()
+    cand_by_id: Dict[int, models.Candidate] = {c.id: c for c in candidates}
 
-   
+    # 5) build response, preserve order
     out: List[schemas.ApplicationRecommendation] = []
     for r in recs:
-        cid = r.get("candidate_id")
-        if cid is None:
-            continue
-        candidate = cand_by_id.get(cid)
-        if candidate is None:
+        candidate = cand_by_id.get(r["candidate_id"])
+        if not candidate:
             continue
         out.append(
             schemas.ApplicationRecommendation(
                 application_id=r["application_id"],
                 candidate=schemas.CandidateRead.model_validate(candidate, from_attributes=True),
-                score=float(r["score"]),
-                parts=r.get("parts", {}),
-                reasons=r.get("reasons", []),
+                score=r["score"],
+                parts=r["parts"],
+                reasons=r["reasons"],
             )
         )
     return out

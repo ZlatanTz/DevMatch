@@ -45,9 +45,12 @@ async def create_application(
         raise HTTPException(status_code=400, detail="already applied to this job")
 
     db_app = models.Application(
-        **application_data.model_dump(exclude={"candidate_id", "job_id"}, exclude_none=True),
+        **application_data.model_dump(
+            exclude={"candidate_id", "job_id"}, exclude_none=True
+        ),
         job_id=job_id,
         candidate_id=candidate_id,
+        skills=application_data.skills or [], 
     )
 
     db.add(db_app)

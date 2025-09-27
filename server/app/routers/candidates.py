@@ -1,5 +1,5 @@
 from typing import List, Dict, Literal
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,7 +7,8 @@ from app.core import get_db
 from app import schemas, models
 from app.services.candidates import list_candidates, get_candidate, candidate_update
 from app.services import applications, recommendations
-from app.utils.auth import require_roles
+from app.utils.auth import require_roles, get_current_user
+
 router = APIRouter()
 
 @router.get("/", response_model=List[schemas.CandidateRead])
@@ -36,26 +37,29 @@ async def list_candidate_apps(candidate_id: int, db: AsyncSession = Depends(get_
 async def list_recommended_jobs(
     candidate_id: int,
     min_score: float = Query(0.0, ge=0.0, le=1.0),
-    limit: int = Query(20, ge=1, le=100),             
+    limit: int = Query(20, ge=1, le=100),
 
-    # new filters
+
     sort_by: Literal["recommended", "created_at", "max_salary"] = Query("recommended"),
     sort_dir: Literal["asc", "desc"] = Query("desc"),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
 
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(require_roles("employer"))
+    current_user = Depends(get_current_user),  
 ):
+    if getattr(current_user, "role", None) != "candidate":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Candidates only")
+    if int(getattr(current_user, "id", 0)) != int(candidate_id):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not your profile")
+
     recs = await recommendations.recommend_jobs_for_candidate(db, candidate_id, limit=limit)
     recs = [r for r in recs if r.get("score", 0.0) >= min_score]
     if not recs:
         return []
 
     job_ids = [r["job_id"] for r in recs]
-    rows = (
-        await db.execute(select(models.Job).where(models.Job.id.in_(job_ids)))
-    ).scalars().all()
+    rows = (await db.execute(select(models.Job).where(models.Job.id.in_(job_ids)))).scalars().all()
     job_by_id: Dict[int, models.Job] = {j.id: j for j in rows}
 
     enriched = []
