@@ -144,7 +144,6 @@ async def list_ranked_applications_for_job(
     db: AsyncSession = Depends(get_db),
     current_user = Depends(require_roles("employer")),
 ):
-    # 0) authorize ownership
     employer = await db.scalar(
         select(models.Employer).where(models.Employer.user_id == current_user.id)
     )
@@ -157,10 +156,10 @@ async def list_ranked_applications_for_job(
     if job.employer_id != employer.id:
         raise HTTPException(status_code=403, detail="not authorized for this job")
 
-    # 1) get recs
-    recs_raw: List[Mapping[str, Any]] = await recommendations.rank_applications_for_job(db, id, limit=limit)
+    
+    recs_raw: List[Mapping[str, Any]] = await recommendations.rank_applications_for_job(db, id, limit=limit) # type: ignore
 
-    # 2) normalize types and apply score filter
+    
     def to_int(x: Any) -> Optional[int]:
         if isinstance(x, int):
             return x
@@ -170,7 +169,6 @@ async def list_ranked_applications_for_job(
 
     recs: List[Dict[str, Any]] = []
     for r in recs_raw:
-        # score
         try:
             score = float(r.get("score", 0.0))
         except (TypeError, ValueError):
@@ -194,7 +192,7 @@ async def list_ranked_applications_for_job(
     if not recs:
         return []
 
-    # 3) verify applications belong to this job
+    
     app_ids = [r["application_id"] for r in recs]
     valid_app_ids: Set[int] = set(
         (await db.execute(
@@ -208,15 +206,15 @@ async def list_ranked_applications_for_job(
     if not recs:
         return []
 
-    # 4) bulk load candidates (and EAGER-LOAD skills if your CandidateRead touches them)
+
     candidates = (await db.execute(
         select(models.Candidate)
-        .options(selectinload(models.Candidate.skills))  # avoids async lazy-load explosions
+        .options(selectinload(models.Candidate.skills))
         .where(models.Candidate.id.in_([r["candidate_id"] for r in recs]))
     )).scalars().all()
     cand_by_id: Dict[int, models.Candidate] = {c.id: c for c in candidates}
 
-    # 5) build response, preserve order
+
     out: List[schemas.ApplicationRecommendation] = []
     for r in recs:
         candidate = cand_by_id.get(r["candidate_id"])
@@ -232,3 +230,28 @@ async def list_ranked_applications_for_job(
             )
         )
     return out
+
+
+@router.get("/by-employer/{employer_id}", response_model=common.Page[schemas.JobRead])
+async def get_jobs_by_employer(
+    employer_id: int,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+):
+    rows, total = await jobs.list_jobs_by_employer_id(db, employer_id, page, page_size)
+
+    pages = (total + page_size - 1) // page_size
+    items: List[schemas.JobRead] = [
+        schemas.JobRead.model_validate(r, from_attributes=True) for r in rows
+    ]
+
+    return common.Page[schemas.JobRead](
+        items=items,
+        meta=common.PageMeta(
+            page=page,
+            page_size=page_size,
+            total=total,
+            pages=pages,
+        ),
+    )

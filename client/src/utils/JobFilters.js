@@ -47,13 +47,13 @@
 //   }
 // }
 
-export function readParams(sp) {
+export function readParams(sp, defaultSort = "date-desc") {
   return {
     q: (sp.get("q") || "").trim().toLowerCase(),
     loc: sp.get("loc") || "",
     sen: sp.get("seniority") || "",
     ski: sp.getAll("skills").map((s) => s.toLowerCase()),
-    sort: sp.get("sort") || "date-desc",
+    sort: sp.get("sort") || defaultSort,
   };
 }
 
@@ -95,6 +95,8 @@ export function filterAndSort(jobs, p) {
       return filtered.sort((a, b) => bySalary(a, b));
     case "salary-desc":
       return filtered.sort((a, b) => -bySalary(a, b));
+    case "recommended":
+      return filtered;
     default:
       return filtered;
   }

@@ -19,7 +19,10 @@ class EmployerBase(BaseModel):
 class EmployerRead(EmployerBase):
     id: int
     user_id: int
-    model_config = {"from_attributes": True}
+
+    name: Optional[str] = Field(default=None, alias="company_name")
+
+    model_config = {"from_attributes": True, "populate_by_name": True}
 
 class EmployerUpdate(BaseModel):
     company_name: Optional[str] = None
