@@ -44,7 +44,7 @@ export default function Toolbar() {
     [],
   );
 
-  const { register, control, handleSubmit, reset } = useForm({
+  const { register, control, handleSubmit, reset, setValue, watch } = useForm({
     defaultValues: {
       q: q || "",
       loc: Array.isArray(location) ? location : [],
@@ -152,7 +152,19 @@ export default function Toolbar() {
             type="text"
             placeholder="Search jobs..."
             className="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            onChange={(e) => {
+              setValue("q", e.target.value);
+              updateParamBatch(searchParams, setSearchParams, {
+                q: e.target.value,
+                loc: watch("loc"),
+                seniority: watch("seniority"),
+                skills: watch("skills"),
+                sort: watch("sort"),
+                page: 1,
+              });
+            }}
           />
+
           {user?.employer && (
             <button
               type="button"
