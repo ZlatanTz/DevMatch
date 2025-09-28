@@ -382,17 +382,17 @@ export default function MySubmits() {
                       <div>
                         <label
                           htmlFor="cv"
-                          className="block text-sm font-medium text-federal-blue mb-1"
+                          className="block text-sm font-medium text-federal-blue mb-2"
                         >
-                          Upload CV (PDF)
+                          CV (PDF)
                         </label>
-                        <input
-                          type="file"
-                          id="cv"
-                          accept=".pdf"
-                          disabled
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
-                        />
+                        <a
+                          href={selectedApp.job_id}
+                          target="_blank"
+                          className=" bg-emerald text-white font-bold  w-full px-3 py-2 border border-gray-300 rounded-md transition text-sm"
+                        >
+                          Get CV
+                        </a>
                       </div>
 
                       <div>
