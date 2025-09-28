@@ -26,8 +26,6 @@ export const AuthProvider = ({ children }) => {
     setToken(data.access_token);
 
     const me = await fetchCurrentUser();
-    console.log("inAuthContext me: ", me);
-
     setUser(me);
   };
 

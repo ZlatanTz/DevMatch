@@ -4,9 +4,30 @@ import { transformEmployerFormToPayload } from "../../transformers/employerTrans
 
 const AUTH_BASE = "/auth";
 
+const LOGIN = `${AUTH_BASE}/login`;
 const REGISTER_CANDIDATE = `${AUTH_BASE}/register-candidate`;
 const REGISTER_EMPLOYER = `${AUTH_BASE}/register-employer`;
-const LOGIN = `${AUTH_BASE}/login`;
+
+export const loginService = async ({ email, password }) => {
+  try {
+    const params = new URLSearchParams();
+    params.append("username", email);
+    params.append("password", password);
+
+    const { data } = await api.post(LOGIN, params, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    return data;
+  } catch (err) {
+    if (err.response?.data?.detail) {
+      throw new Error(err.response.data.detail);
+    }
+    throw new Error("Unexpected error, please try again later");
+  }
+};
 
 export async function registerCandidate(formData) {
   const payload = transformCandidateFormToPayload(formData);
@@ -46,17 +67,3 @@ export async function registerEmployer(formData) {
     throw new Error(error.message || "Unexpected error occurred during employer registration.");
   }
 }
-
-export const loginService = async ({ email, password }) => {
-  const params = new URLSearchParams();
-  params.append("username", email);
-  params.append("password", password);
-
-  const { data } = await api.post(LOGIN, params, {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  });
-
-  return data;
-};

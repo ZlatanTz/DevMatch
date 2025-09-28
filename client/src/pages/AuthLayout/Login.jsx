@@ -16,6 +16,7 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
@@ -27,7 +28,8 @@ const Login = () => {
       await login(formData);
       navigate(from, { replace: true });
     } catch (error) {
-      console.error("Login failed:", error);
+      setError("email", { type: "server", message: error.message });
+      setError("password", { type: "server", message: error.message });
     }
   };
 
