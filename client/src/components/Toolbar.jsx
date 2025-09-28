@@ -165,6 +165,14 @@ export default function Toolbar() {
             }}
           />
 
+          {/* STARI INPUT KOJI CEKA APPLY CHANGES DA SE PRITISNE 
+          <input
+            {...register("q")}
+            type="text"
+            placeholder="Search jobs..."
+            className="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          /> */}
+
           {user?.employer && (
             <button
               type="button"
