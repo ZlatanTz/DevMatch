@@ -78,7 +78,7 @@ export async function getRecommendedJobsFiltered(candidateId, opts = {}) {
   if (candidateId == null) throw new Error("candidateId is required");
 
   const params = {
-    min_score: opts.minScore ?? 0,
+    min_score: opts.minScore ?? 0.5,
     limit: opts.limit ?? 20,
 
     sort_by: opts.sortBy ?? "recommended",

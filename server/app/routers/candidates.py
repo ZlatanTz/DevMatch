@@ -63,7 +63,7 @@ def _user_role_name(user) -> str | None:
 @router.get("/{candidate_id}/recommended-jobs", response_model=List[schemas.JobRecommendation])
 async def list_recommended_jobs(
     candidate_id: int,
-    min_score: float = Query(0.0, ge=0.0, le=1.0),
+    min_score: float = Query(0.5, ge=0.0, le=1.0),
     limit: int = Query(20, ge=1, le=100),
     sort_by: Literal["recommended", "created_at", "max_salary"] = Query("recommended"),
     sort_dir: Literal["asc", "desc"] = Query("desc"),

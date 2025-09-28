@@ -78,12 +78,12 @@ def _salary_match(
 
 def _location_match(is_remote: bool, cand_remote_pref: Optional[bool] = None):
     if is_remote:
-        return 1.0, 'remote role, location flexible'
+        return 1.0, 'Location flexible'
     if cand_remote_pref is None:
-        return 0.5, 'on-site role, candidate pref unknown'
+        return 0.5, ''
     if cand_remote_pref is False:
-        return 1.0, 'candidate prefers on-site, job is on site'
-    return 0.2, 'candidate prefers remote, but job is on-site'
+        return 1.0, 'Job is on-site'
+    return 0.2, ''
 
 
 def _skills_match(cand_skills: Optional[List[str]], job_skills: Optional[List[str]]):
@@ -101,19 +101,19 @@ def _skills_match(cand_skills: Optional[List[str]], job_skills: Optional[List[st
 
     ov_txt = ", ".join(overlap) if overlap else "none"
     miss_txt = ", ".join(missing[:5]) + ("…" if len(missing) > 5 else "")
-    reason = f"skills overlap {round(100 * score)}% (matched: {ov_txt}; missing: {miss_txt or 'none'})"
+    reason = f"Skills overlap {round(100 * score)}% (Matched: {ov_txt.capitalize()})"
     return score, reason
 
 
 def _seniority_match(candidate_seniority: Optional[str], job_seniority: Optional[str]):
     cr, jr = _seniority_rank(candidate_seniority), _seniority_rank(job_seniority)
     if cr is None or jr is None:
-        return 0.5, 'seniority info incomplete'
+        return 0.5, ''
     if cr == jr:
-        return 1.0, f"seniority matches {candidate_seniority}"
+        return 1.0, f"Seniority matches"
     diff = abs(cr - jr)
     if diff == 1:
-        return 0.8, f'close seniority {candidate_seniority} vs {job_seniority}'
+        return 0.8, f'Close seniority'
     return max(0.0, 1.0 - 0.4 * diff), f'seniority gap {candidate_seniority} vs {job_seniority}'
 
 
@@ -181,40 +181,37 @@ async def rank_applications_for_job(db: AsyncSession, job_id: int, limit: int = 
     results: List[dict] = []
 
     for app in apps:
-        cand: Optional[Candidate] = app.candidate
+      cand: Optional[Candidate] = app.candidate
 
-        cand_skills_list: List[str]
+      cand_skills_list: List[str]
 
-        if cand is not None and hasattr(cand, 'skills'):
-            cand_skills_list = _collect_skill_names(getattr(cand, 'skills', []))
-        else:
-            cand_skills_list = _collect_skill_names(getattr(app, "skills", []))
+      if cand is not None and hasattr(cand, 'skills'):
+          cand_skills_list = _collect_skill_names(getattr(cand, 'skills', []))
+      else:
+          cand_skills_list = _collect_skill_names(getattr(app, "skills", []))
 
-        sb = _score(
-            cand_skills=cand_skills_list,
-            job_skills=job_skill_names,
-            is_remote=bool(getattr(job, "is_remote", False)),
-            cand_remote_pref=getattr(cand, "prefers_remote", None),  
-            desired_salary=getattr(cand, "desired_salary", None),
-            min_salary=getattr(job, "min_salary", None),
-            max_salary=getattr(job, "max_salary", None),
-            cand_seniority=getattr(cand, "seniority", None),      # 
-            job_seniority=getattr(job, "seniority", None),
-        )
-
-        results.append({
-            'application_id': app.id,
-            'candidate_id': getattr(app, 'candidate_id', None),
-            'score': sb.total,
-            'parts': sb.parts,
-            'reasons': sb.reasons
-        })
-
+    sb = _score(
+        cand_skills=cand_skills_list,
+        job_skills=job_skill_names,
+        is_remote=bool(getattr(job, "is_remote", False)),
+        cand_remote_pref=getattr(cand, "prefers_remote", None),  
+        desired_salary=getattr(cand, "desired_salary", None),
+        min_salary=getattr(job, "min_salary", None),
+        max_salary=getattr(job, "max_salary", None),
+        cand_seniority=getattr(cand, "seniority", None),      # 
+        job_seniority=getattr(job, "seniority", None),
+      )
+    
+    results.append({
+        'application_id': app.id,
+        'candidate_id': getattr(app, 'candidate_id', None),
+        'score': sb.total,
+        'parts': sb.parts,
+        'reasons': sb.reasons
+    })
     results.sort(key= lambda s: s['score'], reverse = True)
     return results[:limit]
 
-
-from sqlalchemy.orm import selectinload
 
 async def recommend_jobs_for_candidate(db: AsyncSession, candidate_id: int, limit: int = 20):
     cand: Optional[Candidate] = await db.get(Candidate, candidate_id)
@@ -232,10 +229,7 @@ async def recommend_jobs_for_candidate(db: AsyncSession, candidate_id: int, limi
         await db.execute(
             select(Job)
             .where(Job.status == "open")
-            .options(
-                selectinload(Job.skills),
-                selectinload(Job.employer),  # so employer.company_name is present
-            )
+            .options(selectinload(Job.skills))
         )
     ).scalars().all()
 
@@ -256,13 +250,10 @@ async def recommend_jobs_for_candidate(db: AsyncSession, candidate_id: int, limi
         )
 
         results.append({
-            "job": job,                     
             "job_id": job.id,
             "score": sb.total,
             "parts": sb.parts,
             "reasons": sb.reasons,
-            "created_at": job.created_at,
-            "max_salary": job.max_salary,   
         })
 
     results.sort(key=lambda r: r["score"], reverse=True)
