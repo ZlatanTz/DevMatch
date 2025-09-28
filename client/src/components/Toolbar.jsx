@@ -10,7 +10,7 @@ export default function Toolbar() {
   const { skills: allSkills = [], loading: skillsLoading } = useSkills();
   const { user } = useAuth();
 
-  console.log(user);
+  // console.log(user);
 
   const skillOptions = useMemo(
     () => allSkills.map((s) => ({ value: String(s.id), label: s.name })),

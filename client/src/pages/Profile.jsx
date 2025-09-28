@@ -11,7 +11,7 @@ const Profile = () => {
   const { getNamesForIds } = useSkills();
 
   const skillIds = user?.candidate.skills.map((skill) => skill.id);
-  console.log(user);
+  // console.log(user);
 
   if (!user) return <div>Loading...</div>;
 

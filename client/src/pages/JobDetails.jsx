@@ -9,7 +9,7 @@ import { applyToJob } from "@/api/services/applications";
 
 const JobDetails = () => {
   const { user, token } = useAuth();
-  console.log(user.candidate.skills);
+  // console.log(user.candidate.skills);
   const job = useLoaderData();
   const { id } = useParams(); // ID iz URL-a
   // const job = jobs.find((job) => job.id === parseInt(id));
