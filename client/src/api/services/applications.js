@@ -28,17 +28,13 @@ export const applyToJob = async (jobId, user, formData) => {
     location: formData.location,
     years_experience: formData.experience,
     seniority_level: formData.seniority,
-    skills: formData.skills,
+    skills: formData.skills.map((skill) => skill.name || skill),
     cover_letter: formData.coverLetter || "",
-    candidate_id: user.id,
+    cv_path: formData.cv?.name || "",
   };
 
   try {
-    const response = await api.post(
-      `/jobs/${jobId}/apply/`,
-      submitData,
-      { headers: { Authorization: `Bearer ${user.token}` } }, // OAuth2 token
-    );
+    const response = await api.post(`/jobs/${jobId}/apply/`, submitData);
     return response.data;
   } catch (error) {
     console.error("Error applying:", error.response?.data || error.message);

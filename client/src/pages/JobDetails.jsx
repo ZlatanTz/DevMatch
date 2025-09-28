@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { applyToJob } from "@/api/services/applications";
 
 const JobDetails = () => {
+  const { user, token } = useAuth();
+  console.log(user.candidate.skills);
   const job = useLoaderData();
   const { id } = useParams(); // ID iz URL-a
   // const job = jobs.find((job) => job.id === parseInt(id));
@@ -32,7 +34,6 @@ const JobDetails = () => {
 
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const { user, token } = useAuth();
   console.log(user);
   // console.log(user);
   // console.log(job);
@@ -79,20 +80,6 @@ const JobDetails = () => {
       .then((data) => setJobs(data.items || []));
   }, []);
 
-  // useEffect(() => {
-  //   if (user) {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       firstName: user.firstName || "",
-  //       lastName: user.lastName || "",
-  //       email: user.email || "",
-  //       phone: user.phone || "",
-  //       location: user.location || "",
-  //       experience: user.years_experiance || "",
-  //     }));
-  //   }
-  // }, [user]);
-
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({
@@ -128,6 +115,9 @@ const JobDetails = () => {
       alert(err.response?.data?.detail || "Something went wrong");
     }
   };
+
+  const initialSelected = user?.candidate.skills.map((skill) => skill.name) || null;
+  const [selectedSkills, setSelectedSkills] = useState(initialSelected);
 
   if (!job) {
     return (
@@ -399,7 +389,11 @@ const JobDetails = () => {
                   >
                     Skill <span className="text-emerald">*</span>
                   </label>
-                  <AllSkillsList max={5} value={true} onChange={handleSkillsChange} />
+                  <AllSkillsList
+                    max={5}
+                    value={selectedSkills}
+                    onChange={(newSelected) => setSelectedSkills(newSelected)}
+                  />
                 </div>
 
                 <div>

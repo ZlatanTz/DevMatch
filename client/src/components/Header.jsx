@@ -30,13 +30,6 @@ export default function Header() {
   const nav = useNavigation();
   const isLoading = nav.state !== "idle";
 
-  // const route =
-  //   user.role.name === "candidate"
-  //     ? "/applications"
-  //     : user.role.name === "employer"
-  //       ? "/jobpostings"
-  //       : "/admin";
-
   useEffect(() => {
     setDropdownOpen(false);
     setMobileOpen(false);

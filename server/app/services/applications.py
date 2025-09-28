@@ -46,7 +46,7 @@ async def create_application(
 
     db_app = models.Application(
         **application_data.model_dump(
-            exclude={"candidate_id", "job_id"}, exclude_none=True
+            exclude={"candidate_id", "job_id", "skills"}, exclude_none=True
         ),
         job_id=job_id,
         candidate_id=candidate_id,
