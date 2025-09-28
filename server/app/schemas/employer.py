@@ -14,6 +14,7 @@ class EmployerBase(BaseModel):
     location: Optional[str] = None
     country: Optional[str] = None
     tel: Optional[str] = None
+    company_logo: Optional[str] = None
 
 class EmployerRead(EmployerBase):
     id: int
@@ -27,3 +28,4 @@ class EmployerUpdate(BaseModel):
     location: Optional[str] = None
     country: Optional[str] = None
     tel: Optional[str] = None
+    company_logo: Optional[str] = None

@@ -16,6 +16,7 @@ async def list_employers(db: AsyncSession):
         employers_with_email.append({
             "id": employer.id,
             "company_name": employer.company_name,
+            "company_logo": employer.company_logo,
             "website": employer.website,
             "about": employer.about,
             "location": employer.location,

@@ -277,6 +277,7 @@ export default function Header() {
                           onClick={() => {
                             setDropdownOpen(false);
                             setIsLogged(false);
+                            logout();
                           }}
                         >
                           Logout

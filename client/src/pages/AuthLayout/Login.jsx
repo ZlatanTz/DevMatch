@@ -16,18 +16,23 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: "onChange",
   });
 
-  const onSubmit = (data) => {
-    // TODO: Call API service
-    login(data);
-    // navigate("/");
-    navigate(from, { replace: true });
+  const onSubmit = async (formData) => {
+    try {
+      await login(formData);
+      navigate(from, { replace: true });
+    } catch (error) {
+      setError("email", { type: "server", message: error.message });
+      setError("password", { type: "server", message: error.message });
+    }
   };
+
   return (
     <div className="flex flex-col lg:flex-row w-full min-h-[100vh]">
       <div className="flex flex-1 items-center justify-center p-8 order-2 lg:order-2">

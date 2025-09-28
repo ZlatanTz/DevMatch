@@ -9,18 +9,19 @@ import {
   employerRegistrationSchema,
 } from "@/schemas/registrationSchemas";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import AuthSidebar from "./AuthSidebar";
+import { registerCandidate, registerEmployer } from "@/api/services/auth";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [role, setRole] = useState("candidate");
-  const navigate = useNavigate();
-  const { login } = useAuth();
-
   const STEPS = ["candidate", "employer"];
   const isLastStep = currentStep === STEPS.length;
+  const { login } = useAuth();
 
   const handleNext = () => setCurrentStep((prev) => (prev < STEPS.length ? prev + 1 : prev));
   const handlePrev = () => setCurrentStep((prev) => (prev > 1 ? prev - 1 : prev));
@@ -31,20 +32,37 @@ const Register = () => {
     register,
     handleSubmit,
     control,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
     mode: "onchange",
+    defaultValues: {
+      preferRemote: true,
+    },
   });
 
-  const onSubmit = (data) => {
-    const registerData = {
-      ...data,
-      role: role,
-    };
-    // TODO: Call register service
-    login(registerData);
-    navigate("/");
+  const SERVICES = {
+    candidate: registerCandidate,
+    employer: registerEmployer,
+  };
+
+  const onSubmit = async (formData) => {
+    const registerData = { ...formData, role };
+    try {
+      const service = SERVICES[role];
+      if (!service) throw new Error(`Unsupported role: ${role}`);
+
+      const data = await service(registerData);
+
+      localStorage.setItem("token", data.access_token);
+      await login({ email: formData.email, password: formData.password });
+
+      toast.success("Account created. Welcome aboard!");
+      navigate("/");
+    } catch (error) {
+      setError("email", { type: "server", message: error.message });
+    }
   };
 
   return (
