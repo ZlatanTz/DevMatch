@@ -181,34 +181,35 @@ async def rank_applications_for_job(db: AsyncSession, job_id: int, limit: int = 
     results: List[dict] = []
 
     for app in apps:
-      cand: Optional[Candidate] = app.candidate
+        cand: Optional[Candidate] = app.candidate
 
-      cand_skills_list: List[str]
+        cand_skills_list: List[str]
 
-      if cand is not None and hasattr(cand, 'skills'):
-          cand_skills_list = _collect_skill_names(getattr(cand, 'skills', []))
-      else:
-          cand_skills_list = _collect_skill_names(getattr(app, "skills", []))
+        if cand is not None and hasattr(cand, 'skills'):
+            cand_skills_list = _collect_skill_names(getattr(cand, 'skills', []))
+        else:
+            cand_skills_list = _collect_skill_names(getattr(app, "skills", []))
 
-    sb = _score(
-        cand_skills=cand_skills_list,
-        job_skills=job_skill_names,
-        is_remote=bool(getattr(job, "is_remote", False)),
-        cand_remote_pref=getattr(cand, "prefers_remote", None),  
-        desired_salary=getattr(cand, "desired_salary", None),
-        min_salary=getattr(job, "min_salary", None),
-        max_salary=getattr(job, "max_salary", None),
-        cand_seniority=getattr(cand, "seniority", None),      # 
-        job_seniority=getattr(job, "seniority", None),
-      )
-    
-    results.append({
-        'application_id': app.id,
-        'candidate_id': getattr(app, 'candidate_id', None),
-        'score': sb.total,
-        'parts': sb.parts,
-        'reasons': sb.reasons
-    })
+        sb = _score(
+            cand_skills=cand_skills_list,
+            job_skills=job_skill_names,
+            is_remote=bool(getattr(job, "is_remote", False)),
+            cand_remote_pref=getattr(cand, "prefers_remote", None),  
+            desired_salary=getattr(cand, "desired_salary", None),
+            min_salary=getattr(job, "min_salary", None),
+            max_salary=getattr(job, "max_salary", None),
+            cand_seniority=getattr(cand, "seniority", None),      # 
+            job_seniority=getattr(job, "seniority", None),
+        )
+
+        results.append({
+            'application_id': app.id,
+            'candidate_id': getattr(app, 'candidate_id', None),
+            'score': sb.total,
+            'parts': sb.parts,
+            'reasons': sb.reasons
+        })
+
     results.sort(key= lambda s: s['score'], reverse = True)
     return results[:limit]
 

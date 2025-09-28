@@ -129,3 +129,24 @@ async def get_job_with_employer(db, job_id: int):
     result = await db.execute(stmt)
     job = result.scalar_one_or_none()
     return job
+
+
+async def list_jobs_by_employer_id(
+    db: AsyncSession,
+    employer_id: int,
+    page: int = 1,
+    page_size: int = 20,
+):
+    stmt = select(Job).where(Job.employer_id == employer_id)
+
+    total_stmt = select(func.count()).select_from(stmt.subquery())
+    total = (await db.execute(total_stmt)).scalar_one()
+
+    stmt = (
+        stmt.options(selectinload(Job.skills))
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+    )
+
+    rows = (await db.execute(stmt)).scalars().all()
+    return rows, total
