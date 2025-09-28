@@ -34,7 +34,6 @@ const JobDetails = () => {
 
   const [visibleCount, setVisibleCount] = useState(6);
 
-  console.log(user);
   // console.log(user);
   // console.log(job);
   // const loggedIn = user ? true : false; --> depricated!
