@@ -1,15 +1,9 @@
-const transformRole = (role) =>
-  role
-    ? {
-        id: role.id,
-        name: role.name,
-      }
-    : null;
+const transformRole = (role) => (role ? { id: role.id, name: role.name } : null);
 
 const transformCandidate = (c) =>
   c
     ? {
-        id: c.id,
+        candidateId: c.id,
         userId: c.user_id,
         firstName: c.first_name,
         lastName: c.last_name,
@@ -23,14 +17,14 @@ const transformCandidate = (c) =>
         imgPath: c.img_path,
         prefersRemote: c.prefers_remote,
         seniority: c.seniority,
-        skills: c.skills?.map((s) => ({ id: s.id, name: s.name })) || [],
+        skills: Array.isArray(c.skills) ? c.skills.map((s) => ({ id: s.id, name: s.name })) : [],
       }
     : null;
 
 const transformEmployer = (e) =>
   e
     ? {
-        id: e.id,
+        employerId: e.id,
         userId: e.user_id,
         companyName: e.company_name,
         website: e.website,
@@ -45,7 +39,7 @@ const transformEmployer = (e) =>
 export const transformUserMe = (data) => {
   if (!data) return null;
 
-  const basicUserInfo = {
+  const base = {
     id: data.id,
     email: data.email,
     isActive: data.is_active,
@@ -56,18 +50,17 @@ export const transformUserMe = (data) => {
     role: transformRole(data.role),
   };
 
-  let candidate = null;
-  let employer = null;
+  const roleName = data.role?.name;
 
-  if (data.role?.name === "candidate") {
-    candidate = transformCandidate(data.candidate);
-  } else if (data.role?.name === "employer") {
-    employer = transformEmployer(data.employer);
+  const result = { ...base };
+
+  if (roleName === "candidate" || (!roleName && data.candidate)) {
+    const cand = transformCandidate(data.candidate);
+    if (cand) result.candidate = cand;
+  } else if (roleName === "employer" || (!roleName && data.employer)) {
+    const emp = transformEmployer(data.employer);
+    if (emp) result.employer = emp;
   }
 
-  return {
-    basicUserInfo,
-    candidate,
-    employer,
-  };
+  return result;
 };
