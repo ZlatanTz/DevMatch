@@ -214,6 +214,8 @@ async def rank_applications_for_job(db: AsyncSession, job_id: int, limit: int = 
     return results[:limit]
 
 
+from sqlalchemy.orm import selectinload
+
 async def recommend_jobs_for_candidate(db: AsyncSession, candidate_id: int, limit: int = 20):
     cand: Optional[Candidate] = await db.get(Candidate, candidate_id)
     if not cand:
@@ -230,7 +232,10 @@ async def recommend_jobs_for_candidate(db: AsyncSession, candidate_id: int, limi
         await db.execute(
             select(Job)
             .where(Job.status == "open")
-            .options(selectinload(Job.skills))
+            .options(
+                selectinload(Job.skills),
+                selectinload(Job.employer),  # so employer.company_name is present
+            )
         )
     ).scalars().all()
 
@@ -251,10 +256,13 @@ async def recommend_jobs_for_candidate(db: AsyncSession, candidate_id: int, limi
         )
 
         results.append({
+            "job": job,                     
             "job_id": job.id,
             "score": sb.total,
             "parts": sb.parts,
             "reasons": sb.reasons,
+            "created_at": job.created_at,
+            "max_salary": job.max_salary,   
         })
 
     results.sort(key=lambda r: r["score"], reverse=True)

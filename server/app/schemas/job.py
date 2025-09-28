@@ -18,6 +18,8 @@ class JobBase(BaseModel):
     company_description: Optional[str] = None
     benefits: Optional[List[str]] = None
 
+
+
 class JobCreate(JobBase):
     employer_id: int
     skills: List[int] = Field(default_factory=list)  
@@ -47,7 +49,13 @@ class JobRead(JobBase):
 
 class JobReadDetailed(JobRead):
     employer: EmployerRead
+    model_config = {"from_attributes": True, "populate_by_name": True}
 
+    def employer_name(self):
+        emp = self.employer
+        if not emp:
+            return None
+        return getattr(emp, "name", None) or getattr(emp, "company_name", None)
 class JobListQuery(BaseModel):
 
     page: int = Field(1, ge=1)
