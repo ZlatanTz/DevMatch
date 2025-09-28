@@ -46,3 +46,17 @@ export async function registerEmployer(formData) {
     throw new Error(error.message || "Unexpected error occurred during employer registration.");
   }
 }
+
+export const loginService = async ({ email, password }) => {
+  const params = new URLSearchParams();
+  params.append("username", email);
+  params.append("password", password);
+
+  const { data } = await api.post(LOGIN, params, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+
+  return data;
+};

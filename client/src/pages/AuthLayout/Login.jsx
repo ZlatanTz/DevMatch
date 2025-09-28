@@ -22,12 +22,15 @@ const Login = () => {
     mode: "onChange",
   });
 
-  const onSubmit = (data) => {
-    // TODO: Call API service
-    login(data);
-    // navigate("/");
-    navigate(from, { replace: true });
+  const onSubmit = async (formData) => {
+    try {
+      await login(formData);
+      navigate(from, { replace: true });
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
+
   return (
     <div className="flex flex-col lg:flex-row w-full min-h-[100vh]">
       <div className="flex flex-1 items-center justify-center p-8 order-2 lg:order-2">

@@ -6,8 +6,13 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-
-  // TODO: Create Request and Response API interceptor
+});
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export default api;
