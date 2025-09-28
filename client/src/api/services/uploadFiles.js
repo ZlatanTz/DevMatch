@@ -10,8 +10,8 @@ export const uploadFileService = async (file) => {
 
   const isPdf = file?.type === "application/pdf";
   const endpoint = isPdf
-    ? `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`
-    : `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`;
+    ? `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload` // for pdf files
+    : `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`; // for img
 
   const { data } = await axios.post(endpoint, form);
   return data.secure_url;
