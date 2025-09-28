@@ -222,7 +222,7 @@ const JobDetails = () => {
               </div>
               <div className="flex justify-start items-center ">
                 <p className="text-paynes-gray font-medium">Website:</p>
-                <a href={employer.website} target="_blank" className="text-gray-700 pl-1">
+                <a href={employer.website} target="_blank" className="text-emerald pl-1">
                   {employer.website}
                 </a>
               </div>

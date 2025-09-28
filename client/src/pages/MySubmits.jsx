@@ -95,9 +95,6 @@ export default function MySubmits() {
 
               <div className="mt-auto space-y-1">
                 <p className="text-gray-500 text-sm">
-                  <span className="font-medium">Score:</span> {mergedApp.score}/100
-                </p>
-                <p className="text-gray-500 text-sm">
                   <span className="font-medium">Applied:</span>{" "}
                   {new Date(mergedApp.created_at).toLocaleDateString()}
                 </p>
@@ -382,17 +379,17 @@ export default function MySubmits() {
                       <div>
                         <label
                           htmlFor="cv"
-                          className="block text-sm font-medium text-federal-blue mb-2"
+                          className="block text-sm font-medium text-federal-blue mb-1"
                         >
-                          CV (PDF)
+                          Upload CV (PDF)
                         </label>
-                        <a
-                          href={selectedApp.job_id}
-                          target="_blank"
-                          className=" bg-emerald text-white font-bold  w-full px-3 py-2 border border-gray-300 rounded-md transition text-sm"
-                        >
-                          Get CV
-                        </a>
+                        <input
+                          type="file"
+                          id="cv"
+                          accept=".pdf"
+                          disabled
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
+                        />
                       </div>
 
                       <div>
