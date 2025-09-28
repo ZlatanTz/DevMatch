@@ -9,6 +9,8 @@ export default function Toolbar() {
   const { q, location, seniority, skills, sort, setSearchParams, searchParams } = useJobsFilter();
   const { skills: allSkills = [], loading: skillsLoading } = useSkills();
   const { user } = useAuth();
+  const roleName = user?.role?.name?.toLowerCase();
+  const isCandidate = Boolean(user?.candidate?.candidateId || roleName === "candidate");
 
   // console.log(user);
 
@@ -34,15 +36,20 @@ export default function Toolbar() {
     [],
   );
 
-  const sortOptions = useMemo(
-    () => [
+  const sortOptions = useMemo(() => {
+    const options = [
       { value: "date-desc", label: "Newest" },
       { value: "date-asc", label: "Oldest" },
       { value: "salary-desc", label: "Salary High → Low" },
       { value: "salary-asc", label: "Salary Low → High" },
-    ],
-    [],
-  );
+    ];
+
+    if (isCandidate) {
+      return [{ value: "recommended", label: "Recommended" }, ...options];
+    }
+
+    return options;
+  }, [isCandidate]);
 
   const { register, control, handleSubmit, reset, setValue, watch } = useForm({
     defaultValues: {
@@ -50,7 +57,7 @@ export default function Toolbar() {
       loc: Array.isArray(location) ? location : [],
       seniority: Array.isArray(seniority) ? seniority : [],
       skills: Array.isArray(skills) ? skills : [],
-      sort: Array.isArray(sort) ? sort : "date-desc",
+      sort: Array.isArray(sort) ? sort : sort || (isCandidate ? "recommended" : "date-desc"),
     },
   });
 
