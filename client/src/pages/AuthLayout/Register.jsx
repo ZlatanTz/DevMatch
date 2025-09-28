@@ -38,7 +38,7 @@ const Register = () => {
     resolver: zodResolver(schema),
     mode: "onchange",
     defaultValues: {
-      preferRemote: true,
+      prefers_remote: true,
     },
   });
 
@@ -52,7 +52,6 @@ const Register = () => {
     try {
       const service = SERVICES[role];
       if (!service) throw new Error(`Unsupported role: ${role}`);
-
       const data = await service(registerData);
 
       localStorage.setItem("token", data.access_token);
