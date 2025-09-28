@@ -9,12 +9,12 @@ export default function MySubmits() {
   const [jobs, setJobs] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
   const { getNamesForIds } = useSkills();
-  const userId = 1;
+  const candidateId = 1;
 
   useEffect(() => {
     const fetchApplicationsAndJobs = async () => {
       try {
-        const apps = await getAllCandidateApplications(userId);
+        const apps = await getAllCandidateApplications(candidateId);
         setApplications(apps);
 
         const jobIds = [...new Set(apps.map((app) => app.job_id))];
@@ -25,8 +25,8 @@ export default function MySubmits() {
       }
     };
 
-    if (userId) fetchApplicationsAndJobs();
-  }, [userId]);
+    if (candidateId) fetchApplicationsAndJobs();
+  }, [candidateId]);
 
   const mergedApplications = useMemo(() => {
     return applications.map((app) => {
@@ -95,9 +95,6 @@ export default function MySubmits() {
 
               <div className="mt-auto space-y-1">
                 <p className="text-gray-500 text-sm">
-                  <span className="font-medium">Score:</span> {mergedApp.score}/100
-                </p>
-                <p className="text-gray-500 text-sm">
                   <span className="font-medium">Applied:</span>{" "}
                   {new Date(mergedApp.created_at).toLocaleDateString()}
                 </p>
@@ -162,7 +159,7 @@ export default function MySubmits() {
                           <div className="flex justify-start items-center mb-4">
                             <p className="text-paynes-gray font-medium">Status:</p>
                             <p className="text-gray-700 pl-1">
-                              {status === "open" ? "Open" : "Closed"}
+                              {selectedApp.job.status === "open" ? "Open" : "Closed"}
                             </p>
                           </div>
 
@@ -210,7 +207,7 @@ export default function MySubmits() {
                             <a
                               href={selectedApp.job.employer.website}
                               target="_blank"
-                              className="text-gray-700 pl-1"
+                              className="text-emerald pl-1"
                             >
                               {selectedApp.job.employer.website}
                             </a>
