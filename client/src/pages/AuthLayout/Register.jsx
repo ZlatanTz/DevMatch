@@ -14,7 +14,7 @@ import { registerCandidate, registerEmployer } from "@/api/services/auth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
-
+import { uploadFileService } from "@/api/services/uploadFiles";
 const Register = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -49,6 +49,8 @@ const Register = () => {
 
   const onSubmit = async (formData) => {
     const registerData = { ...formData, role };
+    console.log(formData.companyLogoPicture);
+
     try {
       const service = SERVICES[role];
       if (!service) throw new Error(`Unsupported role: ${role}`);
@@ -56,6 +58,18 @@ const Register = () => {
 
       localStorage.setItem("token", data.access_token);
       await login({ email: formData.email, password: formData.password });
+
+      // TEMPORARY
+      const inputVal = formData.companyLogoPicture;
+      const file =
+        inputVal instanceof File ? inputVal : Array.isArray(inputVal) ? inputVal[0] : inputVal?.[0];
+
+      if (file) {
+        const logoUrl = await uploadFileService(file);
+        console.log("Cloudinary URL:", logoUrl);
+      } else {
+        console.log("No file found for companyLogoPicture");
+      }
 
       toast.success("Account created. Welcome aboard!");
       navigate("/");
