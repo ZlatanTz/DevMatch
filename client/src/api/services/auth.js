@@ -1,0 +1,48 @@
+import api from "../api";
+import { transformCandidateFormToPayload } from "../../transformers/candidateTransformer";
+import { transformEmployerFormToPayload } from "../../transformers/employerTransformer";
+
+const AUTH_BASE = "/auth";
+
+const REGISTER_CANDIDATE = `${AUTH_BASE}/register-candidate`;
+const REGISTER_EMPLOYER = `${AUTH_BASE}/register-employer`;
+const LOGIN = `${AUTH_BASE}/login`;
+
+export async function registerCandidate(formData) {
+  const payload = transformCandidateFormToPayload(formData);
+
+  try {
+    const response = await api.post(REGISTER_CANDIDATE, payload);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const serverMsg = error.response.data?.detail || error.response.data?.message;
+      throw new Error(serverMsg || `Registration failed with status ${error.response.status}`);
+    }
+    if (error.request) {
+      throw new Error("Error occured");
+    }
+    throw new Error(error.message || "Unexpected error occurred during registration.");
+  }
+}
+
+export async function registerEmployer(formData) {
+  const payload = transformEmployerFormToPayload(formData);
+  console.log("employer payload: ", payload);
+
+  try {
+    const response = await api.post(REGISTER_EMPLOYER, payload);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const backendMsg = error.response.data?.detail || error.response.data?.message;
+      throw new Error(
+        backendMsg || `Employer registration failed with status ${error.response.status}`,
+      );
+    }
+    if (error.request) {
+      throw new Error("No response from server. Please check your connection.");
+    }
+    throw new Error(error.message || "Unexpected error occurred during employer registration.");
+  }
+}

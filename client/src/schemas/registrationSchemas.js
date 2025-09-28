@@ -26,6 +26,11 @@ export const candidateRegistrationSchema = baseRegistrationSchema
       .any()
       .refine((files) => files?.length > 0, "Profile photo is required")
       .transform((files) => files[0]),
+
+    // seniority: z.enum(["intern", "junior", "medior", "senior"], {
+    //   required_error: "Seniority is required",
+    //   invalid_type_error: "Invalid seniority option",
+    // }),
   })
   .refine((data) => data.password === data.repeatPassword, {
     path: ["repeatPassword"],

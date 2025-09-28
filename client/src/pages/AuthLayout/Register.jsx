@@ -9,15 +9,12 @@ import {
   employerRegistrationSchema,
 } from "@/schemas/registrationSchemas";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import AuthSidebar from "./AuthSidebar";
-import { useAuth } from "@/context/AuthContext";
+import { registerCandidate, registerEmployer } from "@/api/services/auth";
 
 const Register = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [role, setRole] = useState("candidate");
-  const navigate = useNavigate();
-  const { login } = useAuth();
 
   const STEPS = ["candidate", "employer"];
   const isLastStep = currentStep === STEPS.length;
@@ -35,16 +32,29 @@ const Register = () => {
   } = useForm({
     resolver: zodResolver(schema),
     mode: "onchange",
+    defaultValues: {
+      preferRemote: true,
+    },
   });
 
   const onSubmit = (data) => {
+    console.log("on submit: ", data);
+
     const registerData = {
       ...data,
       role: role,
     };
-    // TODO: Call register service
-    login(registerData);
-    navigate("/");
+
+    if (registerData.role === "candidate") {
+      registerCandidate(registerData).then((data) => {
+        console.log(data);
+      });
+    }
+    if (registerData.role === "employer") {
+      registerEmployer(registerData).then((data) => {
+        console.log(data);
+      });
+    }
   };
 
   return (
