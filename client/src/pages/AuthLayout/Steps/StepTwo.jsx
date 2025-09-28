@@ -100,11 +100,11 @@ const StepTwo = ({ role, register, errors, control }) => {
           <Input
             label="* Desired Salary"
             name="desired_salary"
-            placeholder="Enter your experiance years"
             type="number"
+            placeholder="Enter your salary"
             register={register}
+            registerOptions={{ valueAsNumber: true }}
             error={errors.desired_salary}
-            {...register("desired_salary", { valueAsNumber: true })}
           />
           <MultiSelect
             label="* Seniority"

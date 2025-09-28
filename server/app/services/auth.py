@@ -40,7 +40,8 @@ async def register_new_candidate(db: AsyncSession, data):
         tel=data.candidate.tel,
         img_path=data.candidate.img_path,
         prefers_remote=data.candidate.prefers_remote,
-    )
+        seniority=data.candidate.seniority,
+    )   
     db.add(new_candidate)
     
     if data.candidate.skills:
