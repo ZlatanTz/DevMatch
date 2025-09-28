@@ -30,9 +30,10 @@ const JobDetails = () => {
     employer,
   } = job;
 
-  const [visibleCount, setVisibleCount] = useState(3);
+  const [visibleCount, setVisibleCount] = useState(6);
 
   const { user, token } = useAuth();
+  console.log(user);
   // console.log(user);
   // console.log(job);
   // const loggedIn = user ? true : false; --> depricated!
@@ -47,24 +48,20 @@ const JobDetails = () => {
   const skillNames = getNamesForIds(skill_ids);
   // console.log(skill_ids);
   // console.log(skillNames);
-  //sad je visak
-  // const handleLogIn = () => {
-  //   setCandidateLoggedIn(!candidateLoggedIn);
-  // }; --> depricated!
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+  const [formData, setFormData] = useState(() => ({
+    firstName: user?.candidate?.firstName || "",
+    lastName: user?.candidate?.lastName || "",
+    email: user?.email || "",
     birthYear: "",
-    phone: "",
-    location: "",
-    experience: "",
-    seniority: "",
-    skills: [],
+    phone: user?.candidate?.tel || "",
+    location: user?.candidate?.location || "",
+    experience: user?.candidate?.yearsExp || "",
+    seniority: user?.candidate?.seniority || "",
+    skills: user?.candidate?.skills || [],
     cv: null,
     coverLetter: "",
-  });
+  }));
 
   //const [selectedSkills, setSelectedSkills] = useState([]);
 

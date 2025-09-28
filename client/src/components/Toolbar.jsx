@@ -10,6 +10,8 @@ export default function Toolbar() {
   const { skills: allSkills = [], loading: skillsLoading } = useSkills();
   const { user } = useAuth();
 
+  console.log(user);
+
   const skillOptions = useMemo(
     () => allSkills.map((s) => ({ value: String(s.id), label: s.name })),
     [allSkills],
@@ -98,19 +100,18 @@ export default function Toolbar() {
   } = useForm({
     defaultValues: {
       title: "",
-      company: "",
-      company_img: "",
-      location: "Remote",
+      company: user?.employer?.companyName || "",
+      company_img: user?.employer?.companyLogo || "",
+      location: "",
       employment_type: "Full-time",
       seniority: "Junior",
       min_salary: "",
       max_salary: "",
-      is_remote: true,
+      is_remote: false,
       status: "open",
       skills: [],
-      created_at: new Date().toISOString(),
       description: "",
-      company_description: "",
+      company_description: user?.employer?.about || "",
     },
   });
 

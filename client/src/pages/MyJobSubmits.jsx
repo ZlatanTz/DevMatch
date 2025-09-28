@@ -11,12 +11,12 @@ export default function MySubmits() {
   const [selectedApp, setSelectedApp] = useState(null);
   const { getNamesForIds } = useSkills();
   const { user, token } = useAuth();
-  const candidateId = user.candidate.candidateId;
+  const employerId = user.employer.employerId;
 
   useEffect(() => {
     const fetchApplicationsAndJobs = async () => {
       try {
-        const apps = await getAllCandidateApplications(candidateId);
+        const apps = await getAllCandidateApplications(employerId);
         setApplications(apps);
 
         const jobIds = [...new Set(apps.map((app) => app.job_id))];
@@ -27,8 +27,8 @@ export default function MySubmits() {
       }
     };
 
-    if (candidateId) fetchApplicationsAndJobs();
-  }, [candidateId]);
+    if (employerId) fetchApplicationsAndJobs();
+  }, [employerId]);
 
   const mergedApplications = useMemo(() => {
     return applications.map((app) => {
@@ -63,7 +63,7 @@ export default function MySubmits() {
   return (
     <div className="p-6">
       <div className="container mx-auto">
-        <h1 className="text-2xl text-emerald font-bold mb-4">My Job Applications</h1>
+        <h1 className="text-2xl text-emerald font-bold mb-4">My Jobs</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {mergedApplications.map((mergedApp) => (
