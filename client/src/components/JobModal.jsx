@@ -2,6 +2,7 @@ import { useSkills } from "@/hooks/useSkills";
 import { useState } from "react";
 import { Link, useLoaderData } from "react-router-dom";
 import SkillList from "./SkillList";
+import { useAuth } from "../context/AuthContext";
 
 export default function BasicModal({ id }) {
   const [open, setOpen] = useState(false);
@@ -27,7 +28,7 @@ export default function BasicModal({ id }) {
 
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-
+  const { user } = useAuth();
   const skill_ids = job.skills.map((skill) => skill.id);
   const { getNamesForIds } = useSkills();
   const skillNames = getNamesForIds(skill_ids);
@@ -146,14 +147,16 @@ export default function BasicModal({ id }) {
             </div>
 
             <div className="flex justify-center pt-4 ">
-              <Link to={`/jobs/${id}`}>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="px-6 py-2 bg-emerald rounded-lg hover:opacity-90 transition-colors text-lg text-white"
-                >
-                  Apply
-                </button>
-              </Link>
+              {user?.candidate && (
+                <Link to={`/jobs/${id}`}>
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="px-6 py-2 bg-emerald rounded-lg hover:opacity-90 transition-colors text-lg text-white"
+                  >
+                    Apply
+                  </button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

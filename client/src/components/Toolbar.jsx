@@ -3,11 +3,12 @@ import { useForm, Controller } from "react-hook-form";
 import { updateParamBatch, useJobsFilter } from "../hooks/useJobsFilter";
 import { useSkills } from "../hooks/useSkills";
 import MultiSelect from "@/pages/AuthLayout/MultiSelect";
+import { useAuth } from "../context/AuthContext";
 
 export default function Toolbar() {
-  const [isCandidate, setIsCandidate] = useState(true);
   const { q, location, seniority, skills, sort, setSearchParams, searchParams } = useJobsFilter();
   const { skills: allSkills = [], loading: skillsLoading } = useSkills();
+  const { user } = useAuth();
 
   const skillOptions = useMemo(
     () => allSkills.map((s) => ({ value: String(s.id), label: s.name })),
@@ -151,7 +152,7 @@ export default function Toolbar() {
             placeholder="Search jobs..."
             className="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
-          {isCandidate && (
+          {user?.employer && (
             <button
               type="button"
               onClick={() => setOpen(true)}
@@ -212,7 +213,7 @@ export default function Toolbar() {
         </div>
       </form>
 
-      {open && isCandidate && (
+      {open && user?.employer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
           <div className="relative bg-white rounded-xl shadow-xl w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto p-6">

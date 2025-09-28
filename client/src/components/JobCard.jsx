@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import SkillList from "./SkillList";
 import { useSkills } from "../hooks/useSkills";
 import BasicModal from "./JobModal";
+import { useAuth } from "../context/AuthContext";
 
 export function JobCard({
   id,
@@ -16,6 +17,7 @@ export function JobCard({
   const skill_ids = skills.map((skill) => skill.id);
   const { getNamesForIds } = useSkills();
   const skillNames = getNamesForIds(skill_ids);
+  const { user } = useAuth();
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6 flex flex-col h-full">
@@ -40,11 +42,13 @@ export function JobCard({
 
         <div className="flex items-center gap-3">
           <BasicModal id={id}></BasicModal>
-          <Link to={`/jobs/${id}`}>
-            <button className="bg-emerald hover:opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium shadow cursor-pointer">
-              Apply
-            </button>
-          </Link>
+          {user?.candidate && (
+            <Link to={`/jobs/${id}`}>
+              <button className="bg-emerald hover:opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium shadow cursor-pointer">
+                Apply
+              </button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

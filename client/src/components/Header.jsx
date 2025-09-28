@@ -245,20 +245,33 @@ export default function Header() {
                       className="absolute right-0 mt-3 w-56 rounded-2xl bg-federal-blue/95 p-2 shadow-xl ring-1 ring-white/10 backdrop-blur"
                     >
                       <div className="flex flex-col">
-                        <NavLink
-                          // to={route}
-                          to="/applications"
-                          className={({ isActive }) =>
-                            `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
-                              isActive
-                                ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
-                                : "text-white/85 hover:text-emerald hover:bg-white/5"
-                            }`
-                          }
-                        >
-                          {/* {route} */}
-                          My Applications
-                        </NavLink>
+                        {user?.employer ? (
+                          <NavLink
+                            to="/my-jobs"
+                            className={({ isActive }) =>
+                              `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
+                                isActive
+                                  ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                                  : "text-white/85 hover:text-emerald hover:bg-white/5"
+                              }`
+                            }
+                          >
+                            My Jobs
+                          </NavLink>
+                        ) : user?.candidate ? (
+                          <NavLink
+                            to="/applications"
+                            className={({ isActive }) =>
+                              `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
+                                isActive
+                                  ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                                  : "text-white/85 hover:text-emerald hover:bg-white/5"
+                              }`
+                            }
+                          >
+                            My Applications
+                          </NavLink>
+                        ) : null}
                         <NavLink
                           to={`/profile/${user.user_id}`}
                           className={({ isActive }) =>
@@ -375,20 +388,33 @@ export default function Header() {
                 </div>
               ) : (
                 <div className="flex flex-col">
-                  <NavLink
-                    // to={route}
-                    to="/applications"
-                    className={({ isActive }) =>
-                      `rounded-xl px-3 py-3 text-base transition-colors ${
-                        isActive
-                          ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
-                          : "text-white/90 hover:text-emerald hover:bg-white/5"
-                      }`
-                    }
-                  >
-                    {/* {route} */}
-                    My Applications
-                  </NavLink>
+                  {user?.employer ? (
+                    <NavLink
+                      to="/my-jobs"
+                      className={({ isActive }) =>
+                        `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
+                          isActive
+                            ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                            : "text-white/85 hover:text-emerald hover:bg-white/5"
+                        }`
+                      }
+                    >
+                      My Jobs
+                    </NavLink>
+                  ) : user?.candidate ? (
+                    <NavLink
+                      to="/applications"
+                      className={({ isActive }) =>
+                        `w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${
+                          isActive
+                            ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
+                            : "text-white/85 hover:text-emerald hover:bg-white/5"
+                        }`
+                      }
+                    >
+                      My Applications
+                    </NavLink>
+                  ) : null}
                   <NavLink
                     to="/profile"
                     className={({ isActive }) =>
