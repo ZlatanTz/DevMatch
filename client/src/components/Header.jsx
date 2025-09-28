@@ -1,18 +1,11 @@
 import { NavLink, useLocation, useNavigation } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import logo from "../assets/devmatch.svg";
 import { useAuth } from "../context/AuthContext";
 
 const navItems = [
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
-];
-
-const sortLinks = [
-  { label: "Newest", to: { pathname: "/jobs", search: "?sort=date-desc" } },
-  { label: "Oldest", to: { pathname: "/jobs", search: "?sort=date-asc" } },
-  { label: "Salary High → Low", to: { pathname: "/jobs", search: "?sort=salary-desc" } },
-  { label: "Salary Low → High", to: { pathname: "/jobs", search: "?sort=salary-asc" } },
 ];
 
 export default function Header() {
@@ -29,6 +22,23 @@ export default function Header() {
   const userDropdownRef = useRef(null);
   const nav = useNavigation();
   const isLoading = nav.state !== "idle";
+  const roleName = user?.role?.name?.toLowerCase();
+  const isCandidate = Boolean(user?.candidate?.candidateId || roleName === "candidate");
+
+  const sortLinks = useMemo(() => {
+    const options = [
+      { label: "Newest", to: { pathname: "/jobs", search: "?sort=date-desc" } },
+      { label: "Oldest", to: { pathname: "/jobs", search: "?sort=date-asc" } },
+      { label: "Salary High → Low", to: { pathname: "/jobs", search: "?sort=salary-desc" } },
+      { label: "Salary Low → High", to: { pathname: "/jobs", search: "?sort=salary-asc" } },
+    ];
+
+    if (isCandidate) {
+      return [{ label: "Recommended", to: { pathname: "/jobs", search: "?sort=recommended" } }, ...options];
+    }
+
+    return options;
+  }, [isCandidate]);
 
   useEffect(() => {
     setDropdownOpen(false);
@@ -37,6 +47,30 @@ export default function Header() {
       setIsLogged(true);
     }
   }, [location.pathname, user]);
+
+  useEffect(() => {
+    if (!location.pathname.startsWith("/jobs")) {
+      setSelectedJobSort("");
+      return;
+    }
+
+    const params = new URLSearchParams(location.search || "");
+    const sortParam = params.get("sort");
+
+    if (sortParam) {
+      const match = sortLinks.find((item) => {
+        const itemParams = new URLSearchParams(item.to?.search || "");
+        return itemParams.get("sort") === sortParam;
+      });
+
+      if (match) {
+        setSelectedJobSort(match.label);
+        return;
+      }
+    }
+
+    setSelectedJobSort(isCandidate ? "Recommended" : "Newest");
+  }, [isCandidate, location.pathname, location.search, sortLinks]);
 
   useEffect(() => {
     function handleDocClick(e) {
@@ -106,14 +140,14 @@ export default function Header() {
               >
                 <NavLink
                   to="/jobs"
-                  className={({ isActive }) =>
-                    `${linkBase} ${isActive ? linkActive : linkInactive} inline-flex items-center`
-                  }
-                  onClick={() => {
-                    setSelectedJobSort("Newest");
-                  }}
-                >
-                  Jobs
+                className={({ isActive }) =>
+                  `${linkBase} ${isActive ? linkActive : linkInactive} inline-flex items-center`
+                }
+                onClick={() => {
+                  setSelectedJobSort(isCandidate ? "Recommended" : "Newest");
+                }}
+              >
+                Jobs
                   <svg
                     className="ml-1 h-4 w-4"
                     fill="none"
@@ -322,7 +356,7 @@ export default function Header() {
                       <NavLink
                         key={item.label}
                         to={item.to}
-                        className={({ isActive }) =>
+                       className={({ isActive }) =>
                           `rounded-xl px-3 py-2 text-base transition-colors ${
                             selectedJobSort === item.label
                               ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
