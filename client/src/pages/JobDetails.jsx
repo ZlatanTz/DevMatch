@@ -1,18 +1,20 @@
+import { getRecommendedJobsFiltered } from "@/api/services/jobs";
 import AllSkillsList from "../components/AllSkillsList";
-import { Link, useLoaderData, useParams } from "react-router-dom";
+import { Link, useLoaderData, useNavigate, useParams } from "react-router-dom";
 import SkillList from "../components/SkillList";
 import { useSkills } from "../hooks/useSkills";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { applyToJob } from "@/api/services/applications";
 
+const INITIAL_VISIBLE = 6;
+
 const JobDetails = () => {
-  const { user, token } = useAuth();
-  // console.log(user.candidate.skills);
+  const { user } = useAuth();
+
   const job = useLoaderData();
-  const { id } = useParams(); // ID iz URL-a
-  // const job = jobs.find((job) => job.id === parseInt(id));
+  const { id } = useParams(); // ID iz URL-a za job
 
   const {
     title,
@@ -32,20 +34,14 @@ const JobDetails = () => {
     employer,
   } = job;
 
-  const [visibleCount, setVisibleCount] = useState(6);
-
-  // console.log(user);
-  // console.log(job);
-  // const loggedIn = user ? true : false; --> depricated!
-  // console.log(loggedIn);
-  // const [candidateLoggedIn, setCandidateLoggedIn] = useState(loggedIn); //da li je ulogovan candidate --> depricated!
-
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
   const skill_ids = job.skills.map((skill) => skill.id);
   const { getNamesForIds } = useSkills();
   const skillNames = getNamesForIds(skill_ids);
+
+  const [jobs, setJobs] = useState([]);
   // console.log(skill_ids);
   // console.log(skillNames);
 
@@ -62,10 +58,6 @@ const JobDetails = () => {
     cv: null,
     coverLetter: "",
   }));
-
-  //const [selectedSkills, setSelectedSkills] = useState([]);
-
-  const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`)
@@ -87,20 +79,11 @@ const JobDetails = () => {
     }));
   };
 
-  const handleSkillsChange = (skills) => {
-    setFormData((prev) => ({ ...prev, skills }));
-  };
-
   const handleFileChange = (e) => {
     setFormData((prev) => ({
       ...prev,
       cv: e.target.files[0],
     }));
-  };
-
-  const handleClickLink = () => {
-    window.scrollTo(0, 0);
-    setVisibleCount(3);
   };
 
   const handleSubmit = async (e) => {
@@ -117,6 +100,71 @@ const JobDetails = () => {
 
   const initialSelected = user?.candidate.skills.map((skill) => skill.name) || null;
   const [selectedSkills, setSelectedSkills] = useState(initialSelected);
+
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const [recommendedJobs, setRecommendedJobs] = useState([]);
+  const [loadMoreClicks, setLoadMoreClicks] = useState(0);
+
+  const navigate = useNavigate();
+  const candidateId = user?.candidate?.candidateId;
+  const roleName = user?.role?.name?.toLowerCase();
+  const isCandidate = Boolean(candidateId || roleName === "candidate");
+
+  const hasRecommendations = isCandidate && recommendedJobs.length > 0;
+  const displayedJobs = useMemo(
+    () => (hasRecommendations ? recommendedJobs : jobs),
+    [hasRecommendations, recommendedJobs, jobs],
+  );
+  const listTitle = hasRecommendations ? "Recommended for you" : "All jobs";
+  const showLoadMore = displayedJobs.length > visibleCount;
+  const loadMoreLabel = loadMoreClicks === 0 ? "Load More" : "View All Jobs";
+
+  useEffect(() => {
+    if (!isCandidate || !candidateId) {
+      setRecommendedJobs([]);
+      return;
+    }
+
+    let active = true;
+
+    getRecommendedJobsFiltered(candidateId, { minScore: 0, limit: 20 })
+      .then((data) => {
+        if (!active) return;
+        const normalized = Array.isArray(data)
+          ? data.map((item) => ({
+              ...item.job,
+              recommendation: {
+                score: item.score,
+                parts: item.parts,
+                reasons: item.reasons,
+              },
+            }))
+          : [];
+        setRecommendedJobs(normalized);
+      })
+      .catch((err) => {
+        console.error("Failed to load recommended jobs", err);
+        if (active) setRecommendedJobs([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [candidateId, isCandidate]);
+
+  useEffect(() => {
+    setVisibleCount(INITIAL_VISIBLE);
+    setLoadMoreClicks(0);
+  }, [jobs.length, recommendedJobs.length, isCandidate]);
+
+  const handleLoadMore = () => {
+    if (loadMoreClicks === 0) {
+      setVisibleCount((prev) => Math.min(prev + INITIAL_VISIBLE, displayedJobs.length));
+      setLoadMoreClicks(1);
+    } else {
+      navigate("/jobs");
+    }
+  };
 
   useEffect(() => {
     setFormData((prev) => ({ ...prev, skills: selectedSkills }));
@@ -447,50 +495,49 @@ const JobDetails = () => {
           </Link>
         )}
 
-        <div className="col-span-1 lg:col-span-4">
-          <div className="rounded-2xl border border-border bg-card/70 mt-8 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">Top rated</h2>
+        <div className="col-span-1 lg:col-span-4 order-2 lg:order-none">
+          <div className="rounded-2xl border border-border bg-card/70 backdrop-blur supports-[backdrop-filter]:bg-card/60 p-4 sm:p-6 shadow-sm">
+            <h2 className="text-xl text-federal-blue sm:text-2xl font-bold tracking-tight mb-4 sm:mb-6">
+              {listTitle}
+            </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-              {jobs.slice(0, visibleCount).map((job) => (
-                <Link
-                  key={job.id}
-                  to={`/jobs/${job.id}`}
-                  onClick={handleClickLink}
-                  className="block rounded-2xl border-2 border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
-                >
-                  <h3 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">
-                    {job.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">
-                    {job.company}
-                  </p>
-                  <p className="text-xs italic text-foreground/80 mb-3">{job.employment_type}</p>
+            {displayedJobs.length === 0 ? (
+              <div className="text-sm text-muted-foreground">No jobs to show right now.</div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                  {displayedJobs.slice(0, visibleCount).map((job) => (
+                    <Link
+                      key={job.id}
+                      to={`/jobs/${job.id}`}
+                      className="block rounded-2xl border-2 border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                    >
+                      <h3 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">
+                        {job.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-1 truncate">
+                        {job.employer?.company_name ?? job.company ?? "Unknown company"}
+                      </p>
+                      <p className="text-xs italic text-foreground/80 mb-3">
+                        {job.employment_type}
+                      </p>
 
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-foreground/80">Rating: 4.5</p>
-                    <div className="flex text-yellow-400" aria-hidden="true">
-                      {"★".repeat(4)}
-                      {"☆".repeat(1)}
-                    </div>
+                      <div className="flex items-center justify-between"></div>
+                    </Link>
+                  ))}
+                </div>
+
+                {showLoadMore && (
+                  <div className="flex justify-center mt-4 sm:mt-6">
+                    <Button
+                      onClick={handleLoadMore}
+                      className="bg-emerald text-white hover:bg-emerald/80 px-4 py-2 sm:py-4 w-28 sm:w-32 text-sm sm:text-base rounded-full shadow-md"
+                    >
+                      {loadMoreLabel}
+                    </Button>
                   </div>
-                </Link>
-              ))}
-            </div>
-
-            {jobs.length > 3 && (
-              <div className="flex justify-center mt-4 sm:mt-6">
-                <Button
-                  onClick={
-                    visibleCount >= jobs.length
-                      ? () => setVisibleCount(3)
-                      : () => setVisibleCount((prev) => prev + 3)
-                  }
-                  className="bg-emerald text-white hover:bg-emerald/80 px-4 py-2 sm:py-4 w-28 sm:w-32 text-sm sm:text-base rounded-full shadow-md"
-                >
-                  {visibleCount >= jobs.length ? "Show Less" : "Load More"}
-                </Button>
-              </div>
+                )}
+              </>
             )}
           </div>
         </div>
