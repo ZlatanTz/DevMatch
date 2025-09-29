@@ -3,7 +3,6 @@ import { NavLink } from "react-router-dom";
 import { BriefcaseBusiness } from "lucide-react";
 import { ChartLine } from "lucide-react";
 import { Users } from "lucide-react";
-import { LayoutDashboard } from "lucide-react";
 
 const AdminSidebar = ({ pageName }) => {
   return (
@@ -18,15 +17,6 @@ const AdminSidebar = ({ pageName }) => {
             <NavLink
               to=""
               end
-              className={({ isActive }) =>
-                `flex gap-5 ${isActive ? "text-emerald-600 font-semibold" : "text-gray-200"}`
-              }
-            >
-              <LayoutDashboard />
-              Dashboard
-            </NavLink>
-            <NavLink
-              to="users"
               className={({ isActive }) =>
                 `flex gap-5 ${isActive ? "text-emerald-600 font-semibold" : "text-gray-200"}`
               }

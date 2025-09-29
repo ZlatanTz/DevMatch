@@ -38,21 +38,7 @@ const ManageJobs = () => {
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const data = await getAllJobs();
-        if (mounted) setJobs(Array.isArray(data) ? data : []);
-      } catch (e) {
-        console.error("Failed to fetch jobs:", e);
-        if (mounted) setJobs([]);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => (mounted = false);
-  }, []);
+  useEffect(() => {}, []);
 
   const handleAskDelete = (id) => {
     setPendingDeleteId(id);

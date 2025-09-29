@@ -36,21 +36,7 @@ const ManageUsers = () => {
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const data = await getAllUsers();
-        if (mounted) setUsers(Array.isArray(data) ? data : []);
-      } catch (e) {
-        console.error("Failed to fetch users:", e);
-        if (mounted) setUsers([]);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => (mounted = false);
-  }, []);
+  useEffect(() => {}, []);
 
   const handleAskDelete = (id) => {
     setPendingDeleteId(id);

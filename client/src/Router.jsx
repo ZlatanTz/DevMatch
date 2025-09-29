@@ -11,10 +11,8 @@ import Profile from "./pages/Profile";
 import Register from "./pages/AuthLayout/Register";
 import Login from "./pages/AuthLayout/Login";
 import ErrorPage from "./pages/ErrorPages/ErrorPage";
-import { profileLoader } from "./routes/loaders/profileLoader";
 import ForgotPassword from "./pages/AuthLayout/ForgotPassword";
 import Statistics from "./pages/Admin/Statistics";
-import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ManageJobs from "./pages/Admin/ManageJobs";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import AdminLayout from "./pages/Admin/AdminLayout";
@@ -59,9 +57,8 @@ export const router = createBrowserRouter([
     path: "/admin",
     element: <AdminLayout />,
     children: [
-      { index: true, element: <AdminDashboard /> },
+      { index: true, element: <ManageUsers /> },
       { path: "jobs", element: <ManageJobs /> },
-      { path: "users", element: <ManageUsers /> },
       { path: "statistics", element: <Statistics /> },
     ],
   },
