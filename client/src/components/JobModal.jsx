@@ -26,6 +26,8 @@ export default function BasicModal({ id }) {
     employer,
   } = job;
 
+  const statusLabel = status === "open" ? "Open" : status === "paused" ? "Paused" : "Closed";
+
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   const { user } = useAuth();
@@ -74,9 +76,9 @@ export default function BasicModal({ id }) {
                 <div className="container mx-auto">
                   <div className="flex flex-col md:flex-row gap-6 mb-8">
                     <div className="job-description lg:w-7/10 md:w-6/10 p-6 rounded-lg shadow border border-gray-200 order-2 md:order-1">
-                      <p className="font-semibold text-federal-blue text-2xl">About the job</p>
+                      <p className="font-semibold text-federal-blue text-2xl mb-2">About the job</p>
                       <p className="mb-4 text-gray-700">{company_description}</p>
-                      <p className="font-semibold text-paynes-gray">The role entails:</p>
+                      <p className="font-semibold text-paynes-gray mb">The role entails:</p>
                       <p className="mb-4 text-gray-700">{description}</p>
                       <p className="font-semibold text-paynes-gray">
                         What we are looking for in you:
@@ -84,20 +86,22 @@ export default function BasicModal({ id }) {
                       <div className="mt-auto pt-3 pb-3 flex items-center justify-between text-sm">
                         <SkillList names={skillNames} max={skillNames.length} />
                       </div>
-                      <p className="font-semibold text-paynes-gray">What we offer:</p>
-                      <ul className="mb-4 text-gray-700 list-disc list-inside">
-                        {benefits.map((benefit, index) => (
-                          <li key={index}>{benefit}</li>
-                        ))}
-                      </ul>
+                      {Array.isArray(benefits) && benefits.length > 0 ? (
+                        <>
+                          <p className="font-semibold text-paynes-gray my-2">What we offer:</p>
+                          <ul className="mb-4 text-gray-700 list-disc list-inside">
+                            {benefits.map((benefit, index) => (
+                              <li key={index}>{benefit}</li>
+                            ))}
+                          </ul>
+                        </>
+                      ) : null}
                     </div>
                     <div className="flex flex-col gap-6 order-1 md:order-2 lg:w-3/10 md:w-4/10">
                       <div className="job-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
                         <div className="flex justify-start items-center mb-4">
                           <p className="text-paynes-gray font-medium">Status:</p>
-                          <p className="text-gray-700 pl-1">
-                            {status === "open" ? "Open" : "Closed"}
-                          </p>
+                          <p className="text-gray-700 pl-1">{statusLabel}</p>
                         </div>
 
                         <div className="flex justify-start items-center mb-4">
@@ -117,7 +121,7 @@ export default function BasicModal({ id }) {
                       </div>
                       <div className="employer-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
                         <div className="flex justify-start items-center mb-4">
-                          <p className="text-paynes-gray font-medium">Compamy:</p>
+                          <p className="text-paynes-gray font-medium">Company:</p>
                           <p className="text-gray-700 pl-1">{employer.company_name}</p>
                         </div>
 

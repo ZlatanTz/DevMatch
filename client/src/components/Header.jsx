@@ -1,8 +1,9 @@
-import { NavLink, useLocation, useNavigation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate, useNavigation } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
 import logo from "../assets/devmatch.svg";
+import profileIcon from "../assets/profileIcon.jpg";
+import companyLogo from "../assets/logo.jpg";
 import { useAuth } from "../context/AuthContext";
-
 const navItems = [
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
@@ -10,6 +11,7 @@ const navItems = [
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isLogged, setIsLogged] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -25,6 +27,8 @@ export default function Header() {
   const roleName = user?.role?.name?.toLowerCase();
   const isCandidate = Boolean(user?.candidate?.candidateId || roleName === "candidate");
 
+  console.log("sr: ", user);
+
   const sortLinks = useMemo(() => {
     const options = [
       { label: "Newest", to: { pathname: "/jobs", search: "?sort=date-desc" } },
@@ -34,7 +38,10 @@ export default function Header() {
     ];
 
     if (isCandidate) {
-      return [{ label: "Recommended", to: { pathname: "/jobs", search: "?sort=recommended" } }, ...options];
+      return [
+        { label: "Recommended", to: { pathname: "/jobs", search: "?sort=recommended" } },
+        ...options,
+      ];
     }
 
     return options;
@@ -140,14 +147,14 @@ export default function Header() {
               >
                 <NavLink
                   to="/jobs"
-                className={({ isActive }) =>
-                  `${linkBase} ${isActive ? linkActive : linkInactive} inline-flex items-center`
-                }
-                onClick={() => {
-                  setSelectedJobSort(isCandidate ? "Recommended" : "Newest");
-                }}
-              >
-                Jobs
+                  className={({ isActive }) =>
+                    `${linkBase} ${isActive ? linkActive : linkInactive} inline-flex items-center`
+                  }
+                  onClick={() => {
+                    setSelectedJobSort(isCandidate ? "Recommended" : "Newest");
+                  }}
+                >
+                  Jobs
                   <svg
                     className="ml-1 h-4 w-4"
                     fill="none"
@@ -262,7 +269,11 @@ export default function Header() {
                     aria-expanded={dropdownOpen}
                     onClick={() => setDropdownOpen((v) => !v)}
                   >
-                    <img src={user.img} alt="Profile" className="h-full w-full object-cover" />
+                    <img
+                      src={user.role.name === "candidate" ? profileIcon : companyLogo}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                    />
                   </button>
 
                   {dropdownOpen && (
@@ -318,6 +329,7 @@ export default function Header() {
                             setDropdownOpen(false);
                             setIsLogged(false);
                             logout();
+                            navigate("/");
                           }}
                         >
                           Logout
@@ -356,7 +368,7 @@ export default function Header() {
                       <NavLink
                         key={item.label}
                         to={item.to}
-                       className={({ isActive }) =>
+                        className={({ isActive }) =>
                           `rounded-xl px-3 py-2 text-base transition-colors ${
                             selectedJobSort === item.label
                               ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"

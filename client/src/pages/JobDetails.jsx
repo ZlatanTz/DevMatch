@@ -34,6 +34,15 @@ const JobDetails = () => {
     employer,
   } = job;
 
+  const statusLabel = status === "open" ? "Open" : status === "paused" ? "Paused" : "Closed";
+
+
+  // console.log(user);
+  // console.log(job);
+  // const loggedIn = user ? true : false; --> depricated!
+  // console.log(loggedIn);
+  // const [candidateLoggedIn, setCandidateLoggedIn] = useState(loggedIn); //da li je ulogovan candidate --> depricated!
+
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 
@@ -222,7 +231,7 @@ const JobDetails = () => {
             <div className="job-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
               <div className="flex justify-start items-center mb-4">
                 <p className="text-paynes-gray font-medium">Status:</p>
-                <p className="text-gray-700 pl-1">{status === "open" ? "Open" : "Closed"}</p>
+                <p className="text-gray-700 pl-1">{statusLabel}</p>
               </div>
 
               <div className="flex justify-start items-center mb-4">

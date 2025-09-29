@@ -4,6 +4,7 @@ import { updateParamBatch, useJobsFilter } from "../hooks/useJobsFilter";
 import { useSkills } from "../hooks/useSkills";
 import MultiSelect from "@/pages/AuthLayout/MultiSelect";
 import { useAuth } from "../context/AuthContext";
+import { createJob } from "@/api/services/jobs";
 
 export default function Toolbar() {
   const { q, location, seniority, skills, sort, setSearchParams, searchParams } = useJobsFilter();
@@ -12,7 +13,7 @@ export default function Toolbar() {
   const roleName = user?.role?.name?.toLowerCase();
   const isCandidate = Boolean(user?.candidate?.candidateId || roleName === "candidate");
 
-  // console.log(user);
+  console.log(user);
 
   const skillOptions = useMemo(
     () => allSkills.map((s) => ({ value: String(s.id), label: s.name })),
@@ -96,6 +97,9 @@ export default function Toolbar() {
   };
 
   const [open, setOpen] = useState(false);
+  const [creatingJob, setCreatingJob] = useState(false);
+  const [createJobError, setCreateJobError] = useState(null);
+  const [benefitInput, setBenefitInput] = useState("");
 
   const {
     register: regJob,
@@ -107,44 +111,109 @@ export default function Toolbar() {
   } = useForm({
     defaultValues: {
       title: "",
-      company: user?.employer?.companyName || "",
-      company_img: user?.employer?.companyLogo || "",
       location: "",
       employment_type: "Full-time",
       seniority: "Junior",
       min_salary: "",
       max_salary: "",
       is_remote: false,
-      status: "open",
       skills: [],
       description: "",
       company_description: user?.employer?.about || "",
+      benefits: [],
+      employer_id: user?.employer?.employerId,
     },
   });
 
-  const submitNewJob = (values) => {
-    const job = {
-      title: values.title.trim(),
-      company: values.company.trim(),
-      company_img: values.company_img.trim(),
-      location: values.location.trim(),
-      employment_type: values.employment_type,
-      seniority: values.seniority,
+  const benefits = watchJob("benefits") || [];
+
+  const addBenefit = () => {
+    const trimmed = benefitInput.trim();
+    if (!trimmed) return;
+
+    const exists = benefits.some((benefit) => benefit.toLowerCase() === trimmed.toLowerCase());
+    if (exists) {
+      setBenefitInput("");
+      return;
+    }
+
+    setValueJob("benefits", [...benefits, trimmed]);
+    setBenefitInput("");
+  };
+
+  const removeBenefit = (index) => {
+    setValueJob(
+      "benefits",
+      benefits.filter((_, benefitIndex) => benefitIndex !== index),
+    );
+  };
+
+  const closeJobModal = () => {
+    setOpen(false);
+    setCreateJobError(null);
+    setCreatingJob(false);
+    resetJob();
+    setBenefitInput("");
+  };
+
+  const submitNewJob = async (values) => {
+    const employerId = user?.employer?.employerId;
+    if (!employerId) {
+      setCreateJobError("Employer profile is required before posting jobs.");
+      return;
+    }
+
+    const trimOrNull = (input) => {
+      if (typeof input !== "string") return null;
+      const trimmed = input.trim();
+      return trimmed.length ? trimmed : null;
+    };
+
+    const title = typeof values.title === "string" ? values.title.trim() : "";
+    if (!title) {
+      setCreateJobError("Job title is required.");
+      return;
+    }
+
+    const benefitsList = Array.isArray(values.benefits)
+      ? values.benefits.map((benefit) => benefit.trim()).filter(Boolean)
+      : [];
+
+    const payload = {
+      title,
+      location: trimOrNull(values.location),
+      employment_type: values.employment_type || null,
+      seniority: values.seniority || null,
       min_salary: values.min_salary ? Number(values.min_salary) : null,
       max_salary: values.max_salary ? Number(values.max_salary) : null,
       is_remote: !!values.is_remote,
-      status: values.status,
+      status: "open",
+      description: trimOrNull(values.description),
+      company_description: trimOrNull(values.company_description),
       skills: Array.isArray(values.skills) ? values.skills.map((v) => Number(v)) : [],
-      created_at: values.created_at || new Date().toISOString(),
-      description: values.description.trim(),
-      company_description: values.company_description.trim(),
+      benefits: benefitsList.length > 0 ? benefitsList : null,
+      employer_id: employerId,
     };
 
-    window.dispatchEvent(new CustomEvent("job:add", { detail: job }));
-    console.log("New job created:", job);
+    setCreatingJob(true);
+    setCreateJobError(null);
+    try {
+      const createdJob = await createJob(payload);
+      window.dispatchEvent(
+        new CustomEvent("job:add", {
+          detail: {
+            ...createdJob,
+          },
+        }),
+      );
 
-    setOpen(false);
-    resetJob();
+      closeJobModal();
+    } catch (error) {
+      const message = error?.response?.data?.detail || "Failed to create job.";
+      setCreateJobError(message);
+    } finally {
+      setCreatingJob(false);
+    }
   };
 
   return (
@@ -183,7 +252,13 @@ export default function Toolbar() {
           {user?.employer && (
             <button
               type="button"
-              onClick={() => setOpen(true)}
+              onClick={() => {
+                setCreateJobError(null);
+                setCreatingJob(false);
+                resetJob();
+                setBenefitInput("");
+                setOpen(true);
+              }}
               className="inline-flex items-center gap-2 px-3 py-2 bg-emerald text-white rounded-md "
             >
               <svg
@@ -243,7 +318,7 @@ export default function Toolbar() {
 
       {open && user?.employer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
+          <div className="absolute inset-0 bg-black/50" onClick={closeJobModal} />
           <div className="relative bg-white rounded-xl shadow-xl w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
@@ -254,7 +329,7 @@ export default function Toolbar() {
               </div>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={closeJobModal}
                 className="p-2 rounded hover:bg-gray-100"
                 aria-label="Close"
               >
@@ -277,7 +352,7 @@ export default function Toolbar() {
 
             <form onSubmit={submitJob(submitNewJob)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
+                <div className="space-y-1 md:col-span-2">
                   <label htmlFor="job-title" className="text-sm font-medium">
                     Job title
                   </label>
@@ -288,7 +363,7 @@ export default function Toolbar() {
                     {...regJob("title", { required: true })}
                   />
                 </div>
-                <div className="space-y-1">
+                {/* <div className="space-y-1">
                   <label htmlFor="job-company" className="text-sm font-medium">
                     Company
                   </label>
@@ -298,7 +373,7 @@ export default function Toolbar() {
                     placeholder="TechNova"
                     {...regJob("company", { required: true })}
                   />
-                </div>
+                </div> 
                 <div className="space-y-1 md:col-span-2">
                   <label htmlFor="job-company-img" className="text-sm font-medium">
                     Company logo URL
@@ -309,7 +384,7 @@ export default function Toolbar() {
                     placeholder="https://…"
                     {...regJob("company_img")}
                   />
-                </div>
+                </div>*/}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -393,19 +468,6 @@ export default function Toolbar() {
                     Remote friendly
                   </label>
                 </div>
-
-                <div className="space-y-1 md:col-span-2">
-                  <label className="text-sm font-medium">Status</label>
-                  <select
-                    className="w-full px-3 py-2 border rounded-md"
-                    value={watchJob("status")}
-                    onChange={(e) => setValueJob("status", e.target.value)}
-                  >
-                    <option value="open">open</option>
-                    <option value="paused">paused</option>
-                    <option value="closed">closed</option>
-                  </select>
-                </div>
               </div>
 
               <div className="space-y-1">
@@ -445,19 +507,75 @@ export default function Toolbar() {
                 />
               </div>
 
+              <div className="space-y-2">
+                <label htmlFor="job-benefit-input" className="text-sm font-medium">
+                  Benefits
+                </label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    id="job-benefit-input"
+                    className="w-full px-3 py-2 border rounded-md"
+                    placeholder="e.g. Health insurance"
+                    value={benefitInput}
+                    onChange={(event) => setBenefitInput(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        addBenefit();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={addBenefit}
+                    disabled={!benefitInput.trim()}
+                    className="px-4 py-2 bg-emerald hover:bg-emerald/80 text-white rounded-md disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    Add
+                  </button>
+                </div>
+                {benefits.length > 0 ? (
+                  <ul className="flex flex-wrap gap-2">
+                    {benefits.map((benefit, index) => (
+                      <li
+                        key={`${benefit}-${index}`}
+                        className="flex items-center gap-2 bg-emerald/10 text-emerald px-3 py-1 rounded-full text-sm"
+                      >
+                        <span>{benefit}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeBenefit(index)}
+                          className="text-emerald hover:text-emerald/70"
+                          aria-label={`Remove benefit ${benefit}`}
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-gray-500">
+                    Add each benefit separately so candidates can see them clearly on the posting.
+                  </p>
+                )}
+              </div>
+
+              {createJobError && <p className="text-sm text-red-600">{createJobError}</p>}
+
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={closeJobModal}
                   className="px-4 py-2 border rounded-md"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald hover:bg-emerald/80 text-white rounded-md"
+                  disabled={creatingJob}
+                  className="px-4 py-2 bg-emerald hover:bg-emerald/80 text-white rounded-md disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Save job
+                  {creatingJob ? "Saving..." : "Save job"}
                 </button>
               </div>
             </form>

@@ -1,11 +1,11 @@
 from typing import Optional
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.models.skill import Skill
-from app.schemas.user import ResetPasswordRequest, UserActiveStatus
+from app.schemas.user import CandidateFilesUpdate, EmployerLogoUpdate, ResetPasswordRequest, UserActiveStatus
 from app.schemas.candidate import CandidateUpdate
 from app.schemas.employer import EmployerUpdate
 from app.utils.auth import hash_password, verify_password
@@ -79,3 +79,45 @@ async def set_active_status(
     await db.commit()
     await db.refresh(current_user)
     return {"is_active": current_user.is_active}
+
+async def update_employer_logo(
+    db: AsyncSession,
+    current_user: User,
+    data: EmployerLogoUpdate,
+) -> User:
+    if current_user.role.name != "employer":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only employers can update company_logo")
+
+    employer = current_user.employer
+    if not employer:
+        raise HTTPException(status_code=404, detail="Employer profile not found")
+
+    employer.company_logo = str(data.company_logo)
+    await db.commit()
+    await db.refresh(employer)
+    return current_user
+
+async def update_candidate_files(
+    db: AsyncSession,
+    current_user: User,
+    data: CandidateFilesUpdate,
+) -> User:
+    if current_user.role.name != "candidate":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only candidates can update files")
+
+    candidate = current_user.candidate
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate profile not found")
+
+    payload = data.model_dump(exclude_unset=True)
+    if not payload:
+        raise HTTPException(status_code=400, detail="No fields provided")
+
+    if "img_path" in payload:
+        candidate.img_path = str(payload["img_path"])
+    if "resume_url" in payload:
+        candidate.resume_url = str(payload["resume_url"])
+
+    await db.commit()
+    await db.refresh(candidate)
+    return current_user
