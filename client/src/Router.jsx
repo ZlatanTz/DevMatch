@@ -19,6 +19,8 @@ import AdminLayout from "./pages/Admin/AdminLayout";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
 import MyJobSubmits from "./pages/MyJobSubmits";
+import ProtectedRoute from "./guards/ProtecedRoute";
+
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -55,11 +57,16 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: <ProtectedRoute allowedRoles={["admin"]} />,
     children: [
-      { index: true, element: <ManageUsers /> },
-      { path: "jobs", element: <ManageJobs /> },
-      { path: "statistics", element: <Statistics /> },
+      {
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <ManageUsers /> },
+          { path: "jobs", element: <ManageJobs /> },
+          { path: "statistics", element: <Statistics /> },
+        ],
+      },
     ],
   },
   {
