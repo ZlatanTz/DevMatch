@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { getAllCandidateApplications } from "@/api/services/applications";
-import { getJobByIdDetailed } from "@/api/services/jobs";
+import { getAllEmployerJobs, getJobByIdDetailed } from "@/api/services/jobs";
 import { useSkills } from "@/hooks/useSkills";
 import SkillList from "../components/SkillList";
 import { useAuth } from "@/context/AuthContext";
@@ -10,24 +10,22 @@ export default function MySubmits() {
   const [jobs, setJobs] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
   const { getNamesForIds } = useSkills();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const employerId = user.employer.employerId;
 
   useEffect(() => {
-    const fetchApplicationsAndJobs = async () => {
+    const fetchJobs = async () => {
       try {
-        const apps = await getAllCandidateApplications(employerId);
-        setApplications(apps);
-
-        const jobIds = [...new Set(apps.map((app) => app.job_id))];
-        const jobsData = await Promise.all(jobIds.map((id) => getJobByIdDetailed(id)));
-        setJobs(jobsData);
+        const data = await getAllEmployerJobs(employerId);
+        setJobs(data.items); // backend vraća Page objekat sa .items
       } catch (error) {
-        console.error("Failed to fetch applications/jobs:", error);
+        console.error("Error fetching employer jobs:", error);
       }
     };
 
-    if (employerId) fetchApplicationsAndJobs();
+    if (employerId) {
+      fetchJobs();
+    }
   }, [employerId]);
 
   const mergedApplications = useMemo(() => {

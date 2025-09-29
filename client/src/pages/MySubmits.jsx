@@ -10,7 +10,7 @@ export default function MySubmits() {
   const [jobs, setJobs] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
   const { getNamesForIds } = useSkills();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const candidateId = user.candidate.candidateId;
 
   useEffect(() => {

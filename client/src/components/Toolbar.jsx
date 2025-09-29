@@ -4,6 +4,7 @@ import { updateParamBatch, useJobsFilter } from "../hooks/useJobsFilter";
 import { useSkills } from "../hooks/useSkills";
 import MultiSelect from "@/pages/AuthLayout/MultiSelect";
 import { useAuth } from "../context/AuthContext";
+import { createNewJob } from "@/api/services/jobs";
 
 export default function Toolbar() {
   const { q, location, seniority, skills, sort, setSearchParams, searchParams } = useJobsFilter();
@@ -12,7 +13,7 @@ export default function Toolbar() {
   const roleName = user?.role?.name?.toLowerCase();
   const isCandidate = Boolean(user?.candidate?.candidateId || roleName === "candidate");
 
-  // console.log(user);
+  console.log(user);
 
   const skillOptions = useMemo(
     () => allSkills.map((s) => ({ value: String(s.id), label: s.name })),
@@ -107,8 +108,6 @@ export default function Toolbar() {
   } = useForm({
     defaultValues: {
       title: "",
-      company: user?.employer?.companyName || "",
-      company_img: user?.employer?.companyLogo || "",
       location: "",
       employment_type: "Full-time",
       seniority: "Junior",
@@ -119,14 +118,14 @@ export default function Toolbar() {
       skills: [],
       description: "",
       company_description: user?.employer?.about || "",
+      benefits: "",
+      employer_id: user?.employer?.employerId,
     },
   });
 
-  const submitNewJob = (values) => {
+  const submitNewJob = async (values) => {
     const job = {
       title: values.title.trim(),
-      company: values.company.trim(),
-      company_img: values.company_img.trim(),
       location: values.location.trim(),
       employment_type: values.employment_type,
       seniority: values.seniority,
@@ -135,16 +134,26 @@ export default function Toolbar() {
       is_remote: !!values.is_remote,
       status: values.status,
       skills: Array.isArray(values.skills) ? values.skills.map((v) => Number(v)) : [],
-      created_at: values.created_at || new Date().toISOString(),
+      // created_at: values.created_at || new Date().toISOString(),
       description: values.description.trim(),
       company_description: values.company_description.trim(),
+      benefits: values.benefits ? values.benefits.split(",").map((b) => b.trim()) : [],
+      employer_id: user?.employer.employerId,
     };
 
-    window.dispatchEvent(new CustomEvent("job:add", { detail: job }));
-    console.log("New job created:", job);
+    console.log(job);
 
-    setOpen(false);
-    resetJob();
+    try {
+      const createdJob = await createNewJob(job);
+      console.log("Job successfully created:", createdJob);
+
+      window.dispatchEvent(new CustomEvent("job:add", { detail: createdJob }));
+
+      setOpen(false);
+      resetJob();
+    } catch (err) {
+      console.error("Failed to create job:", err);
+    }
   };
 
   return (
@@ -277,7 +286,7 @@ export default function Toolbar() {
 
             <form onSubmit={submitJob(submitNewJob)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
+                <div className="space-y-1 md:col-span-2">
                   <label htmlFor="job-title" className="text-sm font-medium">
                     Job title
                   </label>
@@ -288,7 +297,7 @@ export default function Toolbar() {
                     {...regJob("title", { required: true })}
                   />
                 </div>
-                <div className="space-y-1">
+                {/* <div className="space-y-1">
                   <label htmlFor="job-company" className="text-sm font-medium">
                     Company
                   </label>
@@ -298,7 +307,7 @@ export default function Toolbar() {
                     placeholder="TechNova"
                     {...regJob("company", { required: true })}
                   />
-                </div>
+                </div> 
                 <div className="space-y-1 md:col-span-2">
                   <label htmlFor="job-company-img" className="text-sm font-medium">
                     Company logo URL
@@ -309,7 +318,7 @@ export default function Toolbar() {
                     placeholder="https://…"
                     {...regJob("company_img")}
                   />
-                </div>
+                </div>*/}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -442,6 +451,19 @@ export default function Toolbar() {
                   className="w-full px-3 py-2 border rounded-md"
                   placeholder="Who you are as a company…"
                   {...regJob("company_description")}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="job-benefits" className="text-sm font-medium">
+                  Benefits
+                </label>
+                <textarea
+                  id="job-benefits"
+                  rows={4}
+                  className="w-full px-3 py-2 border rounded-md"
+                  placeholder="What are your company benefits…"
+                  {...regJob("benefits")}
                 />
               </div>
 
