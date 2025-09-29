@@ -4,7 +4,7 @@ import {
   getRecommendedJobsFiltered,
 } from "@/api/services/jobs";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ServerResponseWrapper from "@/components/ServerResponseWrapper";
 import {
   Carousel,
@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 
 import Autoplay from "embla-carousel-autoplay";
 import { useAuth } from "@/context/AuthContext";
+import { useSkills } from "@/hooks/useSkills";
+import SkillList from "@/components/SkillList";
 
 const INITIAL_VISIBLE = 6;
 
@@ -54,6 +56,7 @@ export default function HomePage() {
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [loadMoreClicks, setLoadMoreClicks] = useState(0);
+  const [selectedJob, setSelectedJob] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -62,9 +65,12 @@ export default function HomePage() {
 
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { getNamesForIds } = useSkills();
   const candidateId = user?.candidate?.candidateId;
   const roleName = user?.role?.name?.toLowerCase();
   const isCandidate = Boolean(candidateId || roleName === "candidate");
+  const employerId = user?.employer?.employerId;
+  const isEmployer = Boolean(employerId || roleName === "employer");
 
   const autoplayRef = useRef(Autoplay({ delay: 3000 }));
 
@@ -148,6 +154,44 @@ export default function HomePage() {
     }
   };
 
+  const handleJobCardClick = (job) => {
+    if (!job) return;
+    if (isEmployer) {
+      setSelectedJob(job);
+      return;
+    }
+    navigate(`/jobs/${job.id}`);
+  };
+
+  const closeJobModal = () => setSelectedJob(null);
+
+  const resolveSkillNames = (job) => {
+    if (!job) return [];
+    const list = Array.isArray(job.skills) ? job.skills : [];
+
+    const allHaveIds = list.every((skill) => typeof skill === "object" && skill?.id != null);
+    if (allHaveIds) {
+      return getNamesForIds(list.map((skill) => skill.id));
+    }
+
+    return list.map((skill) => {
+      if (typeof skill === "string") return skill;
+      if (skill && typeof skill === "object") return skill.name ?? String(skill.id ?? "");
+      return String(skill ?? "");
+    });
+  };
+
+  const selectedJobSkillNames = resolveSkillNames(selectedJob);
+  const selectedJobStatus = selectedJob?.status ? selectedJob.status.toLowerCase() : "";
+  const selectedJobStatusLabel =
+    selectedJobStatus === "paused"
+      ? "Paused"
+      : selectedJobStatus === "closed"
+        ? "Closed"
+        : selectedJobStatus === "open"
+          ? "Open"
+          : "Unknown";
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -189,9 +233,10 @@ export default function HomePage() {
                 <CarouselContent className="flex gap-3 sm:gap-4">
                   {latestTen.map((job) => (
                     <CarouselItem key={job.id} className="basis-full sm:basis-1/2 lg:basis-1/3">
-                      <Link
-                        to={`/jobs/${job.id}`}
-                        className="group relative flex h-72 sm:h-80 w-full flex-col justify-between rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                      <button
+                        type="button"
+                        onClick={() => handleJobCardClick(job)}
+                        className="group relative flex h-72 sm:h-80 w-full flex-col justify-between rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5 text-left"
                       >
                         <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity motion-safe:duration-300 bg-gradient-to-br from-paynes-gray/5 to-federal-blue/5" />
 
@@ -234,7 +279,7 @@ export default function HomePage() {
                         <p className="relative text-[11px] sm:text-xs text-muted-foreground text-center">
                           {daysAgo(job.created_at)}
                         </p>
-                      </Link>
+                      </button>
                     </CarouselItem>
                   ))}
                 </CarouselContent>
@@ -258,8 +303,12 @@ export default function HomePage() {
             ) : (
               <div className="flex flex-col gap-3">
                 {highestPaidJobs.slice(0, 3).map((job, index) => (
-                  <Link key={job.id ?? `${job.title}-${index}`} to={`/jobs/${job.id}`}>
-                    <div className="relative rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all motion-safe:duration-300">
+                  <button
+                    key={job.id ?? `${job.title}-${index}`}
+                    type="button"
+                    onClick={() => handleJobCardClick(job)}
+                    className="relative w-full rounded-2xl border border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all motion-safe:duration-300 text-left"
+                  >
                       <div className="absolute top-2 right-2">
                         <span className="inline-flex items-center justify-center rounded-full bg-emerald text-white text-[11px] px-2 py-1 shadow-sm">
                           #{index + 1}
@@ -275,8 +324,7 @@ export default function HomePage() {
                       <p className="text-sm sm:text-base font-extrabold text-emerald">
                         {formatCurrency(job.min_salary)} – {formatCurrency(job.max_salary)}
                       </p>
-                    </div>
-                  </Link>
+                  </button>
                 ))}
               </div>
             )}
@@ -296,10 +344,11 @@ export default function HomePage() {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {displayedJobs.slice(0, visibleCount).map((job) => (
-                    <Link
+                    <button
                       key={job.id}
-                      to={`/jobs/${job.id}`}
-                      className="block rounded-2xl border-2 border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                      type="button"
+                      onClick={() => handleJobCardClick(job)}
+                      className="text-left rounded-2xl border-2 border-border bg-white/80 dark:bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 p-3 sm:p-4 shadow-sm transition-all motion-safe:duration-300 hover:shadow-lg hover:-translate-y-0.5"
                     >
                       <h3 className="font-semibold text-sm sm:text-base mb-1 line-clamp-2">
                         {job.title}
@@ -311,8 +360,13 @@ export default function HomePage() {
                         {job.employment_type}
                       </p>
 
-                      <div className="flex items-center justify-between"></div>
-                    </Link>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-emerald">
+                          {formatCurrency(job.min_salary)} – {formatCurrency(job.max_salary)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">{daysAgo(job.created_at)}</span>
+                      </div>
+                    </button>
                   ))}
                 </div>
 
@@ -331,6 +385,162 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+      {selectedJob && isEmployer ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl w-[90vw] max-w-4xl h-[90vh] p-4 md:p-6 flex flex-col overflow-hidden">
+            <div className="flex justify-end mb-4">
+              <button
+                type="button"
+                onClick={closeJobModal}
+                className="text-gray-500 hover:text-black text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="overflow-y-auto flex-grow">
+              <div className="container mx-auto space-y-6">
+                {selectedJob.employer?.company_logo ? (
+                  <img
+                    src={selectedJob.employer.company_logo}
+                    alt={selectedJob.employer.company_name || "Company logo"}
+                    className="w-full h-48 sm:h-56 md:h-64 object-contain object-center rounded-lg shadow"
+                  />
+                ) : null}
+
+                <div className="flex flex-col items-center space-y-2 sm:flex-row sm:flex-wrap sm:justify-around sm:space-y-0 p-4 rounded-lg bg-federal-blue text-white">
+                  <p className="mx-2 font-medium">
+                    {selectedJob.employer?.company_name || selectedJob.company || "Company"}
+                  </p>
+                  {selectedJob.title ? <p className="mx-2 font-medium">{selectedJob.title}</p> : null}
+                  {selectedJob.location ? <p className="mx-2 font-medium">{selectedJob.location}</p> : null}
+                  {selectedJob.seniority ? <p className="mx-2 font-medium">{selectedJob.seniority}</p> : null}
+                  {selectedJob.employment_type ? (
+                    <p className="mx-2 font-medium">{selectedJob.employment_type}</p>
+                  ) : null}
+                  <p className="mx-2 font-medium">{selectedJob.is_remote ? "Remote" : "On-site"}</p>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+                  <div className="p-6 rounded-lg shadow border border-gray-200 bg-white space-y-4">
+                    <div>
+                      <p className="font-semibold text-federal-blue text-2xl">About the job</p>
+                      {selectedJob.company_description ? (
+                        <p className="mt-3 text-gray-700">{selectedJob.company_description}</p>
+                      ) : null}
+                    </div>
+                    {selectedJob.description ? (
+                      <div>
+                        <p className="font-semibold text-paynes-gray">The role entails:</p>
+                        <p className="text-gray-700">{selectedJob.description}</p>
+                      </div>
+                    ) : null}
+                    <div>
+                      <p className="font-semibold text-paynes-gray mb-2">Required skills</p>
+                      <SkillList names={selectedJobSkillNames} max={selectedJobSkillNames.length || 0} />
+                    </div>
+                    {Array.isArray(selectedJob.benefits) && selectedJob.benefits.length > 0 ? (
+                      <div>
+                        <p className="font-semibold text-paynes-gray">Benefits</p>
+                        <ul className="text-gray-700 list-disc list-inside space-y-1">
+                          {selectedJob.benefits.map((benefit, index) => (
+                            <li key={`${benefit}-${index}`}>{benefit}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="p-6 rounded-lg shadow border border-gray-200 bg-white space-y-3">
+                      <div className="flex items-center gap-2">
+                        <p className="text-paynes-gray font-medium">Status:</p>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald/10 text-emerald">
+                          {selectedJobStatusLabel}
+                        </span>
+                      </div>
+                      <div className="flex justify-start items-center">
+                        <p className="text-paynes-gray font-medium">Date posted:</p>
+                        <p className="text-gray-700 pl-1">
+                          {selectedJob?.created_at
+                            ? new Date(selectedJob.created_at).toLocaleDateString()
+                            : "N/A"}
+                        </p>
+                      </div>
+                      {selectedJob.location ? (
+                        <div className="flex justify-start items-center">
+                          <p className="text-paynes-gray font-medium">Location:</p>
+                          <p className="text-gray-700 pl-1">{selectedJob.location}</p>
+                        </div>
+                      ) : null}
+                      {selectedJob.min_salary || selectedJob.max_salary ? (
+                        <div className="flex justify-start items-center">
+                          <p className="text-paynes-gray font-medium">Salary:</p>
+                          <p className="text-gray-700 pl-1">
+                            {formatCurrency(selectedJob.min_salary)} – {formatCurrency(selectedJob.max_salary)}
+                          </p>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {selectedJob.employer ? (
+                      <div className="p-6 rounded-lg shadow border border-gray-200 bg-white space-y-3">
+                        {selectedJob.employer.company_name ? (
+                          <div className="flex justify-start items-center">
+                            <p className="text-paynes-gray font-medium">Company:</p>
+                            <p className="text-gray-700 pl-1">{selectedJob.employer.company_name}</p>
+                          </div>
+                        ) : null}
+                        {selectedJob.employer.location ? (
+                          <div className="flex justify-start items-center">
+                            <p className="text-paynes-gray font-medium">Location:</p>
+                            <p className="text-gray-700 pl-1">{selectedJob.employer.location}</p>
+                          </div>
+                        ) : null}
+                        {selectedJob.employer.country ? (
+                          <div className="flex justify-start items-center">
+                            <p className="text-paynes-gray font-medium">Country:</p>
+                            <p className="text-gray-700 pl-1">{selectedJob.employer.country}</p>
+                          </div>
+                        ) : null}
+                        {selectedJob.employer.tel ? (
+                          <div className="flex justify-start items-center">
+                            <p className="text-paynes-gray font-medium">Phone:</p>
+                            <p className="text-gray-700 pl-1">{selectedJob.employer.tel}</p>
+                          </div>
+                        ) : null}
+                        {selectedJob.employer.website ? (
+                          <div className="flex justify-start items-center">
+                            <p className="text-paynes-gray font-medium">Website:</p>
+                            <a
+                              href={selectedJob.employer.website}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-emerald pl-1"
+                            >
+                              {selectedJob.employer.website}
+                            </a>
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-center pt-4">
+              <button
+                type="button"
+                onClick={closeJobModal}
+                className="px-6 py-2 bg-emerald rounded-lg hover:opacity-90 transition-colors text-lg text-white"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </ServerResponseWrapper>
   );
 }
