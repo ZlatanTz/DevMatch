@@ -116,3 +116,32 @@ export async function getRecommendedJobsFiltered(candidateId, opts = {}) {
 
   return data;
 }
+
+export const createNewJob = async (params = {}) => {
+  try {
+    const response = await api.post("/jobs/", params);
+
+    return response.data;
+  } catch (err) {
+    console.error("API error (createNewJob):", err);
+    throw err;
+  }
+};
+
+export const getAllEmployerJobs = async (employer_id, params = {}) => {
+  try {
+    const response = await api.get(`/jobs/by-employer/${employer_id}`, {
+      params: {
+        page: 1,
+        page_size: 100,
+        sort_by: "created_at",
+        sort_dir: "desc",
+        ...params,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};

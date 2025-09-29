@@ -13,7 +13,7 @@ export default function Toolbar() {
   const roleName = user?.role?.name?.toLowerCase();
   const isCandidate = Boolean(user?.candidate?.candidateId || roleName === "candidate");
 
-  // console.log(user);
+  console.log(user);
 
   const skillOptions = useMemo(
     () => allSkills.map((s) => ({ value: String(s.id), label: s.name })),
@@ -110,8 +110,6 @@ export default function Toolbar() {
   } = useForm({
     defaultValues: {
       title: "",
-      company: user?.employer?.companyName || "",
-      company_img: user?.employer?.companyLogo || "",
       location: "",
       employment_type: "Full-time",
       seniority: "Junior",
@@ -121,6 +119,8 @@ export default function Toolbar() {
       skills: [],
       description: "",
       company_description: user?.employer?.about || "",
+      benefits: "",
+      employer_id: user?.employer?.employerId,
     },
   });
 
@@ -321,7 +321,7 @@ export default function Toolbar() {
 
             <form onSubmit={submitJob(submitNewJob)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
+                <div className="space-y-1 md:col-span-2">
                   <label htmlFor="job-title" className="text-sm font-medium">
                     Job title
                   </label>
@@ -332,7 +332,7 @@ export default function Toolbar() {
                     {...regJob("title", { required: true })}
                   />
                 </div>
-                <div className="space-y-1">
+                {/* <div className="space-y-1">
                   <label htmlFor="job-company" className="text-sm font-medium">
                     Company
                   </label>
@@ -342,7 +342,7 @@ export default function Toolbar() {
                     placeholder="TechNova"
                     {...regJob("company", { required: true })}
                   />
-                </div>
+                </div> 
                 <div className="space-y-1 md:col-span-2">
                   <label htmlFor="job-company-img" className="text-sm font-medium">
                     Company logo URL
@@ -353,7 +353,7 @@ export default function Toolbar() {
                     placeholder="https://…"
                     {...regJob("company_img")}
                   />
-                </div>
+                </div>*/}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -437,7 +437,6 @@ export default function Toolbar() {
                     Remote friendly
                   </label>
                 </div>
-
               </div>
 
               <div className="space-y-1">
@@ -477,9 +476,7 @@ export default function Toolbar() {
                 />
               </div>
 
-              {createJobError && (
-                <p className="text-sm text-red-600">{createJobError}</p>
-              )}
+              {createJobError && <p className="text-sm text-red-600">{createJobError}</p>}
 
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
