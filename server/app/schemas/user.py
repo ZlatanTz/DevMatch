@@ -62,14 +62,12 @@ class ResetPasswordRequest(BaseModel):
     old_password: str
     new_password: str
 
-<<<<<<< HEAD
 class EmployerLogoUpdate(BaseModel):
     company_logo: AnyUrl = Field(..., description="Public URL to employer's company logo")
 
 class CandidateFilesUpdate(BaseModel):
     img_path: Optional[AnyUrl] = Field(None, description="Public URL to candidate profile image")
     resume_url: Optional[AnyUrl] = Field(None, description="Public URL to candidate resume (PDF)")
-=======
+    
 class UserSuspendStatus(BaseModel):
     is_suspended: bool
->>>>>>> ac674aafdc92c910ca90f45c1307007dbc8657fe
