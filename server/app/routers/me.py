@@ -1,8 +1,8 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core import get_db
-from app.schemas.user import ResetPasswordRequest, UserActiveStatus, UserRead, ExtendedUserRead
+from app.schemas.user import CandidateFilesUpdate, EmployerLogoUpdate, ResetPasswordRequest, UserActiveStatus, UserRead, ExtendedUserRead
 from app.schemas.candidate import CandidateUpdate
 from app.schemas.employer import EmployerUpdate
 from app.models.user import User
@@ -42,3 +42,19 @@ async def set_active_status(
     current_user: User = Depends(get_current_user),
 ):
     return await me_service.set_active_status(db, current_user, data)
+
+@router.put("/employer/logo", response_model=ExtendedUserRead, status_code=status.HTTP_200_OK)
+async def put_employer_logo(
+    data: EmployerLogoUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return await me_service.update_employer_logo(db, current_user, data)
+
+@router.put("/candidate/files", response_model=ExtendedUserRead, status_code=status.HTTP_200_OK)
+async def put_candidate_files(
+    data: CandidateFilesUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return await me_service.update_candidate_files(db, current_user, data)

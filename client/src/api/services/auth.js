@@ -49,8 +49,6 @@ export async function registerCandidate(formData) {
 
 export async function registerEmployer(formData) {
   const payload = transformEmployerFormToPayload(formData);
-  console.log("employer payload: ", payload);
-
   try {
     const response = await api.post(REGISTER_EMPLOYER, payload);
     return response.data;

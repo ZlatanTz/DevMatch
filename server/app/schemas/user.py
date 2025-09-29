@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import AnyUrl, BaseModel, EmailStr, Field
 from app.schemas.role import RoleRead
 from app.schemas.candidate import CandidateBase, CandidateRead
 from app.schemas.employer import EmployerBase, EmployerRead
@@ -62,5 +62,12 @@ class ResetPasswordRequest(BaseModel):
     old_password: str
     new_password: str
 
+class EmployerLogoUpdate(BaseModel):
+    company_logo: AnyUrl = Field(..., description="Public URL to employer's company logo")
+
+class CandidateFilesUpdate(BaseModel):
+    img_path: Optional[AnyUrl] = Field(None, description="Public URL to candidate profile image")
+    resume_url: Optional[AnyUrl] = Field(None, description="Public URL to candidate resume (PDF)")
+    
 class UserSuspendStatus(BaseModel):
     is_suspended: bool

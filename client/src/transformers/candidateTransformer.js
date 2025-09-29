@@ -51,7 +51,6 @@ export const transformCandidateFormToPayload = (form) => {
         : Number(form.desired_salary ?? 0),
     country: form.country,
     tel: form.phone,
-    img_path: getFileName(form.profilePicture),
     prefers_remote: prefersRemote,
     seniority: pickOptionValue(form.seniority),
     skills: normalizeSkills(form.skills),
