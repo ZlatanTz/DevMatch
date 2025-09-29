@@ -143,12 +143,11 @@ export default function MySubmits() {
                         <p className="mb-4 text-gray-700">{selectedApp.job.company_description}</p>
                         <p className="font-semibold text-paynes-gray">The role entails:</p>
                         <p className="mb-4 text-gray-700">{selectedApp.job.description}</p>
-                        <p className="font-semibold text-paynes-gray">
+                        <p className="font-semibold text-paynes-gray mb-2">
                           What we are looking for in you:
                         </p>
-                        <div className="mt-auto pt-3 pb-3 flex items-center justify-between text-sm">
-                          <SkillList names={skillNames} max={skillNames.length} />
-                        </div>
+                        <SkillList names={skillNames} max={skillNames.length} />
+
                         <p className="font-semibold text-paynes-gray">What we offer:</p>
                         <ul className="mb-4 text-gray-700 list-disc list-inside">
                           {selectedApp.job.benefits.map((benefit, index) => (
