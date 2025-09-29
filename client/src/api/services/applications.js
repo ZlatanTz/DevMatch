@@ -41,3 +41,15 @@ export const applyToJob = async (jobId, user, formData) => {
     throw error;
   }
 };
+
+export const updateApplicationStatus = async (applicationId, status) => {
+  try {
+    const response = await api.put(`/applications/${applicationId}`, {
+      status: status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating application status:", error);
+    throw error;
+  }
+};

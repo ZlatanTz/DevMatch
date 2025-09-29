@@ -1,8 +1,9 @@
-import { NavLink, useLocation, useNavigation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate, useNavigation } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
 import logo from "../assets/devmatch.svg";
+import profileIcon from "../assets/profileIcon.jpg";
+import companyLogo from "../assets/logo.jpg";
 import { useAuth } from "../context/AuthContext";
-
 const navItems = [
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
@@ -10,6 +11,7 @@ const navItems = [
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isLogged, setIsLogged] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -267,7 +269,11 @@ export default function Header() {
                     aria-expanded={dropdownOpen}
                     onClick={() => setDropdownOpen((v) => !v)}
                   >
-                    <img src={user.img} alt="Profile" className="h-full w-full object-cover" />
+                    <img
+                      src={user.role.name === "candidate" ? profileIcon : companyLogo}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                    />
                   </button>
 
                   {dropdownOpen && (
@@ -323,6 +329,7 @@ export default function Header() {
                             setDropdownOpen(false);
                             setIsLogged(false);
                             logout();
+                            navigate("/");
                           }}
                         >
                           Logout
@@ -448,7 +455,7 @@ export default function Header() {
                     </NavLink>
                   ) : null}
                   <NavLink
-                    to="/profile"
+                    to={`/profile/${user.id}`}
                     className={({ isActive }) =>
                       `rounded-xl px-3 py-3 text-base transition-colors ${
                         isActive

@@ -59,6 +59,9 @@ export function readParams(sp, defaultSort = "date-desc") {
 
 export function filterAndSort(jobs, p) {
   const filtered = jobs.filter((j) => {
+    const status = typeof j.status === "string" ? j.status.toLowerCase() : String(j.status || "").toLowerCase();
+    if (status && status !== "open") return false;
+
     const text = `${j.title ?? ""} ${j.company ?? ""} ${j.description ?? ""}`.toLowerCase();
     if (p.q && !text.includes(p.q)) return false;
 

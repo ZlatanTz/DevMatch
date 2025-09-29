@@ -32,6 +32,8 @@ const JobDetails = () => {
     employer,
   } = job;
 
+  const statusLabel = status === "open" ? "Open" : status === "paused" ? "Paused" : "Closed";
+
   const [visibleCount, setVisibleCount] = useState(6);
 
   // console.log(user);
@@ -56,7 +58,7 @@ const JobDetails = () => {
     birthYear: "",
     phone: user?.candidate?.tel || "",
     location: user?.candidate?.location || "",
-    experience: user?.candidate?.yearsExp || "",
+    experience: user?.candidate?.yearsExp || 0,
     seniority: user?.candidate?.seniority || "",
     skills: user?.candidate?.skills || [],
     cv: null,
@@ -118,6 +120,10 @@ const JobDetails = () => {
   const initialSelected = user?.candidate.skills.map((skill) => skill.name) || null;
   const [selectedSkills, setSelectedSkills] = useState(initialSelected);
 
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, skills: selectedSkills }));
+  }, [selectedSkills]);
+
   if (!job) {
     return (
       <section className="p-10 text-center">
@@ -170,7 +176,7 @@ const JobDetails = () => {
             <div className="job-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
               <div className="flex justify-start items-center mb-4">
                 <p className="text-paynes-gray font-medium">Status:</p>
-                <p className="text-gray-700 pl-1">{status === "open" ? "Open" : "Closed"}</p>
+                <p className="text-gray-700 pl-1">{statusLabel}</p>
               </div>
 
               <div className="flex justify-start items-center mb-4">
@@ -220,7 +226,7 @@ const JobDetails = () => {
           user?.candidate ? (
             <div className="job-apply-form bg-white p-6 rounded-lg shadow-md border border-gray-200">
               <h2 className="text-xl font-bold text-center mb-4 text-federal-blue">
-                Apply for a job{" "}
+                Apply for a job
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-4">

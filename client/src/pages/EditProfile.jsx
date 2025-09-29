@@ -1,328 +1,438 @@
-import { useLoaderData, Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import CreatableSelect from "react-select/creatable";
-import {
-  candidateRegistrationSchema,
-  employerRegistrationSchema,
-} from "@/schemas/registrationSchemas";
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { updateMe } from "@/api/services/me";
+import { transformUserMe } from "@/transformers/currentUserTransformer";
+import AllSkillsList from "@/components/AllSkillsList";
+import { useSkills } from "@/hooks/useSkills";
 
-function EditProfile() {
-  const user = useLoaderData();
-
-  const [allSkills, setAllSkills] = useState([]); // full list from API
-  const [skillOptions, setSkillOptions] = useState([]); // formatted for react-select
-  const [selectedSkills, setSelectedSkills] = useState([]); // user’s chosen skill IDs
-
-  useEffect(() => {
-    async function fetchSkills() {
-      try {
-        const res = await axios.get("http://127.0.0.1:8000/skills/");
-        setAllSkills(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    fetchSkills();
-  }, []);
-
-  useEffect(() => {
-    const defaultSkillIds = (user.skills || []).map((s) => s.id);
-    setSelectedSkills(defaultSkillIds);
-
-    const mergedSkills = [...allSkills, ...(user.skills || [])];
-    const uniqueSkills = Array.from(new Map(mergedSkills.map((s) => [s.id, s])).values());
-
-    setSkillOptions(
-      uniqueSkills.map((skill) => ({
-        value: skill.id,
-        label: skill.name,
-      })),
-    );
-  }, [allSkills, user.skills]);
-
-  const [firstName, setFirstName] = useState(user.first_name || "");
-  const [lastName, setLastName] = useState(user.last_name || "");
-  const [location, setLocation] = useState(user.location || "");
-  const [country, setCountry] = useState(user.country || "");
-  const [yearsExp, setYearsExp] = useState(user.years_exp || 0);
-  const [bio, setBio] = useState(user.bio || "");
-  const [resumeUrl, setResumeUrl] = useState(user.resume_url || "");
-  const [desiredSalary, setDesiredSalary] = useState(user.desired_salary || 0);
-  const [img, setImg] = useState(user.img || "");
-  const [companyName, setCompanyName] = useState(user.company_name || "");
-  const [website, setWebsite] = useState(user.website || "");
-  const [about, setAbout] = useState(user.about || "");
-  const [tel, setTel] = useState(user.tel || "");
-  const [email, setEmail] = useState(user.email || "");
-
+const EditProfile = () => {
+  const { user, updateUser } = useAuth();
+  const { skills, getNamesForIds, getIdsForNames } = useSkills();
   const navigate = useNavigate();
 
-  const [imgPreview, setImgPreview] = useState(user.img || "");
+  if (!user) return <div>Loading ... </div>;
 
-  const handleImgChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setImgPreview(URL.createObjectURL(file));
+  const initialSelected = user?.candidate?.skills.map((skill) => skill.id) || []; //ids
+  const [selectedSkills, setSelectedSkills] = useState(initialSelected); // ids
+  const [selectedSkillsNames, setSelectedSkillsNames] = useState(getNamesForIds(selectedSkills)); //names
+
+  const [candidateData, setCandidateData] = useState({
+    firstName: user?.candidate?.firstName || "",
+    lastName: user?.candidate?.lastName || "",
+    location: user?.candidate?.location || "",
+    country: user?.candidate?.country || "",
+    tel: user?.candidate?.tel || "",
+    bio: user?.candidate?.bio || "",
+    resumeUrl: user?.candidate?.resumeUrl || "",
+    imgPath: user?.candidate?.imgPath || "", // nisam dodao polje
+    yearsExp: user?.candidate?.yearsExp || 0,
+    desiredSalary: user?.candidate?.desiredSalary || 0,
+    prefersRemote: user?.candidate?.prefersRemote || null, // nisam dodao polje
+    seniority: user?.candidate?.seniority || null,
+    skills: initialSelected || [],
+  });
+
+  const [employerData, setEmployerData] = useState({
+    companyName: user?.employer?.companyName || "",
+    website: user?.employer?.website || "",
+    location: user?.employer?.location || "",
+    country: user?.employer?.country || "",
+    tel: user?.employer?.tel || "",
+    about: user?.employer?.about || "",
+    companyLogo: user?.employer?.companyLogo || "", // nisam dodao polje
+  });
+
+  const handleCandidateChange = (e) => {
+    setCandidateData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  const onSubmit = async (e) => {
+  const handleEmployerChange = (e) => {
+    setEmployerData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleCandidateFileChange = (e) => {
+    setCandidateData((prev) => ({
+      ...prev,
+      resumeUrl: e.target.files[0]?.name || "",
+    }));
+  };
+
+  const handleCandidateImgChange = (e) => {
+    setCandidateData((prev) => ({
+      ...prev,
+      imgPath: e.target.files[0]?.name || "",
+    }));
+  };
+
+  const handleEmployerImgChange = (e) => {
+    setEmployerData((prev) => ({
+      ...prev,
+      companyLogo: e.target.files[0]?.name || "",
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const role = user.role.toLowerCase();
-    const id = user.user_id;
 
-    const url =
-      role === "candidate"
-        ? `http://127.0.0.1:8000/candidates/${id}`
-        : `http://127.0.0.1:8000/employers/${id}`;
+    const normalizeSkills = (allSelected, allSkills) => {
+      const ids = allSelected
+        .map((item) => {
+          if (typeof item === "number") return item;
+          const skill = allSkills.find((s) => s.name === item);
+          return skill ? skill.id : null;
+        })
+        .filter(Boolean);
 
-    let payload;
-
-    if (role === "employer") {
-      payload = {
-        company_name: companyName,
-        website,
-        about,
-        location,
-        country,
-        tel,
-        email,
-      };
-    } else {
-      payload = {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        location,
-        years_exp: yearsExp,
-        bio,
-        resume_url: resumeUrl,
-        desired_salary: desiredSalary,
-        skills: selectedSkills,
-      };
-    }
-
-    console.log("Submitting payload:", payload);
+      return [...new Set(ids)];
+    };
 
     try {
-      const res = await axios.put(url, payload);
-      console.log("Updated profile:", res.data);
-      navigate(`/profile/${id}`);
-    } catch (err) {
-      console.log("Error:", err.response?.data || err.message);
+      let updatedUserSnake;
+      if (user?.candidate) {
+        const normalizedSkills = normalizeSkills(selectedSkills, skills);
+        const finalCandidateData = {
+          ...candidateData,
+          skills: normalizedSkills,
+        };
+
+        updatedUserSnake = await updateMe({ candidateData: finalCandidateData });
+      } else {
+        updatedUserSnake = await updateMe({ employerData });
+      }
+      const updatedUserCamel = transformUserMe(updatedUserSnake);
+      updateUser(updatedUserCamel);
+
+      navigate(`/profile/${user.id}`);
+    } catch (error) {
+      console.error("Error updating profile:", error);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow mt-10 mb-10">
-      <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
-
-      <div>
-        <label className="block font-medium">Profile Image</label>
-        <input type="file" onChange={handleImgChange} className="w-full border rounded-lg p-2" />
-        {imgPreview && (
-          <img
-            src={imgPreview}
-            alt="Profile Preview"
-            className="w-32 h-32 object-cover rounded-lg mt-2"
-          />
-        )}
-      </div>
-
-      <form onSubmit={onSubmit} className="space-y-4 mt-4">
-        {user.role === "Candidate" ? (
+    <div className="w-[90%] md:w-[70%] mx-auto my-[50px] p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl md:text-3xl mb-6">Edit Profile</h1>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {user?.candidate ? (
           <>
-            <div>
-              <label className="block font-medium">First Name</label>
-              <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="w-full border rounded-lg p-2"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-federal-blue mb-1"
+                >
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="First Name"
+                  value={candidateData.firstName}
+                  onChange={handleCandidateChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-federal-blue mb-1"
+                >
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={candidateData.lastName}
+                  onChange={handleCandidateChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="tel" className="block text-sm font-medium text-federal-blue mb-1">
+                  Phone number
+                </label>
+                <input
+                  type="tel"
+                  name="tel"
+                  placeholder="+381 63 123456"
+                  value={candidateData.tel}
+                  onChange={handleCandidateChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-medium text-federal-blue mb-1"
+                >
+                  Location
+                </label>
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="Location"
+                  value={candidateData.location}
+                  onChange={handleCandidateChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="country"
+                  className="block text-sm font-medium text-federal-blue mb-1"
+                >
+                  Country
+                </label>
+                <input
+                  type="text"
+                  name="country"
+                  placeholder="Country"
+                  value={candidateData.country}
+                  onChange={handleCandidateChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label
+                  htmlFor="yearsExp"
+                  className="block text-sm font-medium text-federal-blue mb-1"
+                >
+                  Job experience (years) <span className="text-emerald">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="yearsExp"
+                  min="0"
+                  placeholder="Job experience (years)"
+                  value={candidateData.yearsExp}
+                  onChange={handleCandidateChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="desiredSalary"
+                  className="block text-sm font-medium text-federal-blue mb-1"
+                >
+                  Desired Salary
+                </label>
+                <input
+                  type="number"
+                  name="desiredSalary"
+                  placeholder="Desired Salary"
+                  value={candidateData.desiredSalary}
+                  onChange={handleCandidateChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="education"
+                  className="block text-sm font-medium text-federal-blue mb-1"
+                >
+                  Level
+                </label>
+                <select
+                  name="seniority"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                  value={candidateData.seniority}
+                  onChange={handleCandidateChange}
+                >
+                  <option value={null}>Seniority</option>
+                  <option value="Intern">Intern</option>
+                  <option value="Junior">Junior</option>
+                  <option value="Medior">Medior</option>
+                  <option value="Senior">Senior</option>
+                </select>
+              </div>
             </div>
 
             <div>
-              <label className="block font-medium">Last Name</label>
-              <input
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Location</label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Years of Experience</label>
-              <input
-                type="number"
-                value={yearsExp}
-                onChange={(e) => setYearsExp(Number(e.target.value))}
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Desired Salary</label>
-              <input
-                type="number"
-                value={desiredSalary}
-                onChange={(e) => setDesiredSalary(Number(e.target.value))}
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Bio</label>
-              <textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                rows={4}
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Resume URL</label>
-              <input
-                type="url"
-                value={resumeUrl}
-                onChange={(e) => setResumeUrl(e.target.value)}
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Skills</label>
-              <CreatableSelect
-                isMulti
-                options={skillOptions}
-                classNamePrefix="react-select"
-                value={skillOptions.filter((opt) => selectedSkills.includes(opt.value))}
-                onChange={(selected) => {
-                  const ids = selected.map((opt) =>
-                    typeof opt.value === "number" ? opt.value : opt.tempId,
-                  );
+              <label htmlFor="skills" className="block text-sm font-medium text-federal-blue mb-1">
+                Skill
+              </label>
+              <AllSkillsList
+                max={5}
+                value={selectedSkillsNames}
+                onChange={(newSelected) => {
+                  setSelectedSkillsNames(newSelected);
+                  const ids = getIdsForNames(newSelected);
                   setSelectedSkills(ids);
                 }}
-                onCreateOption={(inputValue) => {
-                  const newOption = {
-                    value: Date.now() * -1,
-                    label: inputValue,
-                    tempId: Date.now() * -1,
-                  };
-                  setSkillOptions([...skillOptions, newOption]);
-                  setSelectedSkills([...selectedSkills, newOption.value]);
-                }}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="resume"
+                  className="block text-sm font-medium text-federal-blue mb-1"
+                >
+                  Upload CV (PDF)
+                </label>
+                <input
+                  type="file"
+                  name="resumeUrl"
+                  accept=".pdf"
+                  onChange={handleCandidateFileChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="imgPath"
+                  className="block text-sm font-medium text-federal-blue mb-1"
+                >
+                  Upload Profile Picture
+                </label>
+
+                <input
+                  type="file"
+                  name="imgPath"
+                  onChange={handleCandidateImgChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="bio" className="block text-sm font-medium text-federal-blue mb-1">
+                About you
+              </label>
+              <textarea
+                name="bio"
+                placeholder="About you"
+                value={candidateData.bio}
+                onChange={handleCandidateChange}
+                className="w-full h-24 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               />
             </div>
           </>
         ) : (
           <>
             <div>
-              <label className="block font-medium">Company Name</label>
+              <label htmlFor="companyName" className=" text-sm font-medium text-federal-blue mb-1">
+                Company Name
+              </label>
               <input
                 type="text"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="w-full border rounded-lg p-2"
+                name="companyName"
+                placeholder="Company Name"
+                value={employerData.companyName}
+                onChange={handleEmployerChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               />
             </div>
 
             <div>
-              <label className="block font-medium">Website</label>
-              <input
-                type="url"
-                value={website}
-                onChange={(e) => setWebsite(e.target.value)}
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">About</label>
-              <textarea
-                value={about}
-                onChange={(e) => setAbout(e.target.value)}
-                rows={4}
-                className="w-full border rounded-lg p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium">Location</label>
+              <label htmlFor="website" className=" text-sm font-medium text-federal-blue mb-1">
+                Website
+              </label>
               <input
                 type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full border rounded-lg p-2"
+                name="website"
+                placeholder="Website"
+                value={employerData.website}
+                onChange={handleEmployerChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               />
             </div>
 
             <div>
-              <label className="block font-medium">Country</label>
+              <label htmlFor="location" className=" text-sm font-medium text-federal-blue mb-1">
+                Location
+              </label>
               <input
                 type="text"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className="w-full border rounded-lg p-2"
+                name="location"
+                placeholder="Location"
+                value={employerData.location}
+                onChange={handleEmployerChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               />
             </div>
-
             <div>
-              <label className="block font-medium">Email</label>
+              <label htmlFor="country" className=" text-sm font-medium text-federal-blue mb-1">
+                Country
+              </label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border rounded-lg p-2"
+                type="text"
+                name="country"
+                placeholder="Country"
+                value={employerData.country}
+                onChange={handleEmployerChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               />
             </div>
-
             <div>
-              <label className="block font-medium">Telephone</label>
+              <label htmlFor="tel" className=" text-sm font-medium text-federal-blue mb-1">
+                Phone
+              </label>
               <input
                 type="tel"
-                value={tel}
-                onChange={(e) => setTel(e.target.value)}
-                className="w-full border rounded-lg p-2"
+                name="tel"
+                placeholder="Phone"
+                value={employerData.tel}
+                onChange={handleEmployerChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="companyLogo" className=" text-sm font-medium text-federal-blue mb-1">
+                Upload Company Logo
+              </label>
+              <input
+                type="file"
+                name="companyLogo"
+                onChange={handleEmployerImgChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="about" className="block text-sm font-medium text-federal-blue mb-1">
+                About
+              </label>
+              <textarea
+                name="about"
+                placeholder="About"
+                value={employerData.about}
+                onChange={handleEmployerChange}
+                className="w-full h-24 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
               />
             </div>
           </>
         )}
 
-        <div className="w-full flex justify-center">
-          <button
-            type="submit"
-            className="bg-emerald cursor-pointer text-white px-4 py-2 rounded-lg"
-          >
-            Save Changes
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="bg-emerald text-white px-4 py-2 rounded-md hover:opacity-90"
+        >
+          Save Changes
+        </button>
       </form>
     </div>
   );
-}
+};
 
 export default EditProfile;
