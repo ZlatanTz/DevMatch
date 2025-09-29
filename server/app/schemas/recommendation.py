@@ -1,9 +1,9 @@
 from typing import Dict, List
 from pydantic import BaseModel
-from app.schemas.job import JobRead
+from app.schemas.job import JobReadDetailed
 from app.schemas.candidate import CandidateRead
 class JobRecommendation(BaseModel):
-    job: JobRead
+    job: JobReadDetailed
     score: float
     parts: Dict[str, float]
     reasons: List[str]
@@ -15,4 +15,4 @@ class ApplicationRecommendation(BaseModel):
     score: float
     parts: Dict[str, float]
     reasons: List[str]
-    model_config = {'from_attributes': True}
+    model_config = {'from_attributes' : True}

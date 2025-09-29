@@ -78,12 +78,12 @@ def _salary_match(
 
 def _location_match(is_remote: bool, cand_remote_pref: Optional[bool] = None):
     if is_remote:
-        return 1.0, 'remote role, location flexible'
+        return 1.0, 'Location flexible'
     if cand_remote_pref is None:
-        return 0.5, 'on-site role, candidate pref unknown'
+        return 0.5, ''
     if cand_remote_pref is False:
-        return 1.0, 'candidate prefers on-site, job is on site'
-    return 0.2, 'candidate prefers remote, but job is on-site'
+        return 1.0, 'Job is on-site'
+    return 0.2, ''
 
 
 def _skills_match(cand_skills: Optional[List[str]], job_skills: Optional[List[str]]):
@@ -101,19 +101,19 @@ def _skills_match(cand_skills: Optional[List[str]], job_skills: Optional[List[st
 
     ov_txt = ", ".join(overlap) if overlap else "none"
     miss_txt = ", ".join(missing[:5]) + ("…" if len(missing) > 5 else "")
-    reason = f"skills overlap {round(100 * score)}% (matched: {ov_txt}; missing: {miss_txt or 'none'})"
+    reason = f"Skills overlap {round(100 * score)}% (Matched: {ov_txt.capitalize()})"
     return score, reason
 
 
 def _seniority_match(candidate_seniority: Optional[str], job_seniority: Optional[str]):
     cr, jr = _seniority_rank(candidate_seniority), _seniority_rank(job_seniority)
     if cr is None or jr is None:
-        return 0.5, 'seniority info incomplete'
+        return 0.5, ''
     if cr == jr:
-        return 1.0, f"seniority matches {candidate_seniority}"
+        return 1.0, f"Seniority matches"
     diff = abs(cr - jr)
     if diff == 1:
-        return 0.8, f'close seniority {candidate_seniority} vs {job_seniority}'
+        return 0.8, f'Close seniority'
     return max(0.0, 1.0 - 0.4 * diff), f'seniority gap {candidate_seniority} vs {job_seniority}'
 
 
