@@ -1,13 +1,11 @@
 import { Link } from "react-router-dom";
-import profileImg from "../assets/profileImage.jpeg";
 import { Phone, Mail, MapPin, MoveRight, File, Link2 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useSkills } from "../hooks/useSkills";
 import SkillList from "@/components/SkillList";
 
 const Profile = () => {
-  const { user, login, logout } = useAuth();
+  const { user } = useAuth();
   const { getNamesForIds } = useSkills();
   console.log(user);
 

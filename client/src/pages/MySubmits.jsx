@@ -14,7 +14,8 @@ export default function MySubmits() {
   const candidateId = user.candidate.candidateId;
 
   const jobStatusLabel = (status) => {
-    const normalized = typeof status === "string" ? status.toLowerCase() : String(status || "").toLowerCase();
+    const normalized =
+      typeof status === "string" ? status.toLowerCase() : String(status || "").toLowerCase();
     switch (normalized) {
       case "open":
         return "Open";
