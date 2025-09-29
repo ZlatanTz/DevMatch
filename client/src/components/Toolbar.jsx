@@ -99,6 +99,7 @@ export default function Toolbar() {
   const [open, setOpen] = useState(false);
   const [creatingJob, setCreatingJob] = useState(false);
   const [createJobError, setCreateJobError] = useState(null);
+  const [benefitInput, setBenefitInput] = useState("");
 
   const {
     register: regJob,
@@ -119,16 +120,40 @@ export default function Toolbar() {
       skills: [],
       description: "",
       company_description: user?.employer?.about || "",
-      benefits: "",
+      benefits: [],
       employer_id: user?.employer?.employerId,
     },
   });
+
+  const benefits = watchJob("benefits") || [];
+
+  const addBenefit = () => {
+    const trimmed = benefitInput.trim();
+    if (!trimmed) return;
+
+    const exists = benefits.some((benefit) => benefit.toLowerCase() === trimmed.toLowerCase());
+    if (exists) {
+      setBenefitInput("");
+      return;
+    }
+
+    setValueJob("benefits", [...benefits, trimmed]);
+    setBenefitInput("");
+  };
+
+  const removeBenefit = (index) => {
+    setValueJob(
+      "benefits",
+      benefits.filter((_, benefitIndex) => benefitIndex !== index),
+    );
+  };
 
   const closeJobModal = () => {
     setOpen(false);
     setCreateJobError(null);
     setCreatingJob(false);
     resetJob();
+    setBenefitInput("");
   };
 
   const submitNewJob = async (values) => {
@@ -150,6 +175,10 @@ export default function Toolbar() {
       return;
     }
 
+    const benefitsList = Array.isArray(values.benefits)
+      ? values.benefits.map((benefit) => benefit.trim()).filter(Boolean)
+      : [];
+
     const payload = {
       title,
       location: trimOrNull(values.location),
@@ -162,6 +191,7 @@ export default function Toolbar() {
       description: trimOrNull(values.description),
       company_description: trimOrNull(values.company_description),
       skills: Array.isArray(values.skills) ? values.skills.map((v) => Number(v)) : [],
+      benefits: benefitsList.length > 0 ? benefitsList : null,
       employer_id: employerId,
     };
 
@@ -226,6 +256,7 @@ export default function Toolbar() {
                 setCreateJobError(null);
                 setCreatingJob(false);
                 resetJob();
+                setBenefitInput("");
                 setOpen(true);
               }}
               className="inline-flex items-center gap-2 px-3 py-2 bg-emerald text-white rounded-md "
@@ -474,6 +505,59 @@ export default function Toolbar() {
                   placeholder="Who you are as a company…"
                   {...regJob("company_description")}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="job-benefit-input" className="text-sm font-medium">
+                  Benefits
+                </label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    id="job-benefit-input"
+                    className="w-full px-3 py-2 border rounded-md"
+                    placeholder="e.g. Health insurance"
+                    value={benefitInput}
+                    onChange={(event) => setBenefitInput(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        addBenefit();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={addBenefit}
+                    disabled={!benefitInput.trim()}
+                    className="px-4 py-2 bg-emerald hover:bg-emerald/80 text-white rounded-md disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    Add
+                  </button>
+                </div>
+                {benefits.length > 0 ? (
+                  <ul className="flex flex-wrap gap-2">
+                    {benefits.map((benefit, index) => (
+                      <li
+                        key={`${benefit}-${index}`}
+                        className="flex items-center gap-2 bg-emerald/10 text-emerald px-3 py-1 rounded-full text-sm"
+                      >
+                        <span>{benefit}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeBenefit(index)}
+                          className="text-emerald hover:text-emerald/70"
+                          aria-label={`Remove benefit ${benefit}`}
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-gray-500">
+                    Add each benefit separately so candidates can see them clearly on the posting.
+                  </p>
+                )}
               </div>
 
               {createJobError && <p className="text-sm text-red-600">{createJobError}</p>}
