@@ -409,7 +409,7 @@ export default function Header() {
                     </NavLink>
                   ) : null}
                   <NavLink
-                    to="/profile"
+                    to={`/profile/${user.id}`}
                     className={({ isActive }) =>
                       `rounded-xl px-3 py-3 text-base transition-colors ${
                         isActive

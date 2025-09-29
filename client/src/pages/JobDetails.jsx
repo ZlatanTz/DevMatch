@@ -56,7 +56,7 @@ const JobDetails = () => {
     birthYear: "",
     phone: user?.candidate?.tel || "",
     location: user?.candidate?.location || "",
-    experience: user?.candidate?.yearsExp || "",
+    experience: user?.candidate?.yearsExp || 0,
     seniority: user?.candidate?.seniority || "",
     skills: user?.candidate?.skills || [],
     cv: null,
@@ -117,6 +117,10 @@ const JobDetails = () => {
 
   const initialSelected = user?.candidate.skills.map((skill) => skill.name) || null;
   const [selectedSkills, setSelectedSkills] = useState(initialSelected);
+
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, skills: selectedSkills }));
+  }, [selectedSkills]);
 
   if (!job) {
     return (
@@ -220,7 +224,7 @@ const JobDetails = () => {
           user?.candidate ? (
             <div className="job-apply-form bg-white p-6 rounded-lg shadow-md border border-gray-200">
               <h2 className="text-xl font-bold text-center mb-4 text-federal-blue">
-                Apply for a job{" "}
+                Apply for a job
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-4">

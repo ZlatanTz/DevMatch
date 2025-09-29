@@ -17,7 +17,7 @@ class CandidateBase(BaseModel):
     seniority: Optional[str] = None
 
 class CandidateCreate(CandidateBase):
-     skills: List[int] = Field(default_factory=list)  
+    skills: List[int] = Field(default_factory=list)  
 
 
 
@@ -42,4 +42,5 @@ class CandidateUpdate(BaseModel):
     img_path: Optional[str] = None
     prefers_remote: Optional[bool] = None
     skills: Optional[List[int]] = None
+    seniority: Optional[str] = None
 
