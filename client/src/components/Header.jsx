@@ -268,7 +268,7 @@ export default function Header() {
                     onClick={() => setDropdownOpen((v) => !v)}
                   >
                     <img
-                      src={user.role?.candidate ? profileIcon : companyLogo}
+                      src={user.role.name === "candidate" ? profileIcon : companyLogo}
                       alt="Profile"
                       className="h-full w-full object-cover"
                     />
