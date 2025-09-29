@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from .skill import SkillRead 
 from fastapi import Query
 from .employer import EmployerRead
+from app.enums.job_status import JobStatus
 
 class JobBase(BaseModel):
     title: str = Field(..., max_length=255)
@@ -13,7 +14,7 @@ class JobBase(BaseModel):
     min_salary: Optional[int] = None
     max_salary: Optional[int] = None
     is_remote: bool = False
-    status: str = "open"
+    status: JobStatus = JobStatus.open
     description: Optional[str] = None
     company_description: Optional[str] = None
     benefits: Optional[List[str]] = None
@@ -21,6 +22,7 @@ class JobBase(BaseModel):
 
 
 class JobCreate(JobBase):
+    status: Literal[JobStatus.open] = JobStatus.open
     employer_id: int
     skills: List[int] = Field(default_factory=list)  
 
@@ -34,7 +36,7 @@ class JobUpdate(BaseModel):
     min_salary: Optional[int] = None
     max_salary: Optional[int] = None
     is_remote: Optional[bool] = None
-    status: Optional[str] = None
+    status: Optional[JobStatus] = None
     description: Optional[str] = None
     company_description: Optional[str] = None
     benefits: Optional[List[str]] = None

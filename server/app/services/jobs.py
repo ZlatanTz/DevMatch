@@ -6,6 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from app.models import Job, job_skills, Skill, Employer
 from app.schemas.job import JobUpdate, JobListQuery, JobCreate
+from app.enums.job_status import JobStatus
 
 
 async def get_job_by_id(db: AsyncSession, id_: int):
@@ -30,6 +31,8 @@ async def create_job(db: AsyncSession, job_create: JobCreate):
     # build Job without relationship IDs
     data = job_create.model_dump(exclude_unset=True, exclude={"skills"})
     job = Job(**data)
+
+    job.status = JobStatus.open.value
 
 
     if job_create.skills:
@@ -73,7 +76,7 @@ async def _fetch_skills_or_400(db: AsyncSession, ids: Iterable[int]) -> List[Ski
 
 
 async def list_jobs(q: JobListQuery, db: AsyncSession) -> Tuple[Sequence[Job], int]:
-    stmt = select(Job)
+    stmt = select(Job).where(Job.status == JobStatus.open.value)
 
     if q.title_contains:
         stmt = stmt.where(Job.title.ilike(f"%{q.title_contains}%"))
@@ -117,8 +120,15 @@ async def list_jobs(q: JobListQuery, db: AsyncSession) -> Tuple[Sequence[Job], i
 
 
 async def list_jobs_with_employer(q, db):
-    stmt = select(Job).options(selectinload(Job.employer))
-    total = await db.scalar(select(func.count()).select_from(Job))
+    stmt = (
+        select(Job)
+        .where(Job.status == JobStatus.open.value)
+        .options(selectinload(Job.employer))
+    )
+
+    total_stmt = select(func.count()).select_from(stmt.subquery())
+    total = (await db.execute(total_stmt)).scalar_one()
+
     rows = (
         await db.execute(stmt.offset((q.page-1)*q.page_size).limit(q.page_size))
     ).scalars().all()

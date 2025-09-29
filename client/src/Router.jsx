@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Register from "./pages/AuthLayout/Register";
 import Login from "./pages/AuthLayout/Login";
 import ErrorPage from "./pages/ErrorPages/ErrorPage";
+// import { profileLoader } from "./routes/loaders/profileLoader";
 import ForgotPassword from "./pages/AuthLayout/ForgotPassword";
 import Statistics from "./pages/Admin/Statistics";
 import ManageJobs from "./pages/Admin/ManageJobs";

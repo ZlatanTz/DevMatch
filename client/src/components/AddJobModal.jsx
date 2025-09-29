@@ -157,18 +157,6 @@ export const AddJobModal = () => {
                 </label>
               </div>
 
-              <div className="space-y-1 md:col-span-2">
-                <label className="text-sm font-medium">Status</label>
-                <select
-                  className="w-full px-3 py-2 border rounded-md"
-                  value={watchJob("status")}
-                  onChange={(e) => setValueJob("status", e.target.value)}
-                >
-                  <option value="open">open</option>
-                  <option value="paused">paused</option>
-                  <option value="closed">closed</option>
-                </select>
-              </div>
             </div>
 
             {/* Skills multi-select, stores array of string IDs, convert to numbers on submit */}
