@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { getAllCandidateApplications } from "@/api/services/applications";
 import { getAllEmployerJobs, getJobByIdDetailed } from "@/api/services/jobs";
 import { useSkills } from "@/hooks/useSkills";
 import SkillList from "../components/SkillList";

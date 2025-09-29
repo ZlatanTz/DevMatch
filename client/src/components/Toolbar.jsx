@@ -98,6 +98,25 @@ export default function Toolbar() {
 
   const [open, setOpen] = useState(false);
 
+  const openModal = () => {
+    setOpen(true);
+    resetJob({
+      title: "",
+      location: "",
+      employment_type: "Full-time",
+      seniority: "Junior",
+      min_salary: "",
+      max_salary: "",
+      is_remote: false,
+      status: "open",
+      skills: [],
+      description: "",
+      company_description: user?.employer?.about || "",
+      benefits: "",
+      employer_id: user?.employer?.employerId,
+    });
+  };
+
   const {
     register: regJob,
     handleSubmit: submitJob,
@@ -192,7 +211,8 @@ export default function Toolbar() {
           {user?.employer && (
             <button
               type="button"
-              onClick={() => setOpen(true)}
+              // onClick={() => setOpen(true)}
+              onClick={openModal}
               className="inline-flex items-center gap-2 px-3 py-2 bg-emerald text-white rounded-md "
             >
               <svg
