@@ -7,6 +7,7 @@ from fastapi import HTTPException, applications
 
 from app import models, schemas
 from app.enums.application_status import ApplicationStatus
+from app.enums.job_status import JobStatus
 
 
 
@@ -23,6 +24,8 @@ async def create_application(
     job = await db.scalar(select(models.Job).where(models.Job.id == job_id))
     if not job:
         raise HTTPException(status_code=404, detail="job not found")
+    if job.status != JobStatus.open.value:
+        raise HTTPException(status_code=400, detail="job is not open for applications")
 
  
     candidate = await db.scalar(
