@@ -7,6 +7,7 @@ import {
 } from "@/api/services/jobs";
 import { useAuth } from "@/context/AuthContext";
 import SkillList from "../components/SkillList";
+import { updateApplicationStatus } from "@/api/services/applications";
 
 export default function MyJobSubmits() {
   const [jobs, setJobs] = useState([]);
@@ -174,12 +175,12 @@ export default function MyJobSubmits() {
 
   const handleAccept = (applicationId) => {
     console.log("Accepted:", applicationId);
-    //POZVATI API PUT APPLICATION I PROMIJENITI STATUS
+    updateApplicationStatus(applicationId, "accepted");
   };
 
   const handleDecline = (applicationId) => {
     console.log("Declined:", applicationId);
-    //POZVATI API PUT APPLICATION I PROMIJENITI STATUS
+    updateApplicationStatus(applicationId, "rejected");
   };
 
   if (!user) {
