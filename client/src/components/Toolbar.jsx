@@ -151,7 +151,7 @@ export default function Toolbar() {
       min_salary: values.min_salary ? Number(values.min_salary) : null,
       max_salary: values.max_salary ? Number(values.max_salary) : null,
       is_remote: !!values.is_remote,
-      status: values.status,
+      // status: values.status,
       skills: Array.isArray(values.skills) ? values.skills.map((v) => Number(v)) : [],
       // created_at: values.created_at || new Date().toISOString(),
       description: values.description.trim(),
@@ -160,11 +160,9 @@ export default function Toolbar() {
       employer_id: user?.employer.employerId,
     };
 
-    console.log(job);
-
     try {
       const createdJob = await createNewJob(job);
-      console.log("Job successfully created:", createdJob);
+      // console.log("Job created:", createdJob);
 
       window.dispatchEvent(new CustomEvent("job:add", { detail: createdJob }));
 
@@ -423,7 +421,7 @@ export default function Toolbar() {
                   </label>
                 </div>
 
-                <div className="space-y-1 md:col-span-2">
+                {/* <div className="space-y-1 md:col-span-2">
                   <label className="text-sm font-medium">Status</label>
                   <select
                     className="w-full px-3 py-2 border rounded-md"
@@ -434,7 +432,7 @@ export default function Toolbar() {
                     <option value="paused">paused</option>
                     <option value="closed">closed</option>
                   </select>
-                </div>
+                </div> */}
               </div>
 
               <div className="space-y-1">
