@@ -3,6 +3,8 @@ import { Phone, Mail, MapPin, MoveRight, File, Link2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useSkills } from "../hooks/useSkills";
 import SkillList from "@/components/SkillList";
+import profileIcon from "../assets/profileIcon.jpg";
+import employerLogo from "../assets/logo.jpg";
 
 const Profile = () => {
   const { user } = useAuth();
@@ -21,7 +23,7 @@ const Profile = () => {
           <div className="flex flex-col md:flex-row justify-center items-center md:items-start w-full gap-6">
             <div className="flex justify-center md:justify-start md:flex-[30%]">
               <img
-                src={user.candidate.imgPath}
+                src={profileIcon}
                 alt={user.candidate.imgPath}
                 className="h-[150px] w-[150px] md:h-[200px] md:w-[200px] rounded-full object-cover"
               />
@@ -91,7 +93,7 @@ const Profile = () => {
           <div className="flex flex-col md:flex-row justify-center items-center md:items-start w-full gap-6">
             <div className="flex justify-center md:justify-start md:flex-[30%]">
               <img
-                src={user.employer.companyLogo}
+                src={employerLogo}
                 alt={user.employer.companyLogo}
                 className="h-[150px] w-[150px] md:h-[200px] md:w-[200px] rounded-full object-cover"
               />

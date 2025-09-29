@@ -1,6 +1,8 @@
 import { NavLink, useLocation, useNavigate, useNavigation } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
 import logo from "../assets/devmatch.svg";
+import profileIcon from "../assets/profileIcon.jpg";
+import companyLogo from "../assets/logo.jpg";
 import { useAuth } from "../context/AuthContext";
 const navItems = [
   { to: "/about", label: "About Us" },
@@ -265,7 +267,11 @@ export default function Header() {
                     aria-expanded={dropdownOpen}
                     onClick={() => setDropdownOpen((v) => !v)}
                   >
-                    <img src={user.img} alt="Profile" className="h-full w-full object-cover" />
+                    <img
+                      src={user.role?.candidate ? profileIcon : companyLogo}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                    />
                   </button>
 
                   {dropdownOpen && (
