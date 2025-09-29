@@ -47,19 +47,6 @@ const AdminSidebar = ({ pageName }) => {
               Manage Jobs
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="statistics"
-              className={({ isActive }) =>
-                `flex items-center gap-4 text-base transition ${
-                  isActive ? "text-emerald-400 font-semibold" : "text-gray-200 hover:text-white"
-                }`
-              }
-            >
-              <ChartLine className="w-5 h-5" />
-              Statistics
-            </NavLink>
-          </li>
         </ul>
       </nav>
 
