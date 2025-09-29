@@ -61,3 +61,6 @@ class UserWithProfile(UserOut):
 class ResetPasswordRequest(BaseModel):
     old_password: str
     new_password: str
+
+class UserSuspendStatus(BaseModel):
+    is_suspended: bool
