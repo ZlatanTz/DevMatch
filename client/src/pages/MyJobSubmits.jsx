@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { getAllCandidateApplications } from "@/api/services/applications";
-import { getJobByIdDetailed } from "@/api/services/jobs";
+import { getJobByIdDetailed, updateJobStatus } from "@/api/services/jobs";
 import { useSkills } from "@/hooks/useSkills";
 import SkillList from "../components/SkillList";
 import { useAuth } from "@/context/AuthContext";
@@ -9,9 +9,55 @@ export default function MySubmits() {
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
+  const [updatingJobId, setUpdatingJobId] = useState(null);
+  const [jobActionError, setJobActionError] = useState(null);
   const { getNamesForIds } = useSkills();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const employerId = user.employer.employerId;
+
+  const normalizeStatus = (value) => (typeof value === "string" ? value.toLowerCase() : String(value || "").toLowerCase());
+  const formatJobStatus = (value) => {
+    switch (normalizeStatus(value)) {
+      case "open":
+        return "Open";
+      case "paused":
+        return "Paused";
+      case "closed":
+        return "Closed";
+      default:
+        return "Unknown";
+    }
+  };
+  const jobStatusBadgeClass = (value) => {
+    switch (normalizeStatus(value)) {
+      case "open":
+        return "bg-green-100 text-green-800";
+      case "paused":
+        return "bg-yellow-100 text-yellow-800";
+      case "closed":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+  const getJobStatusActions = (value) => {
+    switch (normalizeStatus(value)) {
+      case "open":
+        return [
+          { label: "Pause job", nextStatus: "paused" },
+          { label: "Close job", nextStatus: "closed" },
+        ];
+      case "paused":
+        return [
+          { label: "Reopen job", nextStatus: "open" },
+          { label: "Close job", nextStatus: "closed" },
+        ];
+      case "closed":
+        return [{ label: "Reopen job", nextStatus: "open" }];
+      default:
+        return [];
+    }
+  };
 
   useEffect(() => {
     const fetchApplicationsAndJobs = async () => {
@@ -46,11 +92,42 @@ export default function MySubmits() {
   }, [applications, jobs]);
 
   const handleApplicationClick = (mergedApp) => {
+    setJobActionError(null);
     setSelectedApp(mergedApp);
   };
 
   const closeModal = () => {
+    setJobActionError(null);
     setSelectedApp(null);
+  };
+
+  const handleJobStatusChange = async (jobId, nextStatus) => {
+    try {
+      setUpdatingJobId(jobId);
+      setJobActionError(null);
+      const updatedJob = await updateJobStatus(jobId, nextStatus);
+
+      setJobs((prev) => {
+        const exists = prev.some((job) => job.id === jobId);
+        if (!exists) {
+          return [...prev, updatedJob];
+        }
+        return prev.map((job) => (job.id === jobId ? { ...job, ...updatedJob } : job));
+      });
+
+      setSelectedApp((prev) => {
+        if (!prev?.job || prev.job.id !== jobId) return prev;
+        return {
+          ...prev,
+          job: { ...prev.job, ...updatedJob },
+        };
+      });
+    } catch (error) {
+      const message = error?.response?.data?.detail || "Failed to update job status.";
+      setJobActionError({ jobId, message });
+    } finally {
+      setUpdatingJobId(null);
+    }
   };
 
   const skillIds = selectedApp?.job?.skills?.map((skill) => skill.id) || [];
@@ -58,7 +135,12 @@ export default function MySubmits() {
 
   const candidateSkillNames = selectedApp?.skills;
 
-  console.log(mergedApplications);
+  const selectedJob = selectedApp?.job;
+  const selectedJobStatusLabel = formatJobStatus(selectedJob?.status);
+  const selectedJobStatusActions = selectedJob ? getJobStatusActions(selectedJob.status) : [];
+  const isUpdatingSelectedJob = selectedJob ? updatingJobId === selectedJob.id : false;
+  const selectedJobActionError =
+    selectedJob && jobActionError?.jobId === selectedJob.id ? jobActionError.message : null;
 
   return (
     <div className="p-6">
@@ -77,7 +159,7 @@ export default function MySubmits() {
               </h3>
               <p className="text-gray-600 mb-2">{mergedApp.job?.employer.company_name}</p>
 
-              <div className="mb-2">
+              <div className="mb-2 flex flex-wrap gap-2">
                 <span
                   className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                     mergedApp.status === "in_review"
@@ -93,6 +175,14 @@ export default function MySubmits() {
                       ? "Applied"
                       : mergedApp.status}
                 </span>
+
+                {mergedApp.job && (
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${jobStatusBadgeClass(mergedApp.job.status)}`}
+                  >
+                    {formatJobStatus(mergedApp.job.status)}
+                  </span>
+                )}
               </div>
 
               <div className="mt-auto space-y-1">
@@ -158,11 +248,35 @@ export default function MySubmits() {
                       </div>
                       <div className="flex flex-col gap-6 order-1 md:order-2 lg:w-3/10 md:w-4/10">
                         <div className="job-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
-                          <div className="flex justify-start items-center mb-4">
-                            <p className="text-paynes-gray font-medium">Status:</p>
-                            <p className="text-gray-700 pl-1">
-                              {selectedApp.job.status === "open" ? "Open" : "Closed"}
-                            </p>
+                          <div className="flex flex-col gap-2 mb-4">
+                            <div className="flex items-center gap-2">
+                              <p className="text-paynes-gray font-medium">Status:</p>
+                              <span
+                                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${jobStatusBadgeClass(selectedJob?.status)}`}
+                              >
+                                {selectedJobStatusLabel}
+                              </span>
+                            </div>
+
+                            {selectedJob && selectedJobStatusActions.length > 0 && (
+                              <div className="self-start flex flex-wrap gap-2">
+                                {selectedJobStatusActions.map((action) => (
+                                  <button
+                                    key={action.nextStatus}
+                                    type="button"
+                                    onClick={() => handleJobStatusChange(selectedJob.id, action.nextStatus)}
+                                    disabled={isUpdatingSelectedJob}
+                                    className="px-3 py-1.5 text-sm font-medium rounded-md border border-emerald text-emerald hover:bg-emerald/10 disabled:opacity-60 disabled:cursor-not-allowed"
+                                  >
+                                    {isUpdatingSelectedJob ? "Saving..." : action.label}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+
+                            {selectedJobActionError && (
+                              <p className="text-sm text-red-600">{selectedJobActionError}</p>
+                            )}
                           </div>
 
                           <div className="flex justify-start items-center mb-4">

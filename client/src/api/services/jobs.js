@@ -56,6 +56,26 @@ export const getJobByIdDetailed = async (id) => {
   }
 };
 
+export const updateJobStatus = async (id, status) => {
+  try {
+    const response = await api.put(`/jobs/${id}`, { status });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const createJob = async (payload) => {
+  try {
+    const response = await api.post("/jobs/", payload);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const getHighestRatedJobs = async (params = {}) => {
   try {
     const response = await api.get("/jobs/", {

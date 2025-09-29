@@ -167,6 +167,7 @@ export default function ApplicationModal({ id, onClose }) {
 
   const { getNamesForIds } = useSkills();
   const skillNames = getNamesForIds(skills);
+  const statusLabel = status === "open" ? "Open" : status === "paused" ? "Paused" : "Closed";
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
@@ -218,7 +219,7 @@ export default function ApplicationModal({ id, onClose }) {
                 <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200 md:self-start">
                   <div className="flex justify-start items-center mb-4">
                     <p className="text-paynes-gray font-medium">Status:</p>
-                    <p className="text-gray-700 pl-1">{status === "open" ? "Open" : "Closed"}</p>
+                    <p className="text-gray-700 pl-1">{statusLabel}</p>
                   </div>
 
                   <div className="flex justify-start items-center mb-4">
