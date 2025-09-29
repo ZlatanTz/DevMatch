@@ -136,10 +136,17 @@ const StepTwo = ({ role, register, errors, control }) => {
             register={register}
             error={errors.bio}
           />
-          <FileInput label="* Resume" name="resume" register={register} error={errors.resume} />
+          <FileInput
+            label="* Resume"
+            name="resume"
+            register={register}
+            error={errors.resume}
+            accept=".pdf"
+          />
           <FileInput
             label="Profile photo"
             name="profilePicture"
+            accept=".jpg,.jpeg,.png"
             register={register}
             error={errors.profilePicture}
           />
@@ -172,6 +179,7 @@ const StepTwo = ({ role, register, errors, control }) => {
           <FileInput
             label="* Company Logo"
             name="companyLogoPicture"
+            accept=".jpg,.jpeg,.png"
             register={register}
             error={errors.companyLogoPicture}
           />

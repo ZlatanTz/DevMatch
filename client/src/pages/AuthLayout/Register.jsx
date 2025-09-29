@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import StepOne from "./Steps/StepOne";
 import StepTwo from "./Steps/StepTwo";
-import { MoveLeft } from "lucide-react";
+import { MoveLeft, LoaderCircle } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   candidateRegistrationSchema,
@@ -14,7 +14,8 @@ import { registerCandidate, registerEmployer } from "@/api/services/auth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
-import { uploadFileService } from "@/api/services/uploadFiles";
+import { handleFileUploads } from "@/utils/files";
+
 const Register = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -42,39 +43,48 @@ const Register = () => {
     },
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const SERVICES = {
     candidate: registerCandidate,
     employer: registerEmployer,
   };
 
+  const FILE_FIELDS = {
+    candidate: {
+      img: "profilePicture",
+      resume: "resume",
+    },
+    employer: {
+      logo: "companyLogoPicture",
+    },
+  };
+
   const onSubmit = async (formData) => {
+    setIsSubmitting(true);
     const registerData = { ...formData, role };
-    console.log(formData.companyLogoPicture);
 
     try {
-      const service = SERVICES[role];
-      if (!service) throw new Error(`Unsupported role: ${role}`);
-      const data = await service(registerData);
+      // Register
+      const register = SERVICES[role];
+      if (!register) throw new Error(`Unsupported role: ${role}`);
+      const data = await register(registerData);
 
+      // Login registered user
       localStorage.setItem("token", data.access_token);
       await login({ email: formData.email, password: formData.password });
 
-      // TEMPORARY
-      const inputVal = formData.companyLogoPicture;
-      const file =
-        inputVal instanceof File ? inputVal : Array.isArray(inputVal) ? inputVal[0] : inputVal?.[0];
-
-      if (file) {
-        const logoUrl = await uploadFileService(file);
-        console.log("Cloudinary URL:", logoUrl);
-      } else {
-        console.log("No file found for companyLogoPicture");
-      }
+      // File handling
+      await handleFileUploads(role, formData);
 
       toast.success("Account created. Welcome aboard!");
       navigate("/");
     } catch (error) {
-      setError("email", { type: "server", message: error.message });
+      const msg =
+        error?.detail || error?.message || error?.response?.data?.detail || "Something went wrong";
+      setError("email", { type: "server", message: msg });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -113,11 +123,17 @@ const Register = () => {
               </Button>
             )}
             <Button
-              className="w-full sm:w-auto bg-federal-blue hover:bg-paynes-gray text-md px-8 py-4 sm:px-12 md:px-18 lg:px-16"
+              className="w-full sm:w-auto min-w-[120px] bg-federal-blue hover:bg-paynes-gray text-md px-8 py-4 sm:px-12 md:px-18 lg:px-16 flex justify-center items-center"
               onClick={isLastStep ? handleSubmit(onSubmit) : handleNext}
-              disabled={!role}
+              disabled={!role || isSubmitting}
             >
-              {isLastStep ? "Finish" : "Next"}
+              {isSubmitting ? (
+                <LoaderCircle className="h-5 w-5 animate-spin" />
+              ) : isLastStep ? (
+                "Finish"
+              ) : (
+                "Next"
+              )}
             </Button>
           </div>
         </div>

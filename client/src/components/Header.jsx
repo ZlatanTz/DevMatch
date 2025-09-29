@@ -25,6 +25,8 @@ export default function Header() {
   const roleName = user?.role?.name?.toLowerCase();
   const isCandidate = Boolean(user?.candidate?.candidateId || roleName === "candidate");
 
+  console.log("sr: ", user);
+
   const sortLinks = useMemo(() => {
     const options = [
       { label: "Newest", to: { pathname: "/jobs", search: "?sort=date-desc" } },
@@ -34,7 +36,10 @@ export default function Header() {
     ];
 
     if (isCandidate) {
-      return [{ label: "Recommended", to: { pathname: "/jobs", search: "?sort=recommended" } }, ...options];
+      return [
+        { label: "Recommended", to: { pathname: "/jobs", search: "?sort=recommended" } },
+        ...options,
+      ];
     }
 
     return options;
@@ -140,14 +145,14 @@ export default function Header() {
               >
                 <NavLink
                   to="/jobs"
-                className={({ isActive }) =>
-                  `${linkBase} ${isActive ? linkActive : linkInactive} inline-flex items-center`
-                }
-                onClick={() => {
-                  setSelectedJobSort(isCandidate ? "Recommended" : "Newest");
-                }}
-              >
-                Jobs
+                  className={({ isActive }) =>
+                    `${linkBase} ${isActive ? linkActive : linkInactive} inline-flex items-center`
+                  }
+                  onClick={() => {
+                    setSelectedJobSort(isCandidate ? "Recommended" : "Newest");
+                  }}
+                >
+                  Jobs
                   <svg
                     className="ml-1 h-4 w-4"
                     fill="none"
@@ -356,7 +361,7 @@ export default function Header() {
                       <NavLink
                         key={item.label}
                         to={item.to}
-                       className={({ isActive }) =>
+                        className={({ isActive }) =>
                           `rounded-xl px-3 py-2 text-base transition-colors ${
                             selectedJobSort === item.label
                               ? "text-emerald bg-white/5 ring-1 ring-inset ring-emerald/30"
