@@ -125,3 +125,15 @@ export const getAllEmployerJobs = async (employer_id, params = {}) => {
     throw error;
   }
 };
+
+export const getRankedApplications = async (jobId, limit = 20, min_score = 0.0) => {
+  try {
+    const res = await api.get(`/jobs/${jobId}/ranked-applications`, {
+      params: { limit, min_score },
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Failed to fetch ranked applications", err);
+    throw new Error("Failed to fetch ranked applications");
+  }
+};
