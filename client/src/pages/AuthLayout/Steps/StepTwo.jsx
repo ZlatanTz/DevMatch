@@ -11,6 +11,18 @@ const StepTwo = ({ role, register, errors, control }) => {
     label: skill.name,
   }));
 
+  const seniorityOptions = [
+    { value: "intern", label: "intern" },
+    { value: "junior", label: "junior" },
+    { value: "medior", label: "medior" },
+    { value: "senior", label: "senior" },
+  ];
+
+  const preferRemoteOptions = [
+    { value: true, label: "Yes, I prefer" },
+    { value: false, label: "No, I don't" },
+  ];
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-4/5 xl:w-full">
       {/* Shared fields */}
@@ -85,8 +97,32 @@ const StepTwo = ({ role, register, errors, control }) => {
             error={errors.years_experiance}
             {...register("years_experiance", { valueAsNumber: true })}
           />
+          <Input
+            label="* Desired Salary"
+            name="desired_salary"
+            type="number"
+            placeholder="Enter your salary"
+            register={register}
+            registerOptions={{ valueAsNumber: true }}
+            error={errors.desired_salary}
+          />
           <MultiSelect
-            label="* Skills"
+            label="* Seniority"
+            options={seniorityOptions}
+            isMulti={false}
+            name="seniority"
+            control={control}
+            error={errors.seniority}
+          />
+          <MultiSelect
+            label="Do you prefer remote work?"
+            options={preferRemoteOptions}
+            name="prefers_remote"
+            control={control}
+            error={errors.skills}
+          />
+          <MultiSelect
+            label="Skills"
             options={selectOptions}
             isMulti={true}
             name="skills"
@@ -94,16 +130,23 @@ const StepTwo = ({ role, register, errors, control }) => {
             error={errors.skills}
           />
           <Input
-            label="* Bio"
+            label="Bio"
             name="bio"
             placeholder="Enter your bio"
             register={register}
             error={errors.bio}
           />
-          <FileInput label="* CV" name="resume" register={register} error={errors.resume} />
           <FileInput
-            label="* Profile photo"
+            label="* Resume"
+            name="resume"
+            register={register}
+            error={errors.resume}
+            accept=".pdf"
+          />
+          <FileInput
+            label="Profile photo"
             name="profilePicture"
+            accept=".jpg,.jpeg,.png"
             register={register}
             error={errors.profilePicture}
           />
@@ -136,6 +179,7 @@ const StepTwo = ({ role, register, errors, control }) => {
           <FileInput
             label="* Company Logo"
             name="companyLogoPicture"
+            accept=".jpg,.jpeg,.png"
             register={register}
             error={errors.companyLogoPicture}
           />

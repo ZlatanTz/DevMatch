@@ -7,27 +7,42 @@ import { loginSchema } from "@/schemas/loginSchemas";
 import Input from "./Input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || "/";
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: "onChange",
   });
 
-  const onSubmit = (data) => {
-    // TODO: Call API service
-    login(data);
-    // navigate("/");
-    navigate(from, { replace: true });
+  useEffect(() => {
+    if (!user) return;
+
+    if (user.role?.name === "admin") {
+      navigate("/admin", { replace: true });
+    } else {
+      navigate(from || "/", { replace: true });
+    }
+  }, [user, navigate, from]);
+
+  const onSubmit = async (formData) => {
+    try {
+      await login(formData);
+    } catch (error) {
+      setError("email", { type: "server", message: error.message });
+      setError("password", { type: "server", message: error.message });
+    }
   };
+
   return (
     <div className="flex flex-col lg:flex-row w-full min-h-[100vh]">
       <div className="flex flex-1 items-center justify-center p-8 order-2 lg:order-2">

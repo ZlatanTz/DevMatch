@@ -37,7 +37,14 @@ export function SkillsProvider({ children }) {
   const getNamesForIds = (ids = []) => ids.map((id) => byId[id]).filter(Boolean);
 
   return (
-    <SkillsContext.Provider value={{ skills, loading, getNamesForIds }}>
+    <SkillsContext.Provider
+      value={{
+        skills,
+        loading,
+        getNamesForIds: (ids) => skills.filter((s) => ids.includes(s.id)).map((s) => s.name),
+        getIdsForNames: (names) => skills.filter((s) => names.includes(s.name)).map((s) => s.id),
+      }}
+    >
       {children}
     </SkillsContext.Provider>
   );

@@ -16,6 +16,7 @@ export const candidateRegistrationSchema = baseRegistrationSchema
     years_experiance: z.number().min(0),
     skills: z.array(z.number()).min(1, "Choose at least one skill"),
     bio: z.string().min(10, "Bio must have at least 10 characters"),
+    desired_salary: z.number().min(0, "Salary must be ≥ 0"),
 
     resume: z
       .any()
@@ -26,6 +27,15 @@ export const candidateRegistrationSchema = baseRegistrationSchema
       .any()
       .refine((files) => files?.length > 0, "Profile photo is required")
       .transform((files) => files[0]),
+
+    seniority: z.enum(["intern", "junior", "medior", "senior"], {
+      required_error: "Seniority is required",
+      invalid_type_error: "Invalid seniority option",
+    }),
+
+    prefers_remote: z.boolean({
+      invalid_type_error: "Invalid option",
+    }),
   })
   .refine((data) => data.password === data.repeatPassword, {
     path: ["repeatPassword"],

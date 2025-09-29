@@ -15,8 +15,7 @@ from app.core.config import settings
 
 SECRET_KEY = settings.JWT_SECRET
 ALGORITHM = "HS256"
-REFRESH_TOKEN = settings.REFRESH_TOKEN_EXPIRE_DAYS
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
+ACCESS_TOKEN_EXPIRE_MINUTES = 180
 
 ROLE_MAP = {
     1: "admin",
@@ -44,12 +43,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def create_refresh_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN)
-    to_encode.update({"exp": expire, "scope": "refresh_token"})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
 def decode_token(token: str) -> Dict[str, Any]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -72,7 +65,7 @@ async def get_current_user(
 
     result = await db.execute(
         select(User)
-        .options(selectinload(User.candidate), selectinload(User.employer))
+        .options(selectinload(User.candidate), selectinload(User.employer), selectinload(User.role))
         .where(User.id == int(user_id))
     )
     user = result.scalars().first()
@@ -80,9 +73,6 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="User not found")
     if user.is_suspended:
         raise HTTPException(status_code=403, detail="Account suspended")
-    if not user.is_active:
-        raise HTTPException(status_code=403, detail="Account inactive")
-
     return user
 
 def require_roles(*allowed_roles: str):

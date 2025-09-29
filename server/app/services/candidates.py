@@ -1,13 +1,14 @@
 from typing import List
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from app.models import Candidate, User, Role, Skill
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from app.models import Candidate, User, Role, Skill
 from app.schemas.candidate import CandidateUpdate, CandidateRead
 from ..services.users import get_user
-from fastapi import HTTPException
-
-
 async def list_candidates(db: AsyncSession) -> List[CandidateRead]:
     # include skills to serialize into SkillRead
     result = await db.execute(

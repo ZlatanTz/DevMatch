@@ -11,15 +11,17 @@ import Profile from "./pages/Profile";
 import Register from "./pages/AuthLayout/Register";
 import Login from "./pages/AuthLayout/Login";
 import ErrorPage from "./pages/ErrorPages/ErrorPage";
-import { profileLoader } from "./routes/loaders/profileLoader";
+// import { profileLoader } from "./routes/loaders/profileLoader";
 import ForgotPassword from "./pages/AuthLayout/ForgotPassword";
 import Statistics from "./pages/Admin/Statistics";
-import AdminDashboard from "./pages/Admin/AdminDashboard";
 import ManageJobs from "./pages/Admin/ManageJobs";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
+import MyJobSubmits from "./pages/MyJobSubmits";
+import ProtectedRoute from "./guards/ProtecedRoute";
+
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -47,20 +49,25 @@ export const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       { path: "applications", element: <MySubmits />, loader: jobsLoader },
+      { path: "my-jobs", element: <MyJobSubmits />, loader: jobsLoader },
       { path: "contact", element: <Contact /> },
-      { path: "profile/:id", element: <Profile />, loader: profileLoader },
-      { path: "profile/edit/:id", element: <EditProfile />, loader: profileLoader },
+      { path: "profile/:id", element: <Profile /> },
+      { path: "profile/:id/edit", element: <EditProfile /> },
       { path: "about", element: <About /> },
     ],
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: <ProtectedRoute allowedRoles={["admin"]} />,
     children: [
-      { index: true, element: <AdminDashboard /> },
-      { path: "jobs", element: <ManageJobs /> },
-      { path: "users", element: <ManageUsers /> },
-      { path: "statistics", element: <Statistics /> },
+      {
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <ManageUsers /> },
+          { path: "jobs", element: <ManageJobs /> },
+          { path: "statistics", element: <Statistics /> },
+        ],
+      },
     ],
   },
   {

@@ -18,12 +18,10 @@ class ApplicationBase(BaseModel):
 
 class ApplicationCreate(ApplicationBase):
     cv_path: str 
-    candidate_id: int
-    job_id: int
+
 
 class ApplicationUpdate(BaseModel):
     status: Optional[ApplicationStatus] = None
-    cover_letter: Optional[str] = None
 
 class ApplicationOut(ApplicationBase):
     id: int

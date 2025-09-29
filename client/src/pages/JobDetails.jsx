@@ -5,8 +5,11 @@ import { useSkills } from "../hooks/useSkills";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
+import { applyToJob } from "@/api/services/applications";
 
 const JobDetails = () => {
+  const { user, token } = useAuth();
+  // console.log(user.candidate.skills);
   const job = useLoaderData();
   const { id } = useParams(); // ID iz URL-a
   // const job = jobs.find((job) => job.id === parseInt(id));
@@ -29,14 +32,15 @@ const JobDetails = () => {
     employer,
   } = job;
 
-  const [visibleCount, setVisibleCount] = useState(3);
+  const statusLabel = status === "open" ? "Open" : status === "paused" ? "Paused" : "Closed";
 
-  const { user } = useAuth();
+  const [visibleCount, setVisibleCount] = useState(6);
+
   // console.log(user);
   // console.log(job);
-  const loggedIn = user ? true : false;
+  // const loggedIn = user ? true : false; --> depricated!
   // console.log(loggedIn);
-  const [candidateLoggedIn, setCandidateLoggedIn] = useState(loggedIn); //da li je ulogovan candidate
+  // const [candidateLoggedIn, setCandidateLoggedIn] = useState(loggedIn); //da li je ulogovan candidate --> depricated!
 
   const date = new Date(created_at);
   const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
@@ -46,24 +50,20 @@ const JobDetails = () => {
   const skillNames = getNamesForIds(skill_ids);
   // console.log(skill_ids);
   // console.log(skillNames);
-  //sad je visak
-  const handleLogIn = () => {
-    setCandidateLoggedIn(!candidateLoggedIn);
-  };
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+  const [formData, setFormData] = useState(() => ({
+    firstName: user?.candidate?.firstName || "",
+    lastName: user?.candidate?.lastName || "",
+    email: user?.email || "",
     birthYear: "",
-    phone: "",
-    location: "",
-    experience: "",
-    seniority: "",
-    skills: [],
+    phone: user?.candidate?.tel || "",
+    location: user?.candidate?.location || "",
+    experience: user?.candidate?.yearsExp || 0,
+    seniority: user?.candidate?.seniority || "",
+    skills: user?.candidate?.skills || [],
     cv: null,
     coverLetter: "",
-  });
+  }));
 
   //const [selectedSkills, setSelectedSkills] = useState([]);
 
@@ -80,20 +80,6 @@ const JobDetails = () => {
       .then((res) => res.json())
       .then((data) => setJobs(data.items || []));
   }, []);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       firstName: user.firstName || "",
-  //       lastName: user.lastName || "",
-  //       email: user.email || "",
-  //       phone: user.phone || "",
-  //       location: user.location || "",
-  //       experience: user.years_experiance || "",
-  //     }));
-  //   }
-  // }, [user]);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -119,25 +105,24 @@ const JobDetails = () => {
     setVisibleCount(3);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const submissionData = {
-      ...formData,
-      jobId: id,
-    };
-
-    const submitFormData = new FormData();
-    Object.keys(submissionData).forEach((key) => {
-      if (key === "cv") {
-        submitFormData.append(key, submissionData[key]);
-      } else {
-        submitFormData.append(key, submissionData[key]);
-      }
-    });
-
-    console.log("Form submission data:", Object.fromEntries(submitFormData));
+    try {
+      const data = await applyToJob(id, user, formData);
+      console.log("Application submitted:", data);
+      alert("Application submitted successfully!");
+    } catch (err) {
+      alert(err.response?.data?.detail || "Something went wrong");
+    }
   };
+
+  const initialSelected = user?.candidate.skills.map((skill) => skill.name) || null;
+  const [selectedSkills, setSelectedSkills] = useState(initialSelected);
+
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, skills: selectedSkills }));
+  }, [selectedSkills]);
 
   if (!job) {
     return (
@@ -170,7 +155,7 @@ const JobDetails = () => {
 
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
-          <div className="job-description lg:w-7/10 md:w-6/10 p-6 rounded-lg shadow border border-gray-200">
+          <div className="job-description lg:w-7/10 md:w-6/10 p-6 rounded-lg shadow border border-gray-200 order-2 md:order-1">
             <p className="font-semibold text-federal-blue text-2xl">About the job</p>
             <p className="mb-4 text-gray-700">{company_description}</p>
             <p className="font-semibold text-paynes-gray">The role entails:</p>
@@ -187,128 +172,194 @@ const JobDetails = () => {
               ))}
             </ul>
           </div>
-          <div className="job-side-details flex-1 p-6 rounded-lg shadow border border-gray-200 md:self-start">
-            <div className="flex justify-start items-center mb-4">
-              <p className="text-paynes-gray font-medium">Status:</p>
-              <p className="text-gray-700 pl-1">{status === "open" ? "Open" : "Closed"}</p>
-            </div>
+          <div className="flex flex-col gap-6 order-1 md:order-2 lg:w-3/10 md:w-4/10">
+            <div className="job-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Status:</p>
+                <p className="text-gray-700 pl-1">{statusLabel}</p>
+              </div>
 
-            <div className="flex justify-start items-center mb-4">
-              <p className="text-paynes-gray font-medium">Date posted:</p>
-              <p className="text-gray-700 pl-1">{formattedDate}</p>
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Date posted:</p>
+                <p className="text-gray-700 pl-1">{formattedDate}</p>
+              </div>
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Location:</p>
+                <p className="text-gray-700 pl-1">{location}</p>
+              </div>
+              <div className="flex justify-start items-center ">
+                <p className="text-paynes-gray font-medium">Salary:</p>
+                <p className="text-gray-700 pl-1">
+                  {min_salary}€ - {max_salary}€
+                </p>
+              </div>
             </div>
-            <div className="flex justify-start items-center mb-4">
-              <p className="text-paynes-gray font-medium">Location:</p>
-              <p className="text-gray-700 pl-1">{location}</p>
-            </div>
-            <div className="flex justify-start items-center ">
-              <p className="text-paynes-gray font-medium">Salary:</p>
-              <p className="text-gray-700 pl-1">
-                {min_salary}€ - {max_salary}€
-              </p>
+            <div className="employer-side-details w-full p-6 rounded-lg shadow border border-gray-200 md:self-start">
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Compamy:</p>
+                <p className="text-gray-700 pl-1">{employer.company_name}</p>
+              </div>
+
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Location :</p>
+                <p className="text-gray-700 pl-1">{employer.location}</p>
+              </div>
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Country:</p>
+                <p className="text-gray-700 pl-1">{employer.country}</p>
+              </div>
+              <div className="flex justify-start items-center mb-4">
+                <p className="text-paynes-gray font-medium">Phone:</p>
+                <p className="text-gray-700 pl-1">{employer.tel}</p>
+              </div>
+              <div className="flex justify-start items-center ">
+                <p className="text-paynes-gray font-medium">Website:</p>
+                <a href={employer.website} target="_blank" className="text-emerald pl-1">
+                  {employer.website}
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
-        {candidateLoggedIn && (
-          <div className="job-apply-form bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <h2 className="text-xl font-bold text-center mb-4 text-federal-blue">
-              Apply for a job{" "}
-            </h2>
+        {user ? (
+          user?.candidate ? (
+            <div className="job-apply-form bg-white p-6 rounded-lg shadow-md border border-gray-200">
+              <h2 className="text-xl font-bold text-center mb-4 text-federal-blue">
+                Apply for a job
+              </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="firstName"
-                    className="block text-sm font-medium text-federal-blue mb-1"
-                  >
-                    First Name <span className="text-emerald">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    required
-                    placeholder="First Name"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
-                  />
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="firstName"
+                      className="block text-sm font-medium text-federal-blue mb-1"
+                    >
+                      First Name <span className="text-emerald">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      required
+                      placeholder="First Name"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="lastName"
+                      className="block text-sm font-medium text-federal-blue mb-1"
+                    >
+                      Last Name <span className="text-emerald">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      required
+                      placeholder="Last Name"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-federal-blue mb-1"
+                    >
+                      Email address <span className="text-emerald">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      required
+                      placeholder="example@email.com"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="birthYear"
+                      className="block text-sm font-medium text-federal-blue mb-1"
+                    >
+                      Year of birth <span className="text-emerald">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      id="birthYear"
+                      required
+                      min="1950"
+                      max="2005"
+                      placeholder="Year of birth"
+                      value={formData.birthYear}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-medium text-federal-blue mb-1"
+                    >
+                      Phone number <span className="text-emerald">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      required
+                      placeholder="+381 63 123456"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="location"
+                      className="block text-sm font-medium text-federal-blue mb-1"
+                    >
+                      Location <span className="text-emerald">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="location"
+                      required
+                      placeholder="Where do you live?"
+                      value={formData.location}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label
-                    htmlFor="lastName"
+                    htmlFor="experience"
                     className="block text-sm font-medium text-federal-blue mb-1"
                   >
-                    Last Name <span className="text-emerald">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    required
-                    placeholder="Last Name"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-federal-blue mb-1"
-                  >
-                    Email address <span className="text-emerald">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    required
-                    placeholder="example@email.com"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="birthYear"
-                    className="block text-sm font-medium text-federal-blue mb-1"
-                  >
-                    Year of birth <span className="text-emerald">*</span>
+                    Job experience (years) <span className="text-emerald">*</span>
                   </label>
                   <input
                     type="number"
-                    id="birthYear"
+                    id="experience"
                     required
-                    min="1950"
-                    max="2005"
-                    placeholder="Year of birth"
-                    value={formData.birthYear}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium text-federal-blue mb-1"
-                  >
-                    Phone number <span className="text-emerald">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    required
-                    placeholder="+381 63 123456"
-                    value={formData.phone}
+                    min="0"
+                    placeholder="Number of years of experience"
+                    value={formData.experience}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
                   />
@@ -316,120 +367,83 @@ const JobDetails = () => {
 
                 <div>
                   <label
-                    htmlFor="location"
+                    htmlFor="education"
                     className="block text-sm font-medium text-federal-blue mb-1"
                   >
-                    Location <span className="text-emerald">*</span>
+                    Level<span className="text-emerald">*</span>
                   </label>
-                  <input
-                    type="text"
-                    id="location"
+                  <select
+                    id="seniority"
                     required
-                    placeholder="Where do you live?"
-                    value={formData.location}
-                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                    value={formData.seniority}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Seniority</option>
+                    <option value="Intern">Intern</option>
+                    <option value="Junior">Junior</option>
+                    <option value="Medior">Medior</option>
+                    <option value="Senior">Senior</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="skills"
+                    className="block text-sm font-medium text-federal-blue mb-1"
+                  >
+                    Skill <span className="text-emerald">*</span>
+                  </label>
+                  <AllSkillsList
+                    max={5}
+                    value={selectedSkills}
+                    onChange={(newSelected) => setSelectedSkills(newSelected)}
                   />
                 </div>
-              </div>
 
-              <div>
-                <label
-                  htmlFor="experience"
-                  className="block text-sm font-medium text-federal-blue mb-1"
+                <div>
+                  <label htmlFor="cv" className="block text-sm font-medium text-federal-blue mb-1">
+                    Upload CV (PDF) <span className="text-emerald">*</span>
+                  </label>
+                  <input
+                    type="file"
+                    id="cv"
+                    accept=".pdf"
+                    required
+                    onChange={handleFileChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="coverLetter"
+                    className="block text-sm font-medium text-federal-blue mb-1"
+                  >
+                    Cover letter{" "}
+                  </label>
+                  <textarea
+                    id="coverLetter"
+                    rows="4"
+                    placeholder="Write your cover letter here..."
+                    value={formData.coverLetter}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
                 >
-                  Job experience (years) <span className="text-emerald">*</span>
-                </label>
-                <input
-                  type="number"
-                  id="experience"
-                  required
-                  min="0"
-                  placeholder="Number of years of experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="education"
-                  className="block text-sm font-medium text-federal-blue mb-1"
-                >
-                  Level<span className="text-emerald">*</span>
-                </label>
-                <select
-                  id="seniority"
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
-                  value={formData.seniority}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Seniority</option>
-                  <option value="intern">Intern</option>
-                  <option value="junior">Junior</option>
-                  <option value="medior">Medior</option>
-                  <option value="senior">Senior</option>
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="skills"
-                  className="block text-sm font-medium text-federal-blue mb-1"
-                >
-                  Skill <span className="text-emerald">*</span>
-                </label>
-                <AllSkillsList max={5} value={true} onChange={handleSkillsChange} />
-              </div>
-
-              <div>
-                <label htmlFor="cv" className="block text-sm font-medium text-federal-blue mb-1">
-                  Upload CV (PDF) <span className="text-emerald">*</span>
-                </label>
-                <input
-                  type="file"
-                  id="cv"
-                  accept=".pdf"
-                  required
-                  onChange={handleFileChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="coverLetter"
-                  className="block text-sm font-medium text-federal-blue mb-1"
-                >
-                  Cover letter{" "}
-                </label>
-                <textarea
-                  id="coverLetter"
-                  rows="4"
-                  placeholder="Write your cover letter here..."
-                  value={formData.coverLetter}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm"
-                ></textarea>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
-              >
-                Send application
-              </button>
-            </form>
-          </div>
-        )}
-        {!candidateLoggedIn && (
+                  Send application
+                </button>
+              </form>
+            </div>
+          ) : null
+        ) : (
           <Link to="/login" state={{ from: window.location.pathname }}>
-            <button
-              onClick={handleLogIn}
-              className="w-full bg-emerald text-white mb-8 py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
-            >
+            <button className="w-full bg-emerald text-white mb-8 py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base">
               Log In to Apply
             </button>
           </Link>

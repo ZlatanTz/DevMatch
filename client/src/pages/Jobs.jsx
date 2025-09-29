@@ -8,20 +8,93 @@ import {
 import Toolbar from "../components/Toolbar";
 import { JobCard } from "../components/JobCard";
 import { readParams, filterAndSort } from "../utils/JobFilters";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { JobCardSkeletonGrid } from "../components/Skeleton";
+import { useAuth } from "../context/AuthContext";
+import { getRecommendedJobsFiltered } from "../api/services/jobs";
 
 export const Jobs = () => {
   const { items: allJobs, page, pageSize } = useLoaderData();
   const [sp] = useSearchParams();
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
+  const { user } = useAuth();
+  const candidateId = user?.candidate?.candidateId;
+  const roleName = user?.role?.name?.toLowerCase();
+  const isCandidate = Boolean(candidateId || roleName === "candidate");
+  const defaultSort = isCandidate ? "recommended" : "date-desc";
 
-  const params = useMemo(() => readParams(sp), [sp.toString()]);
+  const [recommendedJobs, setRecommendedJobs] = useState([]);
+  const [recommendedLoading, setRecommendedLoading] = useState(false);
+  const [recommendedError, setRecommendedError] = useState(null);
+
+  const params = readParams(sp, defaultSort);
+  const shouldUseRecommended = isCandidate && params.sort === "recommended";
+
+  useEffect(() => {
+    if (!shouldUseRecommended || !candidateId) {
+      setRecommendedJobs([]);
+      setRecommendedError(null);
+      setRecommendedLoading(false);
+      return;
+    }
+
+    let active = true;
+    setRecommendedLoading(true);
+    setRecommendedError(null);
+
+    const mapPayloadToJobs = (payload) => {
+      const records = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.items)
+        ? payload.items
+        : [];
+
+      return records.map((entry) => {
+        const job = entry?.job ?? entry;
+        const hasRecommendationDetails =
+          entry?.score !== undefined || entry?.parts !== undefined || entry?.reasons !== undefined;
+        const recommendation = hasRecommendationDetails
+          ? {
+              score: entry?.score,
+              parts: entry?.parts,
+              reasons: entry?.reasons,
+            }
+          : entry?.recommendation;
+
+        return recommendation ? { ...job, recommendation } : job;
+      });
+    };
+
+    getRecommendedJobsFiltered(candidateId, { page, pageSize })
+      .then((data) => {
+        if (!active) return;
+
+        setRecommendedJobs(mapPayloadToJobs(data));
+      })
+      .catch((err) => {
+        console.error("Failed to load recommended jobs", err);
+        if (active) {
+          setRecommendedError(err);
+          setRecommendedJobs([]);
+        }
+      })
+      .finally(() => {
+        if (active) setRecommendedLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [candidateId, page, pageSize, shouldUseRecommended]);
+
+  const useRecommendedData = shouldUseRecommended && !recommendedError;
+
   const filteredJobs = useMemo(() => {
-    const result = filterAndSort(allJobs || [], params);
+    const baseJobs = useRecommendedData ? recommendedJobs : allJobs || [];
+    const result = filterAndSort(baseJobs || [], params);
     return result;
-  }, [allJobs, params]);
+  }, [useRecommendedData, recommendedJobs, allJobs, params]);
 
   const paginatedJobs = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -63,7 +136,7 @@ export const Jobs = () => {
     <section className="min-h-[80vh] relative">
       <Toolbar />
 
-      {isLoading ? (
+      {isLoading || (useRecommendedData && recommendedLoading) ? (
         <JobCardSkeletonGrid />
       ) : (
         <>

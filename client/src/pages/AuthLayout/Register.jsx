@@ -2,25 +2,27 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import StepOne from "./Steps/StepOne";
 import StepTwo from "./Steps/StepTwo";
-import { MoveLeft } from "lucide-react";
+import { MoveLeft, LoaderCircle } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   candidateRegistrationSchema,
   employerRegistrationSchema,
 } from "@/schemas/registrationSchemas";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import AuthSidebar from "./AuthSidebar";
+import { registerCandidate, registerEmployer } from "@/api/services/auth";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
+import { handleFileUploads } from "@/utils/files";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [role, setRole] = useState("candidate");
-  const navigate = useNavigate();
-  const { login } = useAuth();
-
   const STEPS = ["candidate", "employer"];
   const isLastStep = currentStep === STEPS.length;
+  const { login } = useAuth();
 
   const handleNext = () => setCurrentStep((prev) => (prev < STEPS.length ? prev + 1 : prev));
   const handlePrev = () => setCurrentStep((prev) => (prev > 1 ? prev - 1 : prev));
@@ -31,20 +33,59 @@ const Register = () => {
     register,
     handleSubmit,
     control,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
     mode: "onchange",
+    defaultValues: {
+      prefers_remote: true,
+    },
   });
 
-  const onSubmit = (data) => {
-    const registerData = {
-      ...data,
-      role: role,
-    };
-    // TODO: Call register service
-    login(registerData);
-    navigate("/");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const SERVICES = {
+    candidate: registerCandidate,
+    employer: registerEmployer,
+  };
+
+  const FILE_FIELDS = {
+    candidate: {
+      img: "profilePicture",
+      resume: "resume",
+    },
+    employer: {
+      logo: "companyLogoPicture",
+    },
+  };
+
+  const onSubmit = async (formData) => {
+    setIsSubmitting(true);
+    const registerData = { ...formData, role };
+
+    try {
+      // Register
+      const register = SERVICES[role];
+      if (!register) throw new Error(`Unsupported role: ${role}`);
+      const data = await register(registerData);
+
+      // Login registered user
+      localStorage.setItem("token", data.access_token);
+      await login({ email: formData.email, password: formData.password });
+
+      // File handling
+      await handleFileUploads(role, formData);
+
+      toast.success("Account created. Welcome aboard!");
+      navigate("/");
+    } catch (error) {
+      const msg =
+        error?.detail || error?.message || error?.response?.data?.detail || "Something went wrong";
+      setError("email", { type: "server", message: msg });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -82,11 +123,17 @@ const Register = () => {
               </Button>
             )}
             <Button
-              className="w-full sm:w-auto bg-federal-blue hover:bg-paynes-gray text-md px-8 py-4 sm:px-12 md:px-18 lg:px-16"
+              className="w-full sm:w-auto min-w-[120px] bg-federal-blue hover:bg-paynes-gray text-md px-8 py-4 sm:px-12 md:px-18 lg:px-16 flex justify-center items-center"
               onClick={isLastStep ? handleSubmit(onSubmit) : handleNext}
-              disabled={!role}
+              disabled={!role || isSubmitting}
             >
-              {isLastStep ? "Finish" : "Next"}
+              {isSubmitting ? (
+                <LoaderCircle className="h-5 w-5 animate-spin" />
+              ) : isLastStep ? (
+                "Finish"
+              ) : (
+                "Next"
+              )}
             </Button>
           </div>
         </div>

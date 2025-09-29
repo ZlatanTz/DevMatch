@@ -47,18 +47,21 @@
 //   }
 // }
 
-export function readParams(sp) {
+export function readParams(sp, defaultSort = "date-desc") {
   return {
     q: (sp.get("q") || "").trim().toLowerCase(),
     loc: sp.get("loc") || "",
     sen: sp.get("seniority") || "",
     ski: sp.getAll("skills").map((s) => s.toLowerCase()),
-    sort: sp.get("sort") || "date-desc",
+    sort: sp.get("sort") || defaultSort,
   };
 }
 
 export function filterAndSort(jobs, p) {
   const filtered = jobs.filter((j) => {
+    const status = typeof j.status === "string" ? j.status.toLowerCase() : String(j.status || "").toLowerCase();
+    if (status && status !== "open") return false;
+
     const text = `${j.title ?? ""} ${j.company ?? ""} ${j.description ?? ""}`.toLowerCase();
     if (p.q && !text.includes(p.q)) return false;
 
@@ -95,6 +98,8 @@ export function filterAndSort(jobs, p) {
       return filtered.sort((a, b) => bySalary(a, b));
     case "salary-desc":
       return filtered.sort((a, b) => -bySalary(a, b));
+    case "recommended":
+      return filtered;
     default:
       return filtered;
   }

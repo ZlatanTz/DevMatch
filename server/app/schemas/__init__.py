@@ -1,5 +1,5 @@
 from .skill import SkillBase, SkillCreate, SkillRead
-from .user import UserBase, UserUpdate, UserRead
+from .user import UserBase, UserCreate, UserUpdate, UserRead
 from .candidate import CandidateBase, CandidateCreate, CandidateUpdate, CandidateRead
 from .employer import EmployerBase, EmployerRead
 from .job import JobBase, JobCreate, JobUpdate, JobRead, JobReadDetailed
@@ -28,6 +28,6 @@ __all__ = [
     # Application
     "ApplicationBase", "ApplicationCreate", "ApplicationOut", "ApplicationUpdate", "ApplicationStatus",
 
-    # Recommendation
+    # Recommendation    
     "JobRecommendation", "ApplicationRecommendation"
 ]
