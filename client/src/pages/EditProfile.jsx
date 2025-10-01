@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { updateMe } from "@/api/services/me";
@@ -47,6 +47,10 @@ const EditProfile = () => {
     about: user?.employer?.about || "",
     companyLogo: user?.employer?.companyLogo || "",
   });
+
+  const cvInputRef = useRef(null);
+  const candidateImgInputRef = useRef(null);
+  const companyLogoInputRef = useRef(null);
 
   const handleCandidateChange = (e) => {
     setCandidateData((prev) => ({
@@ -326,11 +330,12 @@ const EditProfile = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="relative">
                 <label htmlFor="cv" className="block text-sm font-medium text-federal-blue mb-1">
                   Upload CV (PDF) <span className="text-emerald">*</span>
                 </label>
                 <input
+                  ref={cvInputRef}
                   type="file"
                   id="cv"
                   accept=".pdf"
@@ -338,17 +343,29 @@ const EditProfile = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
                 />
                 {fileUploaded && <p className="mt-2 text-sm text-green-600">Uploaded CV</p>}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCandidateData((prev) => ({ ...prev, resumeUrl: "" }));
+                    if (cvInputRef.current) cvInputRef.current.value = "";
+                    setFileUploaded(false);
+                  }}
+                  className="absolute mt-1 top-7 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
+                >
+                  Delete
+                </button>
               </div>
 
-              <div>
+              {/* Profile Picture Input */}
+              <div className="relative">
                 <label
                   htmlFor="imgPath"
                   className="block text-sm font-medium text-federal-blue mb-1"
                 >
                   Upload Profile Picture
                 </label>
-
                 <input
+                  ref={candidateImgInputRef}
                   type="file"
                   name="imgPath"
                   accept=".jpg,.jpeg,.png"
@@ -358,6 +375,17 @@ const EditProfile = () => {
                 {imgUploaded && (
                   <p className="mt-2 text-sm text-green-600">Uploaded Profile Picture</p>
                 )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCandidateData((prev) => ({ ...prev, imgPath: "" }));
+                    if (candidateImgInputRef.current) candidateImgInputRef.current.value = "";
+                    setImgUploaded(false);
+                  }}
+                  className="absolute mt-1 top-7 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
+                >
+                  Delete
+                </button>
               </div>
             </div>
 
@@ -444,18 +472,32 @@ const EditProfile = () => {
               />
             </div>
 
-            <div>
-              <label htmlFor="companyLogo" className=" text-sm font-medium text-federal-blue mb-1">
+            <div className="relative mt-4">
+              <label htmlFor="companyLogo" className="text-sm font-medium text-federal-blue mb-1">
                 Upload Company Logo
               </label>
               <input
+                ref={companyLogoInputRef}
                 type="file"
                 name="companyLogo"
                 onChange={handleEmployerImgChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
               />
+              {employerData.companyLogo && (
+                <p className="mt-2 text-sm text-green-600">Uploaded Company Logo</p>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setEmployerData((prev) => ({ ...prev, companyLogo: "" }));
+                  if (employerImgInputRef.current) employerImgInputRef.current.value = "";
+                  setImgUploaded(false);
+                }}
+                className="absolute top-7 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
+              >
+                Delete
+              </button>
             </div>
-
             <div>
               <label htmlFor="about" className="block text-sm font-medium text-federal-blue mb-1">
                 About

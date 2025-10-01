@@ -58,7 +58,7 @@ const Profile = () => {
                   target="_blank"
                   className="text-paynes-gray hover:underline"
                 >
-                  {decodeURIComponent(user.candidate.resumeUrl.split("/").pop())}
+                  {decodeURIComponent(user.candidate.resumeUrl.split("/").pop()) || "No Resume"}
                 </a>
               </div>
             </div>
