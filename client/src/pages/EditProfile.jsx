@@ -5,6 +5,7 @@ import { updateMe } from "@/api/services/me";
 import { transformUserMe } from "@/transformers/currentUserTransformer";
 import AllSkillsList from "@/components/AllSkillsList";
 import { useSkills } from "@/hooks/useSkills";
+import { uploadFileService } from "@/api/services/uploadFiles";
 
 const EditProfile = () => {
   const { user, updateUser } = useAuth();
@@ -16,6 +17,10 @@ const EditProfile = () => {
   const initialSelected = user?.candidate?.skills.map((skill) => skill.id) || []; //ids
   const [selectedSkills, setSelectedSkills] = useState(initialSelected); // ids
   const [selectedSkillsNames, setSelectedSkillsNames] = useState(getNamesForIds(selectedSkills)); //names
+  const [imgUploaded, setImgUploaded] = useState(false);
+  const [fileUploaded, setFileUploaded] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadingImg, setUploadingImg] = useState(false);
 
   const [candidateData, setCandidateData] = useState({
     firstName: user?.candidate?.firstName || "",
@@ -57,25 +62,65 @@ const EditProfile = () => {
     }));
   };
 
-  const handleCandidateFileChange = (e) => {
-    setCandidateData((prev) => ({
-      ...prev,
-      resumeUrl: e.target.files[0]?.name || "",
-    }));
+  const handleCandidateFileChange = async (e) => {
+    const file = e.target.files[0];
+
+    setFileUploaded(false);
+    setUploadingFile(true);
+
+    try {
+      const fileUrl = await uploadFileService(file);
+      setCandidateData((prev) => ({ ...prev, resumeUrl: fileUrl }));
+      setFileUploaded(true);
+    } catch (err) {
+      console.error("Error uploading file:", err);
+    } finally {
+      setUploadingFile(false);
+    }
   };
 
-  const handleCandidateImgChange = (e) => {
-    setCandidateData((prev) => ({
-      ...prev,
-      imgPath: e.target.files[0]?.name || "",
-    }));
+  const handleCandidateImgChange = async (e) => {
+    const file = e.target.files[0];
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert("File is too large. Maximum allowed size is 10 MB.");
+      return;
+    }
+
+    setImgUploaded(false);
+    setUploadingImg(true);
+
+    try {
+      const fileUrl = await uploadFileService(file);
+      setCandidateData((prev) => ({ ...prev, imgPath: fileUrl }));
+      setImgUploaded(true);
+    } catch (err) {
+      console.error("Error uploading image:", err);
+    } finally {
+      setUploadingImg(false);
+    }
   };
 
-  const handleEmployerImgChange = (e) => {
-    setEmployerData((prev) => ({
-      ...prev,
-      companyLogo: e.target.files[0]?.name || "",
-    }));
+  const handleEmployerImgChange = async (e) => {
+    const file = e.target.files[0];
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert("File is too large. Maximum allowed size is 10 MB.");
+      return;
+    }
+
+    setImgUploaded(false);
+    setUploadingImg(true);
+
+    try {
+      const fileUrl = await uploadFileService(file);
+      setEmployerData((prev) => ({ ...prev, companyLogo: fileUrl }));
+      setImgUploaded(true);
+    } catch (err) {
+      console.error("Error uploading image:", err);
+    } finally {
+      setUploadingImg(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -282,19 +327,17 @@ const EditProfile = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label
-                  htmlFor="resume"
-                  className="block text-sm font-medium text-federal-blue mb-1"
-                >
-                  Upload CV (PDF)
+                <label htmlFor="cv" className="block text-sm font-medium text-federal-blue mb-1">
+                  Upload CV (PDF) <span className="text-emerald">*</span>
                 </label>
                 <input
                   type="file"
-                  name="resumeUrl"
+                  id="cv"
                   accept=".pdf"
                   onChange={handleCandidateFileChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
                 />
+                {fileUploaded && <p className="mt-2 text-sm text-green-600">Uploaded CV</p>}
               </div>
 
               <div>
@@ -308,9 +351,13 @@ const EditProfile = () => {
                 <input
                   type="file"
                   name="imgPath"
+                  accept=".jpg,.jpeg,.png"
                   onChange={handleCandidateImgChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
                 />
+                {imgUploaded && (
+                  <p className="mt-2 text-sm text-green-600">Uploaded Profile Picture</p>
+                )}
               </div>
             </div>
 
@@ -426,6 +473,7 @@ const EditProfile = () => {
 
         <button
           type="submit"
+          disabled={uploadingFile || uploadingImg}
           className="bg-emerald text-white px-4 py-2 rounded-md hover:opacity-90"
         >
           Save Changes

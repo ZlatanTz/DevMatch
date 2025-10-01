@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { applyToJob } from "@/api/services/applications";
+import { uploadFileService } from "@/api/services/uploadFiles";
 
 const JobDetails = () => {
   const { user, token } = useAuth();
@@ -61,13 +62,14 @@ const JobDetails = () => {
     experience: user?.candidate?.yearsExp || 0,
     seniority: user?.candidate?.seniority || "",
     skills: user?.candidate?.skills || [],
-    cv: null,
+    cv_path: null,
     coverLetter: "",
   }));
 
   //const [selectedSkills, setSelectedSkills] = useState([]);
 
   const [jobs, setJobs] = useState([]);
+  const [uploadingCV, setUploadingCV] = useState(false);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/jobs`)
@@ -89,15 +91,20 @@ const JobDetails = () => {
     }));
   };
 
-  const handleSkillsChange = (skills) => {
-    setFormData((prev) => ({ ...prev, skills }));
-  };
-
-  const handleFileChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      cv: e.target.files[0],
-    }));
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    setUploadingCV(true);
+    setFormData((prev) => ({ ...prev, cv_path: null }));
+    try {
+      const fileUrl = await uploadFileService(file);
+      console.log(fileUrl);
+      setFormData((prev) => ({ ...prev, cv_path: fileUrl }));
+    } catch (err) {
+      console.error("Error uploading file:", err);
+      alert("Error uploading CV. Please try again.");
+    } finally {
+      setUploadingCV(false);
+    }
   };
 
   const handleClickLink = () => {
@@ -107,9 +114,13 @@ const JobDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.cv_path) {
+      alert("Please upload your CV before submitting.");
+      return;
+    }
 
     try {
-      const data = await applyToJob(id, user, formData);
+      const data = await applyToJob(id, formData);
       console.log("Application submitted:", data);
       alert("Application submitted successfully!");
     } catch (err) {
@@ -413,6 +424,10 @@ const JobDetails = () => {
                     onChange={handleFileChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
                   />
+                  {uploadingCV && <p className="mt-2 text-sm text-emerald">Uploading CV...</p>}
+                  {formData.cv_path && !uploadingCV && (
+                    <p className="mt-2 text-sm text-emerald">Uploaded CV URL: {formData.cv_path}</p>
+                  )}
                 </div>
 
                 <div>
@@ -434,9 +449,10 @@ const JobDetails = () => {
 
                 <button
                   type="submit"
+                  disabled={uploadingCV}
                   className="w-full bg-emerald text-white py-3 px-4 rounded-md hover:bg-emerald/80 focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2 transition-colors font-semibold text-base"
                 >
-                  Send application
+                  {uploadingCV ? "Uploading CV..." : "Send application"}
                 </button>
               </form>
             </div>

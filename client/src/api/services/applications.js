@@ -18,7 +18,7 @@ export const getAllCandidateApplications = async (candidate_id, params = {}) => 
   }
 };
 
-export const applyToJob = async (jobId, user, formData) => {
+export const applyToJob = async (jobId, formData) => {
   const submitData = {
     first_name: formData.firstName,
     last_name: formData.lastName,
@@ -30,7 +30,7 @@ export const applyToJob = async (jobId, user, formData) => {
     seniority_level: formData.seniority,
     skills: formData.skills.map((skill) => skill.name || skill),
     cover_letter: formData.coverLetter || "",
-    cv_path: formData.cv?.name || "",
+    cv_path: formData.cv_path || "",
   };
 
   try {
