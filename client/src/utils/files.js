@@ -12,33 +12,37 @@ export const stripTrailingSlash = (url) =>
   typeof url === "string" && url.endsWith("/") ? url.slice(0, -1) : url;
 
 export const handleFileUploads = async (role, formData) => {
+  const uploadedFiles = {};
+
   if (role === "employer") {
-    const logoFile = getFirstFile(formData.companyLogoPicture);
+    const logoFile = getFirstFile(formData.companyLogo);
     if (logoFile) {
-      const logoUrl = stripTrailingSlash(await uploadFileService(logoFile));
+      const logoUrl = await uploadFileService(logoFile);
+      uploadedFiles.companyLogo = logoUrl;
       await updateEmployerLogo({ company_logo: logoUrl });
     }
   }
 
   if (role === "candidate") {
-    const imgFile = getFirstFile(formData.profilePhotoPicture);
-    const resumeFile = getFirstFile(formData.resumeFile);
-
-    let imgUrl = null;
-    let resumeUrl = null;
+    const imgFile = getFirstFile(formData.imgPath);
+    const resumeFile = getFirstFile(formData.resumeUrl);
 
     if (imgFile) {
-      imgUrl = stripTrailingSlash(await uploadFileService(imgFile));
+      const imgUrl = await uploadFileService(imgFile);
+      uploadedFiles.imgPath = imgUrl;
     }
     if (resumeFile) {
-      resumeUrl = stripTrailingSlash(await uploadFileService(resumeFile));
+      const resumeUrl = await uploadFileService(resumeFile);
+      uploadedFiles.resumeUrl = resumeUrl;
     }
 
-    if (imgUrl || resumeUrl) {
+    if (uploadedFiles.imgPath || uploadedFiles.resumeUrl) {
       await updateCandidateFiles({
-        ...(imgUrl && { img_path: imgUrl }),
-        ...(resumeUrl && { resume_url: resumeUrl }),
+        ...(uploadedFiles.imgPath && { img_path: uploadedFiles.imgPath }),
+        ...(uploadedFiles.resumeUrl && { resume_url: uploadedFiles.resumeUrl }),
       });
     }
   }
+
+  return uploadedFiles;
 };

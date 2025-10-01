@@ -18,12 +18,12 @@ export const candidateRegistrationSchema = baseRegistrationSchema
     bio: z.string().min(10, "Bio must have at least 10 characters"),
     desired_salary: z.number().min(0, "Salary must be ≥ 0"),
 
-    resume: z
+    resumeUrl: z
       .any()
       .refine((files) => files?.length > 0, "CV is required")
       .transform((files) => files[0]),
 
-    profilePicture: z
+    imgPath: z
       .any()
       .refine((files) => files?.length > 0, "Profile photo is required")
       .transform((files) => files[0]),
@@ -48,7 +48,7 @@ export const employerRegistrationSchema = baseRegistrationSchema
     website: z.string().url("Enter valid url"),
     about: z.string().min(10, "About must have at least 10 characters"),
 
-    companyLogoPicture: z
+    companyLogo: z
       .any()
       .refine((files) => files?.length > 0, "Company logo is required")
       .transform((files) => files[0]),

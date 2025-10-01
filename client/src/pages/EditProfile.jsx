@@ -30,10 +30,10 @@ const EditProfile = () => {
     tel: user?.candidate?.tel || "",
     bio: user?.candidate?.bio || "",
     resumeUrl: user?.candidate?.resumeUrl || "",
-    imgPath: user?.candidate?.imgPath || "", // nisam dodao polje
+    imgPath: user?.candidate?.imgPath || "",
     yearsExp: user?.candidate?.yearsExp || 0,
     desiredSalary: user?.candidate?.desiredSalary || 0,
-    prefersRemote: user?.candidate?.prefersRemote || null, // nisam dodao polje
+    prefersRemote: user?.candidate?.prefersRemote || null,
     seniority: user?.candidate?.seniority || null,
     skills: initialSelected || [],
   });
@@ -45,7 +45,7 @@ const EditProfile = () => {
     country: user?.employer?.country || "",
     tel: user?.employer?.tel || "",
     about: user?.employer?.about || "",
-    companyLogo: user?.employer?.companyLogo || "", // nisam dodao polje
+    companyLogo: user?.employer?.companyLogo || "",
   });
 
   const handleCandidateChange = (e) => {

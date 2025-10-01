@@ -138,17 +138,17 @@ const StepTwo = ({ role, register, errors, control }) => {
           />
           <FileInput
             label="* Resume"
-            name="resume"
+            name="resumeUrl"
             register={register}
-            error={errors.resume}
+            error={errors.resumeUrl}
             accept=".pdf"
           />
           <FileInput
             label="Profile photo"
-            name="profilePicture"
+            name="imgPath"
             accept=".jpg,.jpeg,.png"
             register={register}
-            error={errors.profilePicture}
+            error={errors.imgPath}
           />
         </>
       )}
@@ -178,10 +178,10 @@ const StepTwo = ({ role, register, errors, control }) => {
           />
           <FileInput
             label="* Company Logo"
-            name="companyLogoPicture"
+            name="companyLogo"
             accept=".jpg,.jpeg,.png"
             register={register}
-            error={errors.companyLogoPicture}
+            error={errors.companyLogo}
           />
         </>
       )}

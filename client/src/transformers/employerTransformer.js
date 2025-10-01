@@ -11,7 +11,7 @@ export const transformEmployerFormToPayload = (form) => {
       location: form.location,
       country: form.country,
       tel: form.phone,
-      company_logo: getFileName(form.companyLogoPicture),
+      company_logo: getFileName(form.companyLogo),
     },
   };
 };

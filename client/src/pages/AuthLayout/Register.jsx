@@ -22,7 +22,7 @@ const Register = () => {
   const [role, setRole] = useState("candidate");
   const STEPS = ["candidate", "employer"];
   const isLastStep = currentStep === STEPS.length;
-  const { login } = useAuth();
+  const { login, updateUser } = useAuth();
 
   const handleNext = () => setCurrentStep((prev) => (prev < STEPS.length ? prev + 1 : prev));
   const handlePrev = () => setCurrentStep((prev) => (prev > 1 ? prev - 1 : prev));
@@ -33,6 +33,7 @@ const Register = () => {
     register,
     handleSubmit,
     control,
+    setValue,
     setError,
     formState: { errors },
   } = useForm({
@@ -52,30 +53,78 @@ const Register = () => {
 
   const FILE_FIELDS = {
     candidate: {
-      img: "profilePicture",
-      resume: "resume",
+      imgPath: "imgPath",
+      resumeUrl: "resumeUrl",
     },
     employer: {
-      logo: "companyLogoPicture",
+      companyLogo: "companyLogo",
     },
   };
 
+  // const onSubmit = async (formData) => {
+  //   setIsSubmitting(true);
+  //   const registerData = { ...formData, role };
+
+  //   try {
+  //     // Register
+  //     const register = SERVICES[role];
+  //     if (!register) throw new Error(`Unsupported role: ${role}`);
+  //     const data = await register(registerData);
+
+  //     // Login registered user
+  //     localStorage.setItem("token", data.access_token);
+  //     await login({ email: formData.email, password: formData.password });
+
+  //     // File handling
+  //     await handleFileUploads(role, formData);
+
+  //     toast.success("Account created. Welcome aboard!");
+  //     navigate("/");
+  //   } catch (error) {
+  //     const msg =
+  //       error?.detail || error?.message || error?.response?.data?.detail || "Something went wrong";
+  //     setError("email", { type: "server", message: msg });
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
   const onSubmit = async (formData) => {
     setIsSubmitting(true);
-    const registerData = { ...formData, role };
 
     try {
-      // Register
-      const register = SERVICES[role];
-      if (!register) throw new Error(`Unsupported role: ${role}`);
-      const data = await register(registerData);
+      // 1. Registracija
+      const registerFn = SERVICES[role];
+      if (!registerFn) throw new Error(`Unsupported role: ${role}`);
 
-      // Login registered user
+      const registerData = { ...formData };
+      const data = await registerFn(registerData);
+
+      // 2. Login da bi dobio token
       localStorage.setItem("token", data.access_token);
-      await login({ email: formData.email, password: formData.password });
+      const loggedInUser = await login({ email: formData.email, password: formData.password });
 
-      // File handling
-      await handleFileUploads(role, formData);
+      // 3. Upload fajlova nakon što je korisnik logovan
+      const uploadedFiles = await handleFileUploads(role, formData);
+
+      // 4. Update AuthContext sa URL-ovima fajlova
+      if (role === "employer") {
+        updateUser({
+          ...loggedInUser,
+          employer: {
+            ...loggedInUser.employer,
+            ...uploadedFiles,
+          },
+        });
+      } else if (role === "candidate") {
+        updateUser({
+          ...loggedInUser,
+          candidate: {
+            ...loggedInUser.candidate,
+            ...uploadedFiles,
+          },
+        });
+      }
 
       toast.success("Account created. Welcome aboard!");
       navigate("/");
