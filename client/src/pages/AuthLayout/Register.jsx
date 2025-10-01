@@ -61,53 +61,21 @@ const Register = () => {
     },
   };
 
-  // const onSubmit = async (formData) => {
-  //   setIsSubmitting(true);
-  //   const registerData = { ...formData, role };
-
-  //   try {
-  //     // Register
-  //     const register = SERVICES[role];
-  //     if (!register) throw new Error(`Unsupported role: ${role}`);
-  //     const data = await register(registerData);
-
-  //     // Login registered user
-  //     localStorage.setItem("token", data.access_token);
-  //     await login({ email: formData.email, password: formData.password });
-
-  //     // File handling
-  //     await handleFileUploads(role, formData);
-
-  //     toast.success("Account created. Welcome aboard!");
-  //     navigate("/");
-  //   } catch (error) {
-  //     const msg =
-  //       error?.detail || error?.message || error?.response?.data?.detail || "Something went wrong";
-  //     setError("email", { type: "server", message: msg });
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
   const onSubmit = async (formData) => {
     setIsSubmitting(true);
 
     try {
-      // 1. Registracija
       const registerFn = SERVICES[role];
       if (!registerFn) throw new Error(`Unsupported role: ${role}`);
 
       const registerData = { ...formData };
       const data = await registerFn(registerData);
 
-      // 2. Login da bi dobio token
       localStorage.setItem("token", data.access_token);
       const loggedInUser = await login({ email: formData.email, password: formData.password });
 
-      // 3. Upload fajlova nakon što je korisnik logovan
       const uploadedFiles = await handleFileUploads(role, formData);
 
-      // 4. Update AuthContext sa URL-ovima fajlova
       if (role === "employer") {
         updateUser({
           ...loggedInUser,

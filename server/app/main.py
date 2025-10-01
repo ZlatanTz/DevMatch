@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.core.database import engine
 from app.routers import roles_router, users_router, jobs_router, applications_router, candidates_router, employers_router, auth_router, skills_router, me_router, admin_router
-
+from sqlalchemy import text
 app = FastAPI(title="DevMatch API", version="0.1.0")
 
 app.add_middleware(
@@ -12,6 +12,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# @app.on_event("startup")
+# async def startup_db_check():
+#     try:
+#         async with engine.begin() as conn:
+#             # test query mora biti obavijen u text()
+#             result = await conn.execute(text("SELECT 1"))
+#             print("DB connection OK:", result.scalar())  # should print 1
+#     except Exception as e:
+#         print("DB connection failed:", e)
 
 @app.get("/")
 async def root():

@@ -25,8 +25,6 @@ export default function Header() {
   const roleName = user?.role?.name?.toLowerCase();
   const isCandidate = Boolean(user?.candidate?.candidateId || roleName === "candidate");
 
-  console.log("sr: ", user);
-
   const sortLinks = useMemo(() => {
     const options = [
       { label: "Newest", to: { pathname: "/jobs", search: "?sort=date-desc" } },

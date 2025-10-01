@@ -180,6 +180,7 @@ const EditProfile = () => {
                 </label>
                 <input
                   type="text"
+                  id="firstName"
                   name="firstName"
                   placeholder="First Name"
                   value={candidateData.firstName}
@@ -197,6 +198,7 @@ const EditProfile = () => {
                 </label>
                 <input
                   type="text"
+                  id="lastName"
                   name="lastName"
                   placeholder="Last Name"
                   value={candidateData.lastName}
@@ -213,6 +215,7 @@ const EditProfile = () => {
                 </label>
                 <input
                   type="tel"
+                  id="tel"
                   name="tel"
                   placeholder="+381 63 123456"
                   value={candidateData.tel}
@@ -230,6 +233,7 @@ const EditProfile = () => {
                 </label>
                 <input
                   type="text"
+                  id="location"
                   name="location"
                   placeholder="Location"
                   value={candidateData.location}
@@ -247,6 +251,7 @@ const EditProfile = () => {
                 </label>
                 <input
                   type="text"
+                  id="country"
                   name="country"
                   placeholder="Country"
                   value={candidateData.country}
@@ -266,6 +271,7 @@ const EditProfile = () => {
                 </label>
                 <input
                   type="number"
+                  id="yearsExp"
                   name="yearsExp"
                   min="0"
                   placeholder="Job experience (years)"
@@ -284,6 +290,7 @@ const EditProfile = () => {
                 </label>
                 <input
                   type="number"
+                  id="desiredSalary"
                   name="desiredSalary"
                   placeholder="Desired Salary"
                   value={candidateData.desiredSalary}
@@ -338,6 +345,7 @@ const EditProfile = () => {
                   ref={cvInputRef}
                   type="file"
                   id="cv"
+                  name="cv"
                   accept=".pdf"
                   onChange={handleCandidateFileChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald focus:border-transparent transition text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald file:text-white hover:file:bg-emerald/80"
@@ -367,6 +375,7 @@ const EditProfile = () => {
                 <input
                   ref={candidateImgInputRef}
                   type="file"
+                  id="imgPath"
                   name="imgPath"
                   accept=".jpg,.jpeg,.png"
                   onChange={handleCandidateImgChange}
@@ -394,6 +403,7 @@ const EditProfile = () => {
                 About you
               </label>
               <textarea
+                id="bio"
                 name="bio"
                 placeholder="About you"
                 value={candidateData.bio}

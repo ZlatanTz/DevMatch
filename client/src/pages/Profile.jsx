@@ -7,10 +7,8 @@ import SkillList from "@/components/SkillList";
 const Profile = () => {
   const { user } = useAuth();
   const { getNamesForIds } = useSkills();
-  console.log(user);
 
   const skillIds = user?.candidate?.skills.map((skill) => skill.id);
-  console.log(user);
 
   if (!user) return <div>Loading...</div>;
 

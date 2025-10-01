@@ -1,12 +1,6 @@
-// ===============================
-// components/Skeleton.jsx
-// Lightweight skeleton primitives with a YouTube-like shimmer.
-// Drop this file into your project, then import { Skeleton, SkeletonText, SkeletonCircle } where needed.
-// ===============================
 import { useEffect } from "react";
 
 export function SkeletonStyles() {
-  // Inject minimal CSS once for the shimmer effect
   useEffect(() => {
     if (document.getElementById("skeleton-shimmer-styles")) return;
     const style = document.createElement("style");
